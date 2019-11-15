@@ -144,7 +144,7 @@ export default {
           icon: "file",
           childrens: [
             { name: "Observation List", route: "/#/observation-list" },
-            { name: "Observation Trend", route: "/#/observation-trend" }
+            { name: "Observation Form", route: "/#/observation-form" }
           ]
         },
         {
@@ -153,7 +153,7 @@ export default {
           icon: "archive",
           childrens: [
             { name: "Report List", route: "/#/report-list" },
-            { name: "Recommendation", route: "/#/recommendation" }
+            { name: "Recommendation", route: "/#/report-recommendation" }
           ]
         },
         {

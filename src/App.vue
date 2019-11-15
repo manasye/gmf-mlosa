@@ -32,4 +32,8 @@ body {
   overflow-x: hidden;
   /* min-height: 100.1vh; */
 }
+
+#nav {
+  margin-top: 70px;
+}
 </style>
