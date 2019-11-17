@@ -32,8 +32,43 @@ body {
   overflow-x: hidden;
   /* min-height: 100.1vh; */
 }
-
+.container-app {
+  margin: 0 2rem;
+  padding: 1rem 0;
+}
 #nav {
   margin-top: 70px;
+}
+.navbar {
+  padding: 0.5rem 2rem;
+}
+.header-title {
+  color: #13629a;
+  font-weight: bold;
+}
+.slick-prev:before {
+  color: #13629a !important;
+}
+.slick-next:before {
+  color: #13629a !important;
+}
+.grey-text {
+  color: #949699;
+}
+.status-badges {
+  margin: 5px;
+  text-transform: capitalize;
+  color: white;
+}
+/*.apexcharts-canvas {*/
+/*  max-width: 100%;*/
+/*}*/
+@media (max-width: 700px) {
+  .container-app {
+    margin: 0 1rem;
+  }
+  .navbar {
+    padding: 0.5rem 1rem !important;
+  }
 }
 </style>

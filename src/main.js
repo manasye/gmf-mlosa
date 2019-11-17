@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import "./registerServiceWorker";
 import BootstrapVue from "bootstrap-vue";
+import VueApexCharts from "vue-apexcharts";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -20,6 +21,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // require styles
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 library.add(faHome);
 library.add(faChartLine);
@@ -32,7 +35,10 @@ library.add(faQuestionCircle);
 Vue.config.productionTip = false;
 
 Vue.use(BootstrapVue);
+Vue.use(VueApexCharts);
+
 Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("apexchart", VueApexCharts);
 
 new Vue({
   router,
