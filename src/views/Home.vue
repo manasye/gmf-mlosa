@@ -2,13 +2,13 @@
   <div class="container-app">
     <h3 class="header-title">DASHBOARD</h3>
     <slick ref="slick" :options="slickOptions">
-      <div class="chart-wrapper" v-for="i in 3">
-        <!--        <apexchart-->
-        <!--          type="bar"-->
-        <!--          height="350"-->
-        <!--          :options="chartOptions"-->
-        <!--          :series="series"-->
-        <!--        />-->
+      <div class="chart-wrapper" v-for="i in 2">
+        <apexchart
+          type="bar"
+          height="350"
+          :options="chartOptions"
+          :series="series"
+        />
       </div>
     </slick>
     <b-row class="mt-5">

@@ -136,7 +136,7 @@ export default {
       showModal: false,
       navItems: [
         { name: "Home", route: "/#/home", icon: "home" },
-        { name: "Dashboard", route: "/#/dashboard", icon: "chart-line" },
+        { name: "Dashboard", route: "/#/dashboard/safety", icon: "chart-line" },
         { name: "Global Plan", route: "/#/global-plan", icon: "calendar" },
         {
           name: "Observation",
