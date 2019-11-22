@@ -17,7 +17,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 @font-face {
   font-family: "circularstd";
   src: url("./assets/font/CircularStd-Book.otf");
@@ -37,7 +37,12 @@ body {
   padding: 1rem 0;
 }
 #nav {
-  margin-top: 70px;
+  margin-top: 75px;
+}
+.calendar {
+  div {
+    width: 100% !important;
+  }
 }
 .navbar {
   padding: 0.5rem 2rem;

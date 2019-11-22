@@ -188,11 +188,3 @@ export default {
   }
 }
 </style>
-
-<style lang="scss">
-.calendar {
-  div {
-    width: 100% !important;
-  }
-}
-</style>
