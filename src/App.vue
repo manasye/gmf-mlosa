@@ -32,6 +32,9 @@ body {
   overflow-x: hidden;
   /* min-height: 100.1vh; */
 }
+img {
+  max-width: 100%;
+}
 .container-app {
   margin: 0 2rem;
   padding: 1rem 0;

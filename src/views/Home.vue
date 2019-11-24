@@ -24,17 +24,11 @@
             ></datepicker
           ></b-col>
           <b-col cols="12" md="7" class="mb-4 mb-md-0"
-            ><b-card header="featured" header-tag="header">
-              <b-card-text>
-                <span class="grey-text">Due Date</span><br />Header and footers
-                using props.</b-card-text
-              >
-              <b-card-text>
-                <span class="grey-text">Description</span><br />Header and
-                footers using props.</b-card-text
-              >
-            </b-card></b-col
-          >
+            ><card-calendar-info
+              :due="'lorem'"
+              :description="'aaa'"
+            ></card-calendar-info
+          ></b-col>
         </b-row>
       </b-col>
 
@@ -70,13 +64,15 @@
 import Slick from "vue-slick";
 import VueApexCharts from "vue-apexcharts";
 import Datepicker from "vuejs-datepicker";
+import CardCalendarInfo from "@/components/CardCalendarInfo";
 
 export default {
   name: "home",
   components: {
     apexchart: VueApexCharts,
     Slick,
-    Datepicker
+    Datepicker,
+    CardCalendarInfo
   },
   data() {
     return {

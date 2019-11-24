@@ -50,6 +50,19 @@
               >
             </b-nav-item-dropdown>
           </div>
+
+          <div>
+            <b-nav-item-dropdown class="mr-1">
+              <template v-slot:button-content>
+                <font-awesome-icon icon="download" class="mr-1" />
+                Download
+              </template>
+              <b-dropdown-item @click="triggerDb"
+                >MLOSA Database</b-dropdown-item
+              >
+              <b-dropdown-item @click="triggerApp">Mobile Apps</b-dropdown-item>
+            </b-nav-item-dropdown>
+          </div>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto nav-search">
@@ -123,6 +136,69 @@
         </b-button>
       </template>
     </b-modal>
+
+    <b-modal v-model="showModalDb" centered hide-header hide-footer size="lg">
+      <h3 class="header-title">MLOSA DATABASE</h3>
+      <b-row class="mt-3">
+        <b-col cols="12" md="2" class="mb-3"
+          ><label>Year</label
+          ><b-form-select
+            v-model="selectVal.year"
+            :options="yearOptions"
+          ></b-form-select
+        ></b-col>
+        <b-col cols="12" md="2" class="mb-3"
+          ><label>Start Month</label
+          ><b-form-select
+            v-model="selectVal.start"
+            :options="startOptions"
+          ></b-form-select
+        ></b-col>
+        <b-col cols="12" md="2" class="mb-3"
+          ><label>End Month</label
+          ><b-form-select
+            v-model="selectVal.end"
+            :options="endOptions"
+          ></b-form-select
+        ></b-col>
+        <b-col cols="12" md="2" class="mb-3"
+          ><label>UIC</label
+          ><b-form-select
+            v-model="selectVal.uic"
+            :options="uicOptions"
+          ></b-form-select
+        ></b-col>
+        <b-col cols="12" md="3" class="mb-3"
+          ><label>Maintenance Process</label
+          ><b-form-select
+            v-model="selectVal.maintenance"
+            :options="maintenanceOptions"
+          ></b-form-select></b-col
+      ></b-row>
+      <b-button variant="primary" class="mt-2 mb-2">Download</b-button>
+    </b-modal>
+
+    <b-modal v-model="showModalApp" centered hide-header hide-footer>
+      <h3 class="header-title">MLOSA MOBILE APPS</h3>
+      <b-row class="mt-3">
+        <b-col cols="12" md="3">
+          <img src="@/assets/img/logo.png" alt="" />
+        </b-col>
+        <b-col cols="12" md="9"
+          >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
+          animi beatae dolor dolores, eaque earum eos iste labore odit
+          perspiciatis quas sit temporibus ut. Dolor dolorem quam quasi
+          similique voluptates.</b-col
+        >
+      </b-row>
+      <div class="text-right mt-3">
+        <b-button variant="outline-success" class="mr-3"
+          >Download Android</b-button
+        >
+
+        <b-button variant="outline-secondary">Download iOS</b-button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -134,6 +210,45 @@ export default {
   data() {
     return {
       showModal: false,
+      showModalDb: false,
+      showModalApp: false,
+      selectVal: {
+        year: null,
+        start: null,
+        end: null,
+        maintenance: null,
+        uic: null
+      },
+      yearOptions: [
+        {
+          value: null,
+          text: "All Years"
+        }
+      ],
+      startOptions: [
+        {
+          value: null,
+          text: "All Start Month"
+        }
+      ],
+      endOptions: [
+        {
+          value: null,
+          text: "All End Month"
+        }
+      ],
+      maintenanceOptions: [
+        {
+          value: null,
+          text: "All Maintenance Process"
+        }
+      ],
+      uicOptions: [
+        {
+          value: null,
+          text: "All UICs"
+        }
+      ],
       navItems: [
         { name: "Home", route: "/#/home", icon: "home" },
         { name: "Dashboard", route: "/#/dashboard/safety", icon: "chart-line" },
@@ -154,15 +269,6 @@ export default {
           childrens: [
             { name: "Report List", route: "/#/report-list" },
             { name: "Recommendation", route: "/#/report-recommendation" }
-          ]
-        },
-        {
-          name: "Download",
-          route: "/#/download-db",
-          icon: "download",
-          childrens: [
-            { name: "MLOSA Database", route: "/#/download-db" },
-            { name: "Mobile Apps", route: "/#/download-app" }
           ]
         }
       ],
@@ -216,6 +322,12 @@ export default {
           this.$store.dispatch("goToPage", "/login");
         })
         .catch(() => {});
+    },
+    triggerDb() {
+      this.showModalDb = true;
+    },
+    triggerApp() {
+      this.showModalApp = true;
     }
   },
   computed: {
