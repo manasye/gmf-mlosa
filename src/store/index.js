@@ -5,9 +5,15 @@ import router from "../router";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  getters: {},
+  state: {
+    role: ''
+  },
+  mutations: {
+    changeRole(state, role) {
+      state.role = role;
+    }
+  },
+  getters: {role: state => state.role},
   actions: {
     goToPage(context, page) {
       return router.push(page);

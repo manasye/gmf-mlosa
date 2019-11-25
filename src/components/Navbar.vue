@@ -182,7 +182,7 @@
       <h3 class="header-title">MLOSA MOBILE APPS</h3>
       <b-row class="mt-3">
         <b-col cols="12" md="3">
-          <img src="@/assets/img/logo.png" alt="" />
+          <img src="@/assets/img/logo.png" alt="" class="logo" />
         </b-col>
         <b-col cols="12" md="9"
           >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
@@ -192,11 +192,11 @@
         >
       </b-row>
       <div class="text-right mt-3">
-        <b-button variant="outline-success" class="mr-3"
+        <b-button variant="outline-success" class="mr-3" size="sm"
           >Download Android</b-button
         >
 
-        <b-button variant="outline-secondary">Download iOS</b-button>
+        <b-button variant="outline-secondary" size="sm">Download iOS</b-button>
       </div>
     </b-modal>
   </div>
@@ -405,6 +405,11 @@ export default {
   }
   .nav-search input {
     margin: 7px 0;
+  }
+  .logo {
+    max-width: 30vw;
+    display: block;
+    margin: 0 auto 16px;
   }
 }
 .dropdown-menu {
