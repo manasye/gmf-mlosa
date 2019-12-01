@@ -24,6 +24,8 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import { shortenText, convertSnakeCaseToText } from "@/utility/func.js";
+
 library.add(faHome);
 library.add(faChartLine);
 library.add(faCalendar);
@@ -33,6 +35,13 @@ library.add(faDownload);
 library.add(faQuestionCircle);
 
 Vue.config.productionTip = false;
+
+Vue.mixin({
+  methods: {
+    shortenText,
+    convertSnakeCaseToText
+  }
+});
 
 Vue.use(BootstrapVue);
 Vue.use(VueApexCharts);

@@ -259,7 +259,7 @@ export default {
           icon: "file",
           childrens: [
             { name: "Observation List", route: "/#/observation-list" },
-            { name: "Observation Form", route: "/#/observation-form" }
+            { name: "Observation Form", route: "/#/observation/form" }
           ]
         },
         {

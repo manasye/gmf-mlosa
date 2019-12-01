@@ -71,6 +71,20 @@ img {
 /*.apexcharts-canvas {*/
 /*  max-width: 100%;*/
 /*}*/
+.breadcrumb {
+  background-color: transparent !important;
+  padding: 0 0 !important;
+}
+.btn-primary {
+  background-color: #13629a !important;
+  border-color: #13629a !important;
+}
+.badge-primary {
+  background-color: #13629a !important;
+}
+#heading-premium {
+  display: none !important;
+}
 @media (max-width: 700px) {
   .container-app {
     margin: 0 1rem;

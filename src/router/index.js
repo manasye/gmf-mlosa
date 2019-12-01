@@ -5,6 +5,7 @@ import Home from "../views/Home.vue";
 Vue.use(VueRouter);
 
 const routes = [
+  { path: "/", redirect: "/home" },
   {
     path: "/home",
     name: "home",
@@ -37,7 +38,23 @@ const routes = [
       )
   },
   {
-    path: "/observation-form",
+    path: "/observation/:id",
+    name: "observation detail",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-list-detail" */ "../views/ObservationDetail.vue"
+      )
+  },
+  {
+    path: "/observation/:id/:type",
+    name: "observation detail type",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-list-detail-type" */ "../views/ObservationDetailType.vue"
+      )
+  },
+  {
+    path: "/observation/form",
     name: "observation form",
     component: () =>
       import(
