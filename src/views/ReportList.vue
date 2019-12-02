@@ -92,7 +92,12 @@
             {{ data.value }}
           </p>
         </b-badge></template
-      ></b-table
+      >
+      <template v-slot:cell(action)="data">
+        <p class="text-primary mb-0 " style="cursor: pointer">
+          {{ data.value }}
+        </p>
+      </template></b-table
     >
 
     <b-pagination

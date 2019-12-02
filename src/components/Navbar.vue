@@ -137,66 +137,79 @@
       </template>
     </b-modal>
 
-    <b-modal v-model="showModalDb" centered hide-header hide-footer size="lg">
-      <h3 class="header-title">MLOSA DATABASE</h3>
-      <b-row class="mt-3">
-        <b-col cols="12" md="2" class="mb-3"
-          ><label>Year</label
-          ><b-form-select
-            v-model="selectVal.year"
-            :options="yearOptions"
-          ></b-form-select
-        ></b-col>
-        <b-col cols="12" md="2" class="mb-3"
-          ><label>Start Month</label
-          ><b-form-select
-            v-model="selectVal.start"
-            :options="startOptions"
-          ></b-form-select
-        ></b-col>
-        <b-col cols="12" md="2" class="mb-3"
-          ><label>End Month</label
-          ><b-form-select
-            v-model="selectVal.end"
-            :options="endOptions"
-          ></b-form-select
-        ></b-col>
-        <b-col cols="12" md="2" class="mb-3"
-          ><label>UIC</label
-          ><b-form-select
-            v-model="selectVal.uic"
-            :options="uicOptions"
-          ></b-form-select
-        ></b-col>
-        <b-col cols="12" md="3" class="mb-3"
-          ><label>Maintenance Process</label
-          ><b-form-select
-            v-model="selectVal.maintenance"
-            :options="maintenanceOptions"
-          ></b-form-select></b-col
-      ></b-row>
-      <b-button variant="primary" class="mt-2 mb-2">Download</b-button>
+    <b-modal
+      v-model="showModalDb"
+      centered
+      hide-header
+      hide-footer
+      size="lg"
+      class="p-3"
+    >
+      <div class="pl-3 pr-3 pt-2 pb-2">
+        <h3 class="header-title">MLOSA DATABASE</h3>
+        <b-row class="mt-3">
+          <b-col cols="12" md="2" class="mb-3"
+            ><label>Year</label
+            ><b-form-select
+              v-model="selectVal.year"
+              :options="yearOptions"
+            ></b-form-select
+          ></b-col>
+          <b-col cols="12" md="2" class="mb-3"
+            ><label>Start Month</label
+            ><b-form-select
+              v-model="selectVal.start"
+              :options="startOptions"
+            ></b-form-select
+          ></b-col>
+          <b-col cols="12" md="2" class="mb-3"
+            ><label>End Month</label
+            ><b-form-select
+              v-model="selectVal.end"
+              :options="endOptions"
+            ></b-form-select
+          ></b-col>
+          <b-col cols="12" md="2" class="mb-3"
+            ><label>UIC</label
+            ><b-form-select
+              v-model="selectVal.uic"
+              :options="uicOptions"
+            ></b-form-select
+          ></b-col>
+          <b-col cols="12" md="3" class="mb-3"
+            ><label>Maintenance Process</label
+            ><b-form-select
+              v-model="selectVal.maintenance"
+              :options="maintenanceOptions"
+            ></b-form-select></b-col
+        ></b-row>
+        <b-button variant="primary" class="mt-2 mb-2">Download</b-button>
+      </div>
     </b-modal>
 
     <b-modal v-model="showModalApp" centered hide-header hide-footer>
-      <h3 class="header-title">MLOSA MOBILE APPS</h3>
-      <b-row class="mt-3">
-        <b-col cols="12" md="3">
-          <img src="@/assets/img/logo.png" alt="" class="logo" />
-        </b-col>
-        <b-col cols="12" md="9"
-          >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
-          animi beatae dolor dolores, eaque earum eos iste labore odit
-          perspiciatis quas sit temporibus ut. Dolor dolorem quam quasi
-          similique voluptates.</b-col
-        >
-      </b-row>
-      <div class="text-right mt-3">
-        <b-button variant="outline-success" class="mr-3" size="sm"
-          >Download Android</b-button
-        >
+      <div class="pl-3 pr-3 pt-2 pb-2">
+        <h3 class="header-title">MLOSA MOBILE APPS</h3>
+        <b-row class="mt-3">
+          <b-col cols="12" md="3">
+            <img src="@/assets/img/logo.png" alt="" class="logo" />
+          </b-col>
+          <b-col cols="12" md="9"
+            >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
+            animi beatae dolor dolores, eaque earum eos iste labore odit
+            perspiciatis quas sit temporibus ut. Dolor dolorem quam quasi
+            similique voluptates.</b-col
+          >
+        </b-row>
+        <div class="text-right mt-3">
+          <b-button variant="outline-success" class="mr-3" size="sm"
+            >Download Android</b-button
+          >
 
-        <b-button variant="outline-secondary" size="sm">Download iOS</b-button>
+          <b-button variant="outline-secondary" size="sm"
+            >Download iOS</b-button
+          >
+        </div>
       </div>
     </b-modal>
   </div>
