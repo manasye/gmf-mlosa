@@ -5,61 +5,51 @@
         <h3 class="header-title">
           REPORT LIST
         </h3></b-col
-      ><b-col cols="12" md="6" class="mt-2 mb-3 mt-md-0 mb-md-0 text-right">
+      >
+      <b-col cols="12" md="6" class="mt-2 mb-3 mt-md-0 mb-md-0 text-right">
         <b-button variant="success">New Report</b-button>
       </b-col>
     </b-row>
 
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
-        ><label>Year</label
-        ><b-form-select
-          v-model="selectVal.year"
-          :options="yearOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>Year</label>
+        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Month</label
-        ><b-form-select
-          v-model="selectVal.month"
-          :options="monthOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>Month</label>
+        <b-form-select v-model="selectVal.month" :options="monthOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>UIC</label
-        ><b-form-select
-          v-model="selectVal.uic"
-          :options="uicOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>UIC</label>
+        <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Report Status</label
-        ><b-form-select
-          v-model="selectVal.report"
-          :options="reportOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>Report Status</label>
+        <b-form-select v-model="selectVal.report" :options="reportOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Follow Up Status</label
-        ><b-form-select
+        ><label>Follow Up Status</label>
+        <b-form-select
           v-model="selectVal.followUp"
           :options="followUpOptions"
-        ></b-form-select></b-col
-      ><b-col cols="12" md="1" class="mb-3"
-        ><label>Per Page</label
-        ><b-form-select
-          v-model="perPage"
-          :options="perPageOptions"
-        ></b-form-select></b-col
-      ><b-col cols="12" md="2" class="mb-3"
+        />
+      </b-col>
+      <b-col cols="12" md="1" class="mb-3"
+        ><label>Per Page</label>
+        <b-form-select v-model="perPage" :options="perPageOptions" />
+      </b-col>
+      <b-col cols="12" md="2" class="mb-3"
         ><label>Search</label>
         <b-nav-form>
           <b-form-input
             v-model="searchQuery"
             placeholder="Search..."
             style="width: 100%"
-          ></b-form-input> </b-nav-form></b-col
-    ></b-row>
+          />
+        </b-nav-form>
+      </b-col>
+    </b-row>
 
     <b-table
       style="margin-top: 20px;"
@@ -81,8 +71,8 @@
           <p class="status-badges" :class="getReportBadgesVariant(data.value)">
             {{ data.value }}
           </p>
-        </b-badge></template
-      >
+        </b-badge>
+      </template>
       <template v-slot:cell(recommendation)="data">
         <b-badge
           :variant="getRecomBadgesVariant(data.value)"
@@ -91,21 +81,21 @@
           <p class="status-badges" :class="getRecomBadgesVariant(data.value)">
             {{ data.value }}
           </p>
-        </b-badge></template
-      >
+        </b-badge>
+      </template>
       <template v-slot:cell(action)="data">
         <p class="text-primary mb-0 " style="cursor: pointer">
           {{ data.value }}
         </p>
-      </template></b-table
-    >
+      </template>
+    </b-table>
 
     <b-pagination
       v-model="currentPage"
       :total-rows="rows"
       :per-page="perPage"
       align="right"
-    ></b-pagination>
+    />
   </div>
 </template>
 
@@ -152,6 +142,7 @@ export default {
           text: "All UICs"
         }
       ],
+      searchQuery: null,
       perPageOptions,
       perPage: "10",
       currentPage: 1,
@@ -208,4 +199,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped />

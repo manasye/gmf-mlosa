@@ -21,14 +21,11 @@
               class=" mb-4 mb-md-0  calendar"
               :minimumView="'day'"
               :maximumView="'day'"
-            ></datepicker
-          ></b-col>
-          <b-col cols="12" md="7" class="mb-4 mb-md-0"
-            ><card-calendar-info
-              :due="'lorem'"
-              :description="'aaa'"
-            ></card-calendar-info
-          ></b-col>
+            />
+          </b-col>
+          <b-col cols="12" md="7" class="mb-4 mb-md-0">
+            <card-calendar-info :due="'lorem'" :description="'aaa'" />
+          </b-col>
         </b-row>
       </b-col>
 
@@ -53,9 +50,9 @@
                 {{ data.value }}
               </p>
             </b-badge>
-          </template></b-table
-        ></b-col
-      >
+          </template>
+        </b-table>
+      </b-col>
     </b-row>
   </div>
 </template>

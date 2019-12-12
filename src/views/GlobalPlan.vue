@@ -4,54 +4,54 @@
 
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
-        ><label>Year</label
-        ><b-form-select
+        ><label>Year</label>
+        <b-form-select
           v-model="selectVal.year"
           :options="yearOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Start Month</label
-        ><b-form-select
+        ><label>Start Month</label>
+        <b-form-select
           v-model="selectVal.start"
           :options="startOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>End Month</label
-        ><b-form-select
+        ><label>End Month</label>
+        <b-form-select
           v-model="selectVal.end"
           :options="endOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="1" class="mb-3"
-        ><label>UIC</label
-        ><b-form-select
+        ><label>UIC</label>
+        <b-form-select
           v-model="selectVal.uic"
           :options="uicOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Maintenance Process</label
-        ><b-form-select
+        ><label>Maintenance Process</label>
+        <b-form-select
           v-model="selectVal.maintenance"
           :options="maintenanceOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Status</label
-        ><b-form-select
+        ><label>Status</label>
+        <b-form-select
           v-model="selectVal.status"
           :options="statusOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3 d-flex justify-content-end">
         <b-button
           variant="primary"
           class="align-self-end"
           @click="showModal = true"
-          >New MLOSA Plan</b-button
-        >
+          >New MLOSA Plan
+        </b-button>
       </b-col>
     </b-row>
 
@@ -72,8 +72,8 @@
               :minimumView="'day'"
               :maximumView="'day'"
               :open-date="new Date(new Date().getFullYear(), i - 1, 16)"
-            ></datepicker
-          ></b-col>
+            ></datepicker>
+          </b-col>
         </b-row>
       </b-col>
 
@@ -104,16 +104,16 @@
             :minimumView="'day'"
             :maximumView="'day'"
             :open-date="new Date(new Date().getFullYear(), monthDetail - 1, 16)"
-          ></datepicker
-        ></b-col>
+          ></datepicker>
+        </b-col>
         <b-col cols="12" md="8" class="info-wrapper">
           <b-row>
-            <b-col cols="12" md="6" v-for="i in 4" class="mb-3"
-              ><card-calendar-info
+            <b-col cols="12" md="6" v-for="i in 4" class="mb-3">
+              <card-calendar-info
                 :due="'lorem'"
                 :description="'aaa'"
-              ></card-calendar-info
-            ></b-col>
+              ></card-calendar-info>
+            </b-col>
           </b-row>
         </b-col>
       </b-row>
@@ -127,23 +127,23 @@
       v-if="showModal"
     >
       <b-row>
-        <b-col cols="4"> <label class="mt-2">UIC</label></b-col>
+        <b-col cols="4"><label class="mt-2">UIC</label></b-col>
         <b-col cols="8" class="mb-3">
           <b-form-select
             v-model="editedData.uic"
             :options="uicOptions"
           ></b-form-select>
         </b-col>
-        <b-col cols="4"> <label class="mt-2">Due Date</label></b-col>
+        <b-col cols="4"><label class="mt-2">Due Date</label></b-col>
         <b-col cols="8" class="mb-3">
           <datepicker v-model="editedData.due_date"></datepicker>
         </b-col>
-        <b-col cols="4"> <label class="mt-2">Subtitle</label></b-col>
+        <b-col cols="4"><label class="mt-2">Subtitle</label></b-col>
         <b-col cols="8" class="mb-3">
-          <b-form-input
-            v-model="editedData.subtitle"
-          ></b-form-input> </b-col></b-row
-    ></b-modal>
+          <b-form-input v-model="editedData.subtitle"></b-form-input>
+        </b-col>
+      </b-row>
+    </b-modal>
   </div>
 </template>
 
@@ -240,10 +240,12 @@ export default {
   height: 60vh;
   overflow-y: scroll;
 }
+
 .info-wrapper {
   height: 60vh;
   overflow-y: scroll;
 }
+
 @media (max-width: 700px) {
   .info-wrapper {
     height: 40vh;

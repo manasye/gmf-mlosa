@@ -6,14 +6,14 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    role: ''
+    role: ""
   },
   mutations: {
     changeRole(state, role) {
       state.role = role;
     }
   },
-  getters: {role: state => state.role},
+  getters: { role: state => state.role },
   actions: {
     goToPage(context, page) {
       return router.push(page);

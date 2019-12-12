@@ -9,8 +9,9 @@
         :key="tab.title"
         @click="$store.dispatch('goToPage', `/dashboard/${tab.route}`)"
         lazy
-        ><component :is="tab.component" :id="$route.params.id"></component
-      ></b-tab>
+      >
+        <component :is="tab.component" :id="$route.params.id"></component>
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -40,7 +41,7 @@ export default {
         },
         { title: "Risk Register", route: "risk", component: Risk }
       ],
-      tabActive: "safety",
+      tabActive: "safety"
     };
   }
 };

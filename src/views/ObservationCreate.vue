@@ -2,7 +2,7 @@
   <div class="container-app">
     <b-breadcrumb :items="breadcrumbs" />
     <h3 class="header-title">
-      {{ convertSnakeCaseToText(this.$route.params.id) }}
+      {{ convertSnakeCaseToText(this.$route.params.type) }}
     </h3>
 
     <form-header />
@@ -19,7 +19,7 @@
           <th>A</th>
         </tr>
         <tr>
-          <td v-for="i in 8">Apples</td>
+          <td v-for="i in 7">Apples</td>
         </tr>
       </tbody>
     </table>
@@ -48,7 +48,7 @@ export default {
           href: "/#/observation-list"
         },
         {
-          text: this.convertSnakeCaseToText(this.$route.params.id),
+          text: this.convertSnakeCaseToText(this.$route.params.type),
           active: true
         }
       ],
@@ -60,7 +60,6 @@ export default {
         "Risk Index",
         "Hazard (Threat) Effectively Managed",
         "Error Outcome & Remarks",
-        "Verify"
       ],
       formSchema: {
         display: "form",

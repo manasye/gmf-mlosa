@@ -1,15 +1,20 @@
 <template>
-    <div>
-
-    </div>
+  <div></div>
 </template>
 
 <script>
-    export default {
+import FormHeader from "../components/FormHeader";
 
+export default {
+  data() {
+    return {
+      key: value
     }
+  },
+  components: {
+    FormHeader
+  }
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

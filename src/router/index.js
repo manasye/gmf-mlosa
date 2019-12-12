@@ -38,19 +38,19 @@ const routes = [
       )
   },
   {
+    path: "/observation-type/:id",
+    name: "observation type",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-type" */ "../views/ObservationType.vue"
+      )
+  },
+  {
     path: "/observation/:id",
     name: "observation detail",
     component: () =>
       import(
-        /* webpackChunkName: "observation-list-detail" */ "../views/ObservationDetail.vue"
-      )
-  },
-  {
-    path: "/observation/:id/:type",
-    name: "observation detail type",
-    component: () =>
-      import(
-        /* webpackChunkName: "observation-list-detail-type" */ "../views/ObservationDetailType.vue"
+        /* webpackChunkName: "observation-list-detail-type" */ "../views/ObservationDetail.vue"
       )
   },
   {
@@ -59,6 +59,30 @@ const routes = [
     component: () =>
       import(
         /* webpackChunkName: "observation-form" */ "../views/ObservationForm.vue"
+      )
+  },
+  {
+    path: "/observation-new",
+    name: "observation new",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-new-form" */ "../views/ObservationNew.vue"
+      )
+  },
+  {
+    path: "/observation-new/:type",
+    name: "observation new type",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-new-form-type" */ "../views/ObservationNew.vue"
+      )
+  },
+  {
+    path: "/observation-create/:type",
+    name: "observation create type",
+    component: () =>
+      import(
+        /* webpackChunkName: "observation-create-form-type" */ "../views/ObservationCreate.vue"
       )
   },
   {

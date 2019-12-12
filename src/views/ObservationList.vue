@@ -5,60 +5,53 @@
         <h3 class="header-title">OBSERVATION LIST</h3></b-col
       >
       <b-col cols="12" md="6" class="text-right">
-        <b-button variant="primary">New Observation</b-button></b-col
-      >
+        <b-button
+          variant="primary"
+          @click="$store.dispatch('goToPage', `/observation-type/new`)"
+          >New Observation</b-button
+        >
+      </b-col>
     </b-row>
 
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
-        ><label>Year</label
-        ><b-form-select
-          v-model="selectVal.year"
-          :options="yearOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>Year</label>
+        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Month</label
-        ><b-form-select
-          v-model="selectVal.month"
-          :options="monthOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>Month</label>
+        <b-form-select v-model="selectVal.month" :options="monthOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>UIC</label
-        ><b-form-select
-          v-model="selectVal.uic"
-          :options="uicOptions"
-        ></b-form-select
-      ></b-col>
+        ><label>UIC</label>
+        <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Maintenance Process</label
-        ><b-form-select
+        ><label>Maintenance Process</label>
+        <b-form-select
           v-model="selectVal.maintenance"
           :options="maintenanceOptions"
-        ></b-form-select
-      ></b-col>
+        />
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Status</label
-        ><b-form-select
-          v-model="selectVal.status"
-          :options="statusOptions"
-        ></b-form-select></b-col
-      ><b-col cols="12" md="1" class="mb-3"
-        ><label>Per Page</label
-        ><b-form-select
-          v-model="perPage"
-          :options="perPageOptions"
-        ></b-form-select></b-col
-      ><b-col cols="12" md="2" class="mb-3"
+        ><label>Status</label>
+        <b-form-select v-model="selectVal.status" :options="statusOptions" />
+      </b-col>
+      <b-col cols="12" md="1" class="mb-3"
+        ><label>Per Page</label>
+        <b-form-select v-model="perPage" :options="perPageOptions" />
+      </b-col>
+      <b-col cols="12" md="2" class="mb-3"
         ><label>Search</label>
         <b-nav-form>
           <b-form-input
             v-model="searchQuery"
             placeholder="Search..."
             style="width: 100%"
-          ></b-form-input> </b-nav-form></b-col
-    ></b-row>
+          />
+        </b-nav-form>
+      </b-col>
+    </b-row>
 
     <b-table
       style="margin-top: 20px;"
@@ -80,8 +73,8 @@
           <p class="status-badges" :class="getBadgesVariant(data.value)">
             {{ data.value }}
           </p>
-        </b-badge></template
-      >
+        </b-badge>
+      </template>
       <template v-slot:cell(action)="data">
         <p class="text-primary mb-0 " style="cursor: pointer">
           {{ data.value }}
@@ -94,7 +87,7 @@
       :total-rows="rows"
       :per-page="perPage"
       align="right"
-    ></b-pagination>
+    />
   </div>
 </template>
 
@@ -196,4 +189,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped />

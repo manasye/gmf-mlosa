@@ -35,8 +35,8 @@
           <b-row>
             <b-col cols="12">
               <b-form-checkbox v-model="remember" class="mb-4 mb-md-3"
-                >Remember Me</b-form-checkbox
-              >
+                >Remember Me
+              </b-form-checkbox>
             </b-col>
             <!--                      <b-col cols="6" style="text-align: right">-->
             <!--                        <p @click="console.log('hi')">Forgot Password ?</p>-->
@@ -49,8 +49,8 @@
             style="width: 100%"
             @click="login"
             class="mt-3"
-            >LOGIN</b-button
-          >
+            >LOGIN
+          </b-button>
 
           <img
             src="@/assets/img/logo.png"
@@ -113,44 +113,54 @@ export default {
 .row-login {
   min-height: 100vh;
 }
+
 .logo-mlosa {
   width: 10vw;
   display: block;
   margin: 0 auto 24px;
 }
+
 .left,
 .right {
   padding: 10px 30px;
 }
+
 .left {
   background: url("../assets/img/login-bg.png");
   background-size: 100% 100%;
   color: white;
+
   img {
     width: 300px;
   }
+
   .desc {
     min-height: calc(100vh - 73.5px * 2);
     padding: 0 40px;
   }
 }
+
 .text-italic {
   font-style: italic;
 }
+
 hr {
   width: 20%;
   border-top: 10px solid white;
   margin: 40px 0;
 }
+
 .r-container {
   padding: 0 70px;
   width: 100%;
 }
+
 input {
   border: transparent !important;
   border-bottom: 1px solid #ced4da !important;
   border-radius: 0 !important;
 }
+
 @media (max-width: 700px) {
   .row-login {
     min-height: auto;
@@ -160,6 +170,7 @@ input {
     margin-bottom: 20px;
     background: url("../assets/img/login-bg-mobile.jpg");
     background-size: cover;
+
     .desc {
       min-height: 60vh;
     }

@@ -10,7 +10,7 @@
         <span class="ml-3 logo-name">MLOSA</span>
       </b-navbar-brand>
 
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-navbar-toggle target="nav-collapse" />
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
@@ -46,8 +46,8 @@
                 v-for="children in nav.childrens"
                 :href="children.route"
                 :key="children.name"
-                >{{ children.name }}</b-dropdown-item
-              >
+                >{{ children.name }}
+              </b-dropdown-item>
             </b-nav-item-dropdown>
           </div>
 
@@ -58,8 +58,8 @@
                 Download
               </template>
               <b-dropdown-item @click="triggerDb"
-                >MLOSA Database</b-dropdown-item
-              >
+                >MLOSA Database
+              </b-dropdown-item>
               <b-dropdown-item @click="triggerApp">Mobile Apps</b-dropdown-item>
             </b-nav-item-dropdown>
           </div>
@@ -104,8 +104,8 @@
                 size="sm"
                 class="d-block mx-auto mb-3"
                 @click="logout"
-                >LOG OUT</b-button
-              >
+                >LOG OUT
+              </b-button>
             </div>
           </b-nav-item-dropdown>
         </b-navbar-nav>
@@ -149,40 +149,29 @@
         <h3 class="header-title">MLOSA DATABASE</h3>
         <b-row class="mt-3">
           <b-col cols="12" md="2" class="mb-3"
-            ><label>Year</label
-            ><b-form-select
-              v-model="selectVal.year"
-              :options="yearOptions"
-            ></b-form-select
-          ></b-col>
+            ><label>Year</label>
+            <b-form-select v-model="selectVal.year" :options="yearOptions" />
+          </b-col>
           <b-col cols="12" md="2" class="mb-3"
-            ><label>Start Month</label
-            ><b-form-select
-              v-model="selectVal.start"
-              :options="startOptions"
-            ></b-form-select
-          ></b-col>
+            ><label>Start Month</label>
+            <b-form-select v-model="selectVal.start" :options="startOptions" />
+          </b-col>
           <b-col cols="12" md="2" class="mb-3"
-            ><label>End Month</label
-            ><b-form-select
-              v-model="selectVal.end"
-              :options="endOptions"
-            ></b-form-select
-          ></b-col>
+            ><label>End Month</label>
+            <b-form-select v-model="selectVal.end" :options="endOptions" />
+          </b-col>
           <b-col cols="12" md="2" class="mb-3"
-            ><label>UIC</label
-            ><b-form-select
-              v-model="selectVal.uic"
-              :options="uicOptions"
-            ></b-form-select
-          ></b-col>
+            ><label>UIC</label>
+            <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+          </b-col>
           <b-col cols="12" md="3" class="mb-3"
-            ><label>Maintenance Process</label
-            ><b-form-select
+            ><label>Maintenance Process</label>
+            <b-form-select
               v-model="selectVal.maintenance"
               :options="maintenanceOptions"
-            ></b-form-select></b-col
-        ></b-row>
+            />
+          </b-col>
+        </b-row>
         <b-button variant="primary" class="mt-2 mb-2">Download</b-button>
       </div>
     </b-modal>
@@ -198,17 +187,17 @@
             >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
             animi beatae dolor dolores, eaque earum eos iste labore odit
             perspiciatis quas sit temporibus ut. Dolor dolorem quam quasi
-            similique voluptates.</b-col
-          >
+            similique voluptates.
+          </b-col>
         </b-row>
         <div class="text-right mt-3">
           <b-button variant="outline-success" class="mr-3" size="sm"
-            >Download Android</b-button
-          >
+            >Download Android
+          </b-button>
 
           <b-button variant="outline-secondary" size="sm"
-            >Download iOS</b-button
-          >
+            >Download iOS
+          </b-button>
         </div>
       </div>
     </b-modal>
@@ -272,7 +261,7 @@ export default {
           icon: "file",
           childrens: [
             { name: "Observation List", route: "/#/observation-list" },
-            { name: "Observation Form", route: "/#/observation/form" }
+            { name: "Observation Form", route: "/#/observation-type/form" }
           ]
         },
         {
@@ -356,34 +345,43 @@ export default {
   font-weight: bold;
   font-size: 28px;
 }
+
 .navbar {
   background-color: #022f46;
 }
+
 .logo-img {
   height: 40px;
 }
+
 .navbar-item {
   /*margin-right: 4px;*/
 }
+
 .navbar-item a {
   color: rgba(255, 255, 255, 0.6) !important;
 }
+
 .navbar-item:hover a {
   color: white !important;
 }
+
 .navbar-item-active,
 .navbar-item-active a {
   color: white !important;
 }
+
 .navbar-img {
   height: 25px;
   margin-right: 5px;
 }
+
 .navbar-img-expand {
   height: 40px;
   margin: 0 auto;
   display: block;
 }
+
 .user-navbar {
   margin-right: 10px;
 }
@@ -398,33 +396,41 @@ export default {
 .b-nav-dropdown a {
   color: rgba(255, 255, 255, 0.6) !important;
 }
+
 .b-nav-dropdown ul li a {
   color: black !important;
 }
+
 .navbar-dropdown-item-active a {
   color: white !important;
 }
+
 .no-icon-dropdown a::after {
   display: none !important;
 }
+
 @media (max-width: 1024px) and (min-width: 701px) {
   .nav-item {
     font-size: 10px;
   }
 }
+
 @media (max-width: 700px) {
   .navbar-nav .dropdown-menu {
     width: 70vw;
   }
+
   .nav-search input {
     margin: 7px 0;
   }
+
   .logo {
     max-width: 30vw;
     display: block;
     margin: 0 auto 16px;
   }
 }
+
 .dropdown-menu {
   padding: 0 !important;
 }

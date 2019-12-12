@@ -2,47 +2,48 @@
   <div>
     <b-row>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Year</label
-        ><b-form-select
+        ><label>Year</label>
+        <b-form-select
           v-model="selectVal.year"
           :options="yearOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Start Month</label
-        ><b-form-select
+        ><label>Start Month</label>
+        <b-form-select
           v-model="selectVal.start"
           :options="startOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>End Month</label
-        ><b-form-select
+        ><label>End Month</label>
+        <b-form-select
           v-model="selectVal.end"
           :options="endOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Maintenance Process</label
-        ><b-form-select
+        ><label>Maintenance Process</label>
+        <b-form-select
           v-model="selectVal.maintenance"
           :options="maintenanceOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Threat Code</label
-        ><b-form-select
+        ><label>Threat Code</label>
+        <b-form-select
           v-model="selectVal.code"
           :options="codeOptions"
-        ></b-form-select
-      ></b-col>
+        ></b-form-select>
+      </b-col>
       <b-col cols="12" md="2" class="mb-3"
-        ><label>Risk Value</label
-        ><b-form-select
+        ><label>Risk Value</label>
+        <b-form-select
           v-model="selectVal.risk"
           :options="riskOptions"
-        ></b-form-select></b-col
-    ></b-row>
+        ></b-form-select>
+      </b-col>
+    </b-row>
 
     <b-row>
       <b-col cols="12" md="6">
@@ -69,8 +70,8 @@
         <p>Average Risk Value :</p>
         <div class="text-right">
           <b-button variant="primary" size="sm">View Details</b-button>
-        </div></b-col
-      >
+        </div>
+      </b-col>
     </b-row>
 
     <apexchart
