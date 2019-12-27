@@ -5,6 +5,7 @@ import store from "./store";
 import "./registerServiceWorker";
 import BootstrapVue from "bootstrap-vue";
 import VueApexCharts from "vue-apexcharts";
+import VueQuillEditor from "vue-quill-editor";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -23,6 +24,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 import { shortenText, convertSnakeCaseToText } from "@/utility/func.js";
 
@@ -45,6 +49,7 @@ Vue.mixin({
 
 Vue.use(BootstrapVue);
 Vue.use(VueApexCharts);
+Vue.use(VueQuillEditor /* { default global options } */);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("apexchart", VueApexCharts);

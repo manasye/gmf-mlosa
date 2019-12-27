@@ -98,6 +98,18 @@ const routes = [
       import(
         /* webpackChunkName: "recommendation" */ "../views/Recommendation.vue"
       )
+  },
+  {
+    path: "/report-form",
+    name: "report form",
+    component: () =>
+      import(/* webpackChunkName: "report-form" */ "../views/ReportForm.vue")
+  },
+  {
+    path: "/report/:id",
+    name: "report detail",
+    component: () =>
+        import(/* webpackChunkName: "report-detail" */ "../views/ReportDetail.vue")
   }
 ];
 

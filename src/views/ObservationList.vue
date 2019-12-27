@@ -76,8 +76,19 @@
         </b-badge>
       </template>
       <template v-slot:cell(action)="data">
-        <p class="text-primary mb-0 " style="cursor: pointer">
+        <p
+          class="text-primary mb-0 "
+          style="cursor: pointer"
+          @click.stop="actionClick(data.item)"
+        >
           {{ data.value }}
+          <font-awesome-icon
+            icon="download"
+            class="ml-2"
+            style="cursor: pointer"
+            v-if="data.value === 'View'"
+            @click.stop="downloadObservation(data.item)"
+          />
         </p>
       </template>
     </b-table>
@@ -88,6 +99,37 @@
       :per-page="perPage"
       align="right"
     />
+
+    <b-modal
+      v-model="showModal"
+      v-if="observationChosen"
+      centered
+      hide-footer
+      title="OBSERVATION LOG"
+    >
+      <b-table
+        show-empty
+        striped
+        hover
+        :items="histories"
+        :fields="historyField"
+      >
+        <template v-slot:cell(status)="data">
+          <b-badge :variant="getBadgesVariant(data.value)">
+            <p class="status-badges" :class="getBadgesVariant(data.value)">
+              {{ data.value }}
+            </p>
+          </b-badge>
+          <font-awesome-icon
+            icon="download"
+            class="ml-2"
+            style="cursor: pointer"
+            v-if="data.value === 'View' || data.value === 'Verified'"
+            @click.stop="downloadObservation(data.item)"
+          />
+        </template>
+      </b-table>
+    </b-modal>
   </div>
 </template>
 
@@ -152,9 +194,11 @@ export default {
         { key: "status", label: "Status", sortable: true },
         { key: "action", label: "Action", sortable: true }
       ],
-      observations: [
-        { observation_id: "X", status: "Open", action: "Follow Up" }
-      ]
+      observations: [{ observation_id: "X", status: "Open", action: "View" }],
+      showModal: false,
+      histories: [{ status: "Verified" }],
+      historyField: ["date", "activity", "status"],
+      observationChosen: null
     };
   },
   computed: {
@@ -183,8 +227,16 @@ export default {
       if (val === "Open") return "primary";
       else if (val === "Onprogress") return "warning";
       else if (val === "Close") return "success";
+      else if (val === "Verified") return "info";
       else return "danger";
-    }
+    },
+    actionClick(item) {
+      if (item.action === "View") {
+        this.observationChosen = item;
+        this.showModal = true;
+      }
+    },
+    downloadObservation(item) {}
   }
 };
 </script>

@@ -7,7 +7,11 @@
         </h3></b-col
       >
       <b-col cols="12" md="6" class="mt-2 mb-3 mt-md-0 mb-md-0 text-right">
-        <b-button variant="success">New Report</b-button>
+        <b-button
+          variant="success"
+          @click="$store.dispatch('goToPage', '/report-form')"
+          >New Report</b-button
+        >
       </b-col>
     </b-row>
 
@@ -74,17 +78,24 @@
         </b-badge>
       </template>
       <template v-slot:cell(recommendation)="data">
-        <b-badge
-          :variant="getRecomBadgesVariant(data.value)"
-          style="margin-right: 30px"
-        >
+        <b-badge :variant="getRecomBadgesVariant(data.value)" class="mr-3">
           <p class="status-badges" :class="getRecomBadgesVariant(data.value)">
             {{ data.value }}
           </p>
         </b-badge>
+        <font-awesome-icon
+          icon="download"
+          style="cursor: pointer"
+          v-if="data.value === 'Close'"
+          @click.stop="downloadReport(data.item)"
+        />
       </template>
       <template v-slot:cell(action)="data">
-        <p class="text-primary mb-0 " style="cursor: pointer">
+        <p
+          class="text-primary mb-0 "
+          style="cursor: pointer"
+          @click.stop="actionClick(data.item)"
+        >
           {{ data.value }}
         </p>
       </template>
@@ -96,6 +107,33 @@
       :per-page="perPage"
       align="right"
     />
+
+    <b-modal
+      v-model="showModal"
+      v-if="observationChosen"
+      centered
+      hide-footer
+      title="REPORT LOG"
+    >
+      <b-table
+        show-empty
+        striped
+        hover
+        :items="histories"
+        :fields="historyField"
+      >
+        <template v-slot:cell(status)="data">
+          <b-badge :variant="getReportBadgesVariant(data.value)">
+            <p
+              class="status-badges"
+              :class="getReportBadgesVariant(data.value)"
+            >
+              {{ data.value }}
+            </p>
+          </b-badge>
+        </template>
+      </b-table>
+    </b-modal>
   </div>
 </template>
 
@@ -148,7 +186,7 @@ export default {
       currentPage: 1,
       reportFields: [
         { key: "date", label: "Date", sortable: true },
-        { key: "observation_id", label: "Report No", sortable: true },
+        { key: "report_id", label: "Report No", sortable: true },
         { key: "prepared_by", sortable: true },
         { key: "checked_by", sortable: true },
         { key: "approved_by", sortable: true },
@@ -157,7 +195,18 @@ export default {
         { key: "uic", label: "UIC", sortable: true },
         { key: "recommendation", sortable: true }
       ],
-      reports: [{ report_status: "Approved", recommendation: "Overdue" }]
+      reports: [
+        {
+          report_id: 1,
+          report_status: "Approved",
+          recommendation: "Close",
+          action: "View"
+        }
+      ],
+      showModal: false,
+      histories: [{ status: "Verified" }],
+      historyField: ["date", "activity", "status"],
+      observationChosen: null
     };
   },
   computed: {
@@ -194,7 +243,14 @@ export default {
       else if (val === "Close") return "success";
       else if (val === "Overdue") return "danger";
       else return "secondary";
-    }
+    },
+    actionClick(item) {
+      if (item.action === "View") {
+        this.observationChosen = item;
+        this.showModal = true;
+      }
+    },
+    downloadReport(item) {}
   }
 };
 </script>

@@ -134,7 +134,11 @@ export default {
   methods: {
     addRow() {},
     changeForm(schema) {
-      if (schema.display) this.formSchema = schema;
+      console.log(schema);
+
+      if (schema.components) {
+        this.formSchema = schema;
+      }
     }
   }
 };
