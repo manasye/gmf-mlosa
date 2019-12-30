@@ -6,6 +6,10 @@ import "./registerServiceWorker";
 import BootstrapVue from "bootstrap-vue";
 import VueApexCharts from "vue-apexcharts";
 import VueQuillEditor from "vue-quill-editor";
+import "froala-editor/css/froala_editor.pkgd.min.css";
+import "froala-editor/js/froala_editor.min.js";
+import "froala-editor/css/froala_style.min.css";
+import CKEditor from "@ckeditor/ckeditor5-vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -18,6 +22,7 @@ import {
   faQuestionCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import VueFroala from "vue-froala-wysiwyg";
 
 // require styles
 import "bootstrap/dist/css/bootstrap.css";
@@ -50,6 +55,8 @@ Vue.mixin({
 Vue.use(BootstrapVue);
 Vue.use(VueApexCharts);
 Vue.use(VueQuillEditor /* { default global options } */);
+Vue.use(CKEditor);
+Vue.use(VueFroala);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("apexchart", VueApexCharts);

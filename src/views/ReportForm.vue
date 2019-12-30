@@ -45,9 +45,11 @@
       </b-col>
     </b-row>
     <label class="mt-4">I. Introduction</label>
-    <quill-editor v-model="intro" />
+    <ckeditor :editor="editor" v-model="intro" :config="editorConfig" />
+
     <label class="mt-4">II. Brief Summary</label>
-    <quill-editor v-model="briefSummary" />
+    <ckeditor :editor="editor" v-model="briefSummary" :config="editorConfig" />
+
     <label class="mt-4">III. Section Summaries</label>
     <br />
     <label>III.1 MLOSA Demographic</label>
@@ -70,15 +72,23 @@
         </b-form-checkbox
       ></b-col>
     </b-row>
-    <quill-editor v-model="regression" />
+
+    <ckeditor :editor="editor" v-model="regression" :config="editorConfig" />
+
     <label class="mt-4"
       >III.3 Threat and Error Management Result (berubah menjadi II.2 bila
       regression analysis tidak ada)</label
     >
-    <quill-editor v-model="threat" />
+    <ckeditor :editor="editor" v-model="threat" :config="editorConfig" />
+
     <label class="mt-4">IV. Recommendation</label>
     <b-row>
-      <b-col cols="12" md="8"> <quill-editor v-model="recommendation"/></b-col>
+      <b-col cols="12" md="8">
+        <ckeditor
+          :editor="editor"
+          v-model="recommendation"
+          :config="editorConfig"
+      /></b-col>
       <b-col cols="12" md="4">
         <label>Due Date : <br /><datepicker v-model="dueDate"/></label>
         <br />
@@ -93,21 +103,46 @@
       </b-col>
     </b-row>
 
-    <b-button variant="info" class="mr-3">ADD FIELD</b-button>
+    <b-button variant="info" class="mr-3" @click="showModal = true"
+      >ADD FIELD</b-button
+    >
     <b-button variant="success" class="mr-3">SAVE</b-button>
     <b-button variant="primary">SUBMIT</b-button>
+
+    <b-modal v-model="showModal" centered title="ADD FIELD">
+      <b-row>
+        <b-col cols="4"> <label class="mt-2">Label</label></b-col>
+        <b-col cols="8" class="mb-3">
+          <b-form-input v-model="editedData.label" />
+        </b-col>
+        <b-col cols="4"> <label class="mt-2">Type</label></b-col>
+        <b-col cols="8" class="mb-3">
+          <b-form-input v-model="editedData.type" /> </b-col></b-row
+    ></b-modal>
   </div>
 </template>
 
 <script>
 import Datepicker from "vuejs-datepicker";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import axios from "axios";
 
 export default {
   components: { Datepicker },
   data() {
     return {
+      editor: ClassicEditor,
+      editorData: "<p>Content of the editor.</p>",
+      editorConfig: {
+        extraPlugins: [this.MyCustomUploadAdapterPlugin]
+      },
       date: null,
       dueDate: null,
+      showModal: false,
+      editedData: {
+        label: "",
+        type: ""
+      },
       right: [
         {
           label: "No",
@@ -164,8 +199,55 @@ export default {
       threat: null,
       recommendation: null
     };
+  },
+  methods: {
+    MyCustomUploadAdapterPlugin(editor) {
+      editor.plugins.get("FileRepository").createUploadAdapter = loader => {
+        return new UploadAdapter(loader);
+      };
+    }
   }
 };
+
+class UploadAdapter {
+  constructor(loader) {
+    this.loader = loader;
+  }
+
+  upload() {
+    return this.loader.file.then(uploadedFile => {
+      return new Promise((resolve, reject) => {
+        const data = new FormData();
+        console.log(uploadedFile);
+        data.append("upload", uploadedFile);
+
+        // axios({
+        //   url: "/index/uploadimage",
+        //   method: "post",
+        //   data,
+        //   headers: {
+        //     "Content-Type": "multipart/form-data;"
+        //   },
+        //   withCredentials: false
+        // })
+        //   .then(response => {
+        //     if (response.data.result == "success") {
+        //       resolve({
+        //         default: response.data.url
+        //       });
+        //     } else {
+        //       reject(response.data.message);
+        //     }
+        //   })
+        //   .catch(response => {
+        //     reject("Upload failed");
+        //   });
+      });
+    });
+  }
+
+  abort() {}
+}
 </script>
 
 <style scoped />
