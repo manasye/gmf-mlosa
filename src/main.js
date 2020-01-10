@@ -10,6 +10,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import "froala-editor/js/froala_editor.min.js";
 import "froala-editor/css/froala_style.min.css";
 import CKEditor from "@ckeditor/ckeditor5-vue";
+import axios from "axios";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -60,6 +61,9 @@ Vue.use(VueFroala);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("apexchart", VueApexCharts);
+
+axios.defaults.baseURL = "http://172.16.41.172:8080/api";
+axios.defaults.withCredentials = true;
 
 new Vue({
   router,

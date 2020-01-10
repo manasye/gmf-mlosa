@@ -23,14 +23,14 @@
             class="logo-mlosa d-none d-md-block"
           />
           <label for="username">Username</label>
-          <b-form-input id="username" v-model="username"></b-form-input>
+          <b-form-input id="username" v-model="username" />
           <label for="password" class="mt-4">Password</label>
           <b-form-input
             id="password"
             type="password"
             class="mb-4"
             v-model="password"
-          ></b-form-input>
+          />
 
           <b-row>
             <b-col cols="12">
@@ -69,6 +69,12 @@ import swal from "sweetalert";
 
 export default {
   mounted() {
+    axios
+      .get("/user")
+      .then(res => {
+        console.log(res);
+      })
+      .catch(() => {});
     // axios
     //   .get("/login")
     //   .then(res => {
@@ -91,18 +97,21 @@ export default {
     login() {
       const dataLogin = { username: this.username, password: this.password };
       axios
-        .post("/auth", dataLogin)
+        .post("/signin", dataLogin)
         .then(res => {
           const role = res.data.data_user.role;
           localStorage.setItem("role", role);
           localStorage.setItem("username", res.data.data_user.username);
           localStorage.setItem("company_id", res.data.detail_user.company_id);
           localStorage.setItem("user_id", res.data.detail_user.user_id);
-          const route = role === "Customer" ? "/project-customer" : "/customer";
-          this.$store.dispatch("goToPage", route);
+          this.$store.dispatch("goToPage", "/home");
         })
         .catch(err => {
-          swal("Error", err.response.data.message, "error");
+          swal(
+            "Error",
+            err.response.data.message || "An error has occured",
+            "error"
+          );
         });
     }
   }
