@@ -209,6 +209,9 @@ import axios from "axios";
 // import moment from "moment";
 
 export default {
+  mounted() {
+    if (!this.getUsername()) this.$store.dispatch("goToPage", "/login");
+  },
   data() {
     return {
       showModal: false,
