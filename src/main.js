@@ -34,7 +34,11 @@ import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
-import { shortenText, convertSnakeCaseToText } from "@/utility/func.js";
+import {
+  shortenText,
+  convertSnakeCaseToText,
+  getUsername
+} from "@/utility/func.js";
 
 library.add(faHome);
 library.add(faChartLine);
@@ -49,7 +53,8 @@ Vue.config.productionTip = false;
 Vue.mixin({
   methods: {
     shortenText,
-    convertSnakeCaseToText
+    convertSnakeCaseToText,
+    getUsername
   }
 });
 

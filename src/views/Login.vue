@@ -69,12 +69,6 @@ import swal from "sweetalert";
 
 export default {
   mounted() {
-    axios
-      .get("/user")
-      .then(res => {
-        console.log(res);
-      })
-      .catch(() => {});
     // axios
     //   .get("/login")
     //   .then(res => {
@@ -99,11 +93,11 @@ export default {
       axios
         .post("/signin", dataLogin)
         .then(res => {
-          const role = res.data.data_user.role;
-          localStorage.setItem("role", role);
-          localStorage.setItem("username", res.data.data_user.username);
-          localStorage.setItem("company_id", res.data.detail_user.company_id);
-          localStorage.setItem("user_id", res.data.detail_user.user_id);
+          // const role = res.data.data_user.role;
+          // localStorage.setItem("role", role);
+          localStorage.setItem("username", this.username);
+          // localStorage.setItem("company_id", res.data.detail_user.company_id);
+          // localStorage.setItem("user_id", res.data.detail_user.user_id);
           this.$store.dispatch("goToPage", "/home");
         })
         .catch(err => {

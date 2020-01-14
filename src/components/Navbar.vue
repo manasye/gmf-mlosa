@@ -98,7 +98,7 @@
                 alt
                 class="navbar-img-expand mb-3"
               />
-              <p class="mb-2 text-center">Hi</p>
+              <p class="mb-2 text-center">{{ getUsername() }}</p>
               <b-button
                 variant="primary"
                 size="sm"
@@ -320,7 +320,7 @@ export default {
       axios
         .get("/logout")
         .then(() => {
-          localStorage.removeItem("role");
+          localStorage.removeItem("username");
           this.$store.dispatch("goToPage", "/login");
         })
         .catch(() => {});
