@@ -93,12 +93,16 @@ export default {
       axios
         .post("/signin", dataLogin)
         .then(res => {
-          // const role = res.data.data_user.role;
-          // localStorage.setItem("role", role);
-          localStorage.setItem("username", this.username);
-          // localStorage.setItem("company_id", res.data.detail_user.company_id);
-          // localStorage.setItem("user_id", res.data.detail_user.user_id);
-          this.$store.dispatch("goToPage", "/home");
+          if (res.data.result) {
+            // const role = res.data.data_user.role;
+            // localStorage.setItem("role", role);
+            localStorage.setItem("username", this.username);
+            // localStorage.setItem("company_id", res.data.detail_user.company_id);
+            // localStorage.setItem("user_id", res.data.detail_user.user_id);
+            this.$store.dispatch("goToPage", "/home");
+          } else {
+            swal("Error", "An error has occured", "error");
+          }
         })
         .catch(err => {
           swal(
