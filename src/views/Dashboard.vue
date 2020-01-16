@@ -10,7 +10,7 @@
         @click="$store.dispatch('goToPage', `/dashboard/${tab.route}`)"
         lazy
       >
-        <component :is="tab.component" :id="$route.params.id"></component>
+        <component :is="tab.component" :id="$route.params.id" />
       </b-tab>
     </b-tabs>
   </div>
@@ -47,4 +47,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped />

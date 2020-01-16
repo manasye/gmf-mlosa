@@ -11,20 +11,29 @@
         />
       </div>
     </slick>
-    <b-row class="mt-5">
+    <b-row class="mt-4">
       <b-col cols="12" md="6"
         ><h3 class="header-title mb-2 mb-md-4">MLOSA PLAN</h3>
         <b-row>
           <b-col cols="12" md="5">
             <datepicker
               :inline="true"
-              class=" mb-4 mb-md-0  calendar"
+              class="mb-4 mb-md-0 calendar"
               :minimumView="'day'"
               :maximumView="'day'"
+              :highlighted="highlighted"
+              @selected="changeSelectedDate"
             />
           </b-col>
           <b-col cols="12" md="7" class="mb-4 mb-md-0">
-            <card-calendar-info :due="'lorem'" :description="'aaa'" />
+            <card-calendar-info
+              v-for="p in globalPlans[dateSelected]"
+              :due="p.due_date"
+              :description="p.subtitle"
+              :featured="p.uic_name"
+              v-if="globalPlans[dateSelected].length > 0"
+              class="mb-3"
+            />
           </b-col>
         </b-row>
       </b-col>
@@ -62,9 +71,14 @@ import Slick from "vue-slick";
 import VueApexCharts from "vue-apexcharts";
 import Datepicker from "vuejs-datepicker";
 import CardCalendarInfo from "@/components/CardCalendarInfo";
+import moment from "moment";
+import axios from "axios";
 
 export default {
   name: "home",
+  mounted() {
+    this.getGlobalPlan();
+  },
   components: {
     apexchart: VueApexCharts,
     Slick,
@@ -73,6 +87,8 @@ export default {
   },
   data() {
     return {
+      dateSelected: null,
+      highlighted: { dates: [] },
       observations: [{ date: "a", status: "Open" }],
       observationFields: [
         { key: "date", label: "Date", sortable: true },
@@ -85,6 +101,7 @@ export default {
         },
         { key: "status", label: "Status", sortable: true }
       ],
+      globalPlans: [],
       slickOptions: {
         slidesToShow: 2,
         dots: true,
@@ -164,6 +181,30 @@ export default {
       else if (val === "Onprogress") return "warning";
       else if (val === "Close") return "success";
       else return "danger";
+    },
+    changeSelectedDate(date) {
+      this.dateSelected = moment(date).format("YYYY-MM-DD");
+    },
+    getGlobalPlan() {
+      axios
+        .get(`/global_mlosa_plan`)
+        .then(res => {
+          this.globalPlans = res.data.data;
+          const data = Object.keys(res.data.data);
+          let dates = [];
+          data.map(d => {
+            if (d) {
+              const year = d.split("-")[0];
+              const month = d.split("-")[1];
+              const date = d.split("-")[2];
+              dates.push(new Date(year, month - 1, date));
+            }
+          });
+          this.highlighted = {
+            dates
+          };
+        })
+        .catch(() => {});
     }
   }
 };

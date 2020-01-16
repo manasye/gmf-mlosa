@@ -18,3 +18,11 @@ export const convertSnakeCaseToText = text => {
 export const getUsername = () => {
   return localStorage.getItem("username");
 };
+
+export const getPhoto = () => {
+  return localStorage.getItem("photo");
+};
+
+export const getFullname = () => {
+  return localStorage.getItem("fullname");
+};

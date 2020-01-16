@@ -79,6 +79,16 @@ img {
   color: #949699;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-underline {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .status-badges {
   margin: 5px;
   text-transform: capitalize;

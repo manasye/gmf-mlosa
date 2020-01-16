@@ -37,7 +37,9 @@ import "quill/dist/quill.bubble.css";
 import {
   shortenText,
   convertSnakeCaseToText,
-  getUsername
+  getUsername,
+  getPhoto,
+  getFullname
 } from "@/utility/func.js";
 
 library.add(faHome);
@@ -54,7 +56,9 @@ Vue.mixin({
   methods: {
     shortenText,
     convertSnakeCaseToText,
-    getUsername
+    getUsername,
+    getPhoto,
+    getFullname
   }
 });
 

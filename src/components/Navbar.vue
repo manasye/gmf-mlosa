@@ -80,7 +80,7 @@
               <img src="../assets/img/notif.png" class="navbar-img" alt
             /></template>
             <b-dropdown-item v-for="n in notifs" :key="n.name" :href="n.href">
-              {{ n.name }}
+              {{ n.name }} (0)
             </b-dropdown-item>
           </b-nav-item-dropdown>
 
@@ -93,12 +93,10 @@
               />
             </template>
             <div style="margin: 15px 15px 0 15px">
-              <img
-                src="https://ra.ac.ae/wp-content/uploads/2017/02/user-icon-placeholder.png"
-                alt
-                class="navbar-img-expand mb-3"
-              />
-              <p class="mb-2 text-center">{{ getUsername() }}</p>
+              <img :src="getPhoto()" alt class="navbar-img-expand mb-3" />
+              <p class="mb-2 text-center" style="font-size: 14px">
+                {{ getFullname() }}
+              </p>
               <b-button
                 variant="primary"
                 size="sm"
@@ -191,11 +189,18 @@
           </b-col>
         </b-row>
         <div class="text-right mt-3">
-          <b-button variant="outline-success" class="mr-3" size="sm"
+          <b-button
+            variant="outline-success"
+            class="mr-3"
+            size="sm"
+            @click="downloadApp('android')"
             >Download Android
           </b-button>
 
-          <b-button variant="outline-secondary" size="sm"
+          <b-button
+            variant="outline-secondary"
+            size="sm"
+            @click="downloadApp('ios')"
             >Download iOS
           </b-button>
         </div>
@@ -210,7 +215,14 @@ import axios from "axios";
 
 export default {
   mounted() {
-    if (!this.getUsername()) this.$store.dispatch("goToPage", "/login");
+    axios
+      .get("/check_auth")
+      .then(res => {
+        if (!res.data.hasLogin) this.$store.dispatch("goToPage", "/login");
+      })
+      .catch(() => {
+        this.$store.dispatch("goToPage", "/login");
+      });
   },
   data() {
     return {
@@ -321,7 +333,7 @@ export default {
     },
     logout() {
       axios
-        .get("/logout")
+        .get("/signout")
         .then(() => {
           localStorage.removeItem("username");
           this.$store.dispatch("goToPage", "/login");
@@ -333,6 +345,9 @@ export default {
     },
     triggerApp() {
       this.showModalApp = true;
+    },
+    downloadApp(type) {
+      console.log(type);
     }
   },
   computed: {
@@ -380,7 +395,7 @@ export default {
 }
 
 .navbar-img-expand {
-  height: 40px;
+  height: 60px;
   margin: 0 auto;
   display: block;
 }

@@ -69,16 +69,12 @@ import swal from "sweetalert";
 
 export default {
   mounted() {
-    // axios
-    //   .get("/login")
-    //   .then(res => {
-    //     if (res.data.auth) {
-    //       const route =
-    //         this.getRole() === "Customer" ? "/project-customer" : "/customer";
-    //       this.$store.dispatch("goToPage", route);
-    //     }
-    //   })
-    //   .catch(() => {});
+    axios
+      .get("/check_auth")
+      .then(res => {
+        if (res.data.hasLogin) this.$store.dispatch("goToPage", "/home");
+      })
+      .catch(() => {});
   },
   data() {
     return {
@@ -94,11 +90,9 @@ export default {
         .post("/signin", dataLogin)
         .then(res => {
           if (res.data.result) {
-            // const role = res.data.data_user.role;
-            // localStorage.setItem("role", role);
+            localStorage.setItem("photo", res.data.data.photo);
             localStorage.setItem("username", this.username);
-            // localStorage.setItem("company_id", res.data.detail_user.company_id);
-            // localStorage.setItem("user_id", res.data.detail_user.user_id);
+            localStorage.setItem("fullname", res.data.data.fullname);
             this.$store.dispatch("goToPage", "/home");
           } else {
             swal("Error", "An error has occured", "error");
