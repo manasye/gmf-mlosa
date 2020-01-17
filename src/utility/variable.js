@@ -74,8 +74,8 @@ export const statusObservation = [
     text: "Overdue"
   },
   {
-    value: "Onprogress",
-    text: "Onprogress"
+    value: "On Progress",
+    text: "On Progress"
   },
   {
     value: "Closed",

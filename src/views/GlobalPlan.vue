@@ -326,7 +326,15 @@ export default {
     getChart() {
       axios
         .get("/mlosa_implementation")
-        .then(res => {})
+        .then(res => {
+          const data = res.data.data;
+          const labels = data.map(d => d.status);
+          this.series = data.map(d => d.count);
+          this.chartOptions = {
+            ...this.chartOptions,
+            labels
+          };
+        })
         .catch(() => {});
     },
     changeSelectedDate(date) {
