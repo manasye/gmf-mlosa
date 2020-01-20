@@ -38,8 +38,15 @@
 <script>
 import FormHeader from "../components/FormHeader";
 import { Form } from "vue-formio";
+import axios from "axios";
 
 export default {
+  mounted() {
+    axios
+      .get(`/observation/${this.$route.params.id}`)
+      .then(res => {})
+      .catch(() => {});
+  },
   data() {
     return {
       breadcrumbs: [

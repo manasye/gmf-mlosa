@@ -30,7 +30,7 @@
               v-for="p in globalPlans[dateSelected]"
               :due="p.due_date"
               :description="p.subtitle"
-              :featured="p.uic_name"
+              :featured="p.uic ? p.uic.uic_name : ''"
               v-if="globalPlans[dateSelected].length > 0"
               class="mb-3"
             />
@@ -78,6 +78,7 @@ export default {
   name: "home",
   mounted() {
     this.getGlobalPlan();
+    this.getObservations();
   },
   components: {
     apexchart: VueApexCharts,
@@ -89,14 +90,14 @@ export default {
     return {
       dateSelected: null,
       highlighted: { dates: [] },
-      observations: [{ date: "a", status: "Open" }],
+      observations: [],
       observationFields: [
-        { key: "date", label: "Date", sortable: true },
-        { key: "observation_id", label: "Id", sortable: true },
-        { key: "uic", label: "UIC", sortable: true },
+        { key: "observation_date", label: "Date", sortable: true },
+        { key: "observation_no", label: "No", sortable: true },
+        { key: "uic.uic_code", label: "UIC", sortable: true },
         {
-          key: "maintenance_process",
-          label: "Maintenance Process",
+          key: "maintenance.name",
+          label: "Maintenance",
           sortable: true
         },
         { key: "status", label: "Status", sortable: true }
@@ -175,7 +176,9 @@ export default {
     };
   },
   methods: {
-    showObservation() {},
+    showObservation(row) {
+      this.$store.dispatch("goToPage", `/observation/${row.id}`);
+    },
     getBadgesVariant(val) {
       if (val === "Open") return "primary";
       else if (val === "Onprogress") return "warning";
@@ -203,6 +206,14 @@ export default {
           this.highlighted = {
             dates
           };
+        })
+        .catch(() => {});
+    },
+    getObservations() {
+      axios
+        .get("/observation")
+        .then(res => {
+          this.observations = res.data.data;
         })
         .catch(() => {});
     }

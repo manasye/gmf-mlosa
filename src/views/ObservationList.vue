@@ -16,26 +16,43 @@
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
         ><label>Year</label>
-        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+        <b-form-select
+          v-model="selectVal.year"
+          :options="yearOptions"
+          @input="getObservations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Month</label>
-        <b-form-select v-model="selectVal.month" :options="monthOptions" />
+        <b-form-select
+          v-model="selectVal.month"
+          :options="monthOptions"
+          @input="getObservations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>UIC</label>
-        <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+        <b-form-select
+          v-model="selectVal.uic_id"
+          :options="uicOptions"
+          @input="getObservations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
-          v-model="selectVal.maintenance"
+          v-model="selectVal.mp_id"
           :options="maintenanceOptions"
+          @input="getObservations"
         />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Status</label>
-        <b-form-select v-model="selectVal.status" :options="statusOptions" />
+        <b-form-select
+          v-model="selectVal.status"
+          :options="statusOptions"
+          @input="getObservations"
+        />
       </b-col>
       <b-col cols="12" md="1" class="mb-3"
         ><label>Per Page</label>
@@ -43,11 +60,12 @@
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Search</label>
-        <b-nav-form>
+        <b-nav-form @submit.prevent="getObservations">
           <b-form-input
             v-model="searchQuery"
             placeholder="Search..."
             style="width: 100%"
+            @keyup="getObservations"
           />
         </b-nav-form>
       </b-col>
@@ -105,7 +123,7 @@
       v-if="observationChosen"
       centered
       hide-footer
-      title="OBSERVATION LOG"
+      title="Observation Log"
     >
       <b-table
         show-empty
@@ -134,16 +152,34 @@
 </template>
 
 <script>
-import { perPageOptions } from "@/utility/variable.js";
+import {
+  perPageOptions,
+  months,
+  statusObservation
+} from "@/utility/variable.js";
+import axios from "axios";
+import { getUics, getMaintenances, getYearOptions } from "@/utility/func.js";
 
 export default {
+  mounted() {
+    getUics().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
+    getMaintenances().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
+    this.getObservations();
+  },
   data() {
     return {
       selectVal: {
         year: null,
         month: null,
-        maintenance: null,
-        uic: null,
+        mp_id: null,
+        uic_id: null,
         status: null
       },
       yearOptions: [
@@ -155,8 +191,9 @@ export default {
       monthOptions: [
         {
           value: null,
-          text: "All End Month"
-        }
+          text: "All Month"
+        },
+        ...months
       ],
       maintenanceOptions: [
         {
@@ -168,7 +205,8 @@ export default {
         {
           value: null,
           text: "All Status"
-        }
+        },
+        ...statusObservation
       ],
       uicOptions: [
         {
@@ -181,20 +219,20 @@ export default {
       currentPage: 1,
       searchQuery: "",
       observationFields: [
-        { key: "date", label: "Date", sortable: true },
-        { key: "observation_id", label: "Observation ID", sortable: true },
-        { key: "uic", label: "UIC", sortable: true },
+        { key: "observation_date", label: "Date", sortable: true },
+        { key: "observation_no", label: "Observation No", sortable: true },
+        { key: "uic.uic_code", label: "UIC", sortable: true },
         { key: "subtitle", label: "Subtitle", sortable: true },
         { key: "due_date", label: "Due Date", sortable: true },
         {
-          key: "maintenance_process",
-          label: "Maintenance Process",
+          key: "maintenance.name",
+          label: "Maintenance",
           sortable: true
         },
         { key: "status", label: "Status", sortable: true },
         { key: "action", label: "Action", sortable: true }
       ],
-      observations: [{ observation_id: "X", status: "Open", action: "View" }],
+      observations: [],
       showModal: false,
       histories: [{ status: "Verified" }],
       historyField: ["date", "activity", "status"],
@@ -220,12 +258,31 @@ export default {
     }
   },
   methods: {
+    getObservations() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+      axios
+        .get(`/observation?${queryParams}`)
+        .then(res => {
+          this.observations = res.data.data.map(d => {
+            let action;
+            if (d.status === "Open") action = "View";
+            else action = "Follow Up";
+            return { ...d, action };
+          });
+        })
+        .catch(() => {});
+    },
     showObservation(row) {
-      this.$store.dispatch("goToPage", `/observation/${row.observation_id}`);
+      this.$store.dispatch("goToPage", `/observation/${row.id}`);
     },
     getBadgesVariant(val) {
       if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
+      else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else if (val === "Verified") return "info";
       else return "danger";
@@ -234,6 +291,8 @@ export default {
       if (item.action === "View") {
         this.observationChosen = item;
         this.showModal = true;
+      } else {
+        this.$store.dispatch("goToPage", `/observation/${item.id}`);
       }
     },
     downloadObservation(item) {}

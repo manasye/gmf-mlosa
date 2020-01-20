@@ -93,6 +93,9 @@ export default {
             localStorage.setItem("photo", res.data.data.photo);
             localStorage.setItem("username", this.username);
             localStorage.setItem("fullname", res.data.data.fullname);
+            if (this.remember) {
+              localStorage.setItem("remember", true);
+            }
             this.$store.dispatch("goToPage", "/home");
           } else {
             swal("Error", "An error has occured", "error");

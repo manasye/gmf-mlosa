@@ -108,10 +108,10 @@
       v-if="showModalDetail"
       hide-footer
       hide-header
-      size="lg"
+      size="xl"
     >
       <b-row>
-        <b-col cols="12" md="4">
+        <b-col cols="12" md="3">
           <datepicker
             :inline="true"
             class="mb-4 mb-md-0 calendar"
@@ -122,7 +122,7 @@
             @selected="changeSelectedDate"
           />
         </b-col>
-        <b-col cols="12" md="8" class="info-wrapper">
+        <b-col cols="12" md="9" class="info-wrapper">
           <b-row>
             <b-col
               cols="12"
@@ -133,7 +133,7 @@
               <card-calendar-info
                 :due="p.due_date"
                 :description="p.subtitle"
-                :featured="p.uic_name"
+                :featured="p.uic ? p.uic.uic_name : ''"
                 v-if="globalPlans[dateSelected].length > 0"
               />
             </b-col>
@@ -204,13 +204,20 @@ import axios from "axios";
 import Datepicker from "vuejs-datepicker";
 import CardCalendarInfo from "@/components/CardCalendarInfo";
 import { months, statusObservation } from "@/utility/variable.js";
+import { getUics, getMaintenances, getYearOptions } from "@/utility/func.js";
 import moment from "moment";
 
 export default {
   mounted() {
-    this.getUics();
-    this.getMaintenances();
-    this.getYearOptions();
+    getUics().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
+    getMaintenances().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
     this.getGlobalPlan();
     this.getChart();
   },
@@ -278,48 +285,9 @@ export default {
       axios
         .post("/uic", this.editedUic)
         .then(() => {
-          this.getUics();
-        })
-        .catch(() => {});
-    },
-    getUics() {
-      axios
-        .get("/uic")
-        .then(res => {
-          let uics = [];
-          const data = res.data.data;
-          data.map(d => {
-            if (d.uic_name) uics.push({ value: d.id, text: d.uic_name });
+          getUics().then(res => {
+            this.uicOptions = this.uicOptions.concat(res);
           });
-          this.uicOptions = this.uicOptions.concat(uics);
-        })
-        .catch(() => {});
-    },
-    getMaintenances() {
-      axios
-        .get("/maintenance_process")
-        .then(res => {
-          let maintenances = [];
-          const data = res.data.data;
-          data.map(m => {
-            if (m.name) maintenances.push({ value: m.id, text: m.name });
-          });
-          this.maintenanceOptions = this.maintenanceOptions.concat(
-            maintenances
-          );
-        })
-        .catch(() => {});
-    },
-    getYearOptions() {
-      axios
-        .get("/year")
-        .then(res => {
-          let years = [];
-          const data = res.data;
-          data.map(y => {
-            if (y) years.push({ value: y, text: y });
-          });
-          this.yearOptions = this.yearOptions.concat(years);
         })
         .catch(() => {});
     },
@@ -414,9 +382,9 @@ export default {
           text: "All UICs"
         }
       ],
-      series: [44, 55, 13, 43],
+      series: [],
       chartOptions: {
-        labels: ["Open", "On Progress", "Close", "Overdue"],
+        labels: [],
         responsive: [
           {
             breakpoint: 2000,
