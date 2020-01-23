@@ -28,6 +28,7 @@
           <b-col cols="12" md="7" class="mb-4 mb-md-0">
             <card-calendar-info
               v-for="p in globalPlans[dateSelected]"
+              :key="p.id"
               :due="p.due_date"
               :description="p.subtitle"
               :featured="p.uic ? p.uic.uic_name : ''"
@@ -47,7 +48,6 @@
           :items="observations"
           :fields="observationFields"
           responsive
-          @row-clicked="showObservation"
           show-empty
         >
           <template v-slot:cell(status)="data">
@@ -181,7 +181,7 @@ export default {
     },
     getBadgesVariant(val) {
       if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
+      else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else return "danger";
     },

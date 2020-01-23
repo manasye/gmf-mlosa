@@ -38,9 +38,6 @@
                 >Remember Me
               </b-form-checkbox>
             </b-col>
-            <!--                      <b-col cols="6" style="text-align: right">-->
-            <!--                        <p @click="console.log('hi')">Forgot Password ?</p>-->
-            <!--                      </b-col>-->
           </b-row>
 
           <b-button
@@ -85,7 +82,11 @@ export default {
   },
   methods: {
     login() {
-      const dataLogin = { username: this.username, password: this.password };
+      const dataLogin = {
+        username: this.username,
+        password: this.password,
+        remember_me: this.remember
+      };
       axios
         .post("/signin", dataLogin)
         .then(res => {

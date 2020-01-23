@@ -46,7 +46,7 @@ const routes = [
       )
   },
   {
-    path: "/observation/:id",
+    path: "/observation-create/:id",
     name: "observation detail",
     component: () =>
       import(
@@ -77,14 +77,7 @@ const routes = [
         /* webpackChunkName: "observation-new-form-type" */ "../views/ObservationNew.vue"
       )
   },
-  {
-    path: "/observation-create/:type",
-    name: "observation create type",
-    component: () =>
-      import(
-        /* webpackChunkName: "observation-create-form-type" */ "../views/ObservationCreate.vue"
-      )
-  },
+
   {
     path: "/report-list",
     name: "report list",
@@ -109,7 +102,9 @@ const routes = [
     path: "/report/:id",
     name: "report detail",
     component: () =>
-        import(/* webpackChunkName: "report-detail" */ "../views/ReportDetail.vue")
+      import(
+        /* webpackChunkName: "report-detail" */ "../views/ReportDetail.vue"
+      )
   }
 ];
 

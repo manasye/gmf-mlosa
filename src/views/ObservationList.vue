@@ -80,7 +80,6 @@
       :per-page="perPage"
       :current-page="currentPage"
       responsive
-      @row-clicked="showObservation"
       show-empty
     >
       <template v-slot:cell(status)="data">
@@ -292,7 +291,10 @@ export default {
         this.observationChosen = item;
         this.showModal = true;
       } else {
-        this.$store.dispatch("goToPage", `/observation/${item.id}`);
+        this.$store.dispatch(
+          "goToPage",
+          `/observation-type/new?obs_id=${item.id}`
+        );
       }
     },
     downloadObservation(item) {}

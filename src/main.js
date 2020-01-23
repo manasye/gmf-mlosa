@@ -11,6 +11,8 @@ import "froala-editor/js/froala_editor.min.js";
 import "froala-editor/css/froala_style.min.css";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import axios from "axios";
+import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
+import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -70,6 +72,7 @@ Vue.use(VueFroala);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("apexchart", VueApexCharts);
+Vue.component("VueCtkDateTimePicker", VueCtkDateTimePicker);
 
 axios.defaults.baseURL = "http://172.16.41.172:8080/api";
 axios.defaults.withCredentials = true;

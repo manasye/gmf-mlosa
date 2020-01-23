@@ -31,7 +31,7 @@
         cols="12"
         md="4"
         v-for="t in types"
-        :key="t.text"
+        :key="t.name"
         class="mt-3 mt-md-4"
       >
         <b-button
@@ -39,7 +39,7 @@
           size="lg"
           class="d-block mx-auto w-75"
           @click="visitObsType(t)"
-          >{{ t.text }}
+          >{{ t.name }}
         </b-button>
       </b-col>
     </b-row>
@@ -48,8 +48,17 @@
 
 <script>
 import { FormBuilder } from "vue-formio";
+import axios from "axios";
 
 export default {
+  mounted() {
+    axios
+      .get("/maintenance_process")
+      .then(res => {
+        this.types = res.data.data;
+      })
+      .catch(() => {});
+  },
   data() {
     return {
       breadcrumbs: [
@@ -65,23 +74,19 @@ export default {
           active: true
         }
       ],
-      types: [
-        { text: "Maintenance Plan", route: "/maintenance_plan" },
-        { text: "Removal Process", route: "/removal_process" },
-        { text: "Installation Process", route: "/installation_process" },
-        { text: "Troubleshooting", route: "/troubleshooting" },
-        { text: "Prepare To Install", route: "/prepare_to_install" },
-        { text: "Test", route: "/test" },
-        { text: "Removal Preparation", route: "/removal_preparation" },
-        { text: "Servicing", route: "/servicing" },
-        { text: "Close Up / Restore", route: "/close_up_or_restore" }
-      ]
+      types: []
     };
   },
   methods: {
     visitObsType(t) {
       const url = this.$route.params.id !== "form" ? "create" : "new";
-      this.$store.dispatch("goToPage", `/observation-${url}${t.route}`);
+      const obs_id = this.$route.query.obs_id;
+      if (obs_id)
+        this.$store.dispatch(
+          "goToPage",
+          `/observation-${url}/${t.id}?obs_id=${obs_id}`
+        );
+      else this.$store.dispatch("goToPage", `/observation-${url}/${t.id}`);
     }
   }
 };

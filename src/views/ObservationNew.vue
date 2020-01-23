@@ -15,6 +15,21 @@
       /></b-col>
     </b-row>
 
+    <b-row>
+      <b-col cols="12" md="6">
+        <b-row v-for="h in leftHeaders" :key="h.field" class="mt-2">
+          <b-col cols="12" md="6"> {{ h.field }}</b-col>
+          <b-col cols="12" md="6"> {{ h.value }}</b-col>
+        </b-row>
+      </b-col>
+      <b-col cols="12" md="6">
+        <b-row v-for="(h, idx) in rightHeaders" :key="idx" class="mt-2">
+          <b-col cols="12" md="6"> {{ h.field }}</b-col>
+          <b-col cols="12" md="6"> {{ h.value }}</b-col>
+        </b-row>
+      </b-col></b-row
+    >
+
     <form-header />
 
     <div class="text-right">
@@ -22,10 +37,10 @@
         variant="primary"
         class="mt-4 mr-4"
         @click="showModalSection = true"
-        >Add Section</b-button
+        >Add Activity</b-button
       >
       <b-button variant="primary" class="mt-4" @click="showModal = true"
-        >Add Row</b-button
+        >Add Sub Activity</b-button
       >
     </div>
 
@@ -46,36 +61,36 @@
       </tbody>
     </table>
 
-    <h5 class="primary-color mt-5 mb-4">
-      Form Builder
-    </h5>
+    <!--    <h5 class="primary-color mt-5 mb-4">-->
+    <!--      Form Builder-->
+    <!--    </h5>-->
 
-    <form-builder
-      v-bind:form="formSchema"
-      v-bind:options="{}"
-      v-on:change="schema => changeForm(schema)"
-      class="mb-3"
-    />
+    <!--    <form-builder-->
+    <!--      v-bind:form="formSchema"-->
+    <!--      v-bind:options="{}"-->
+    <!--      v-on:change="schema => changeForm(schema)"-->
+    <!--      class="mb-3"-->
+    <!--    />-->
 
     <div class="text-right">
       <b-button variant="danger" class="mr-3">Delete</b-button>
       <b-button variant="primary">Update</b-button>
     </div>
 
-    <b-modal v-model="showModal" centered title="Add Row" @ok="addRow">
+    <b-modal v-model="showModal" centered title="Add Sub Activity" @ok="addRow">
       <b-row>
-        <b-col cols="4"> <label class="mt-2">Section</label></b-col>
+        <b-col cols="4"> <label class="mt-2">Activity</label></b-col>
         <b-col cols="8" class="mb-3">
           <b-form-input v-model="editedData.section" /> </b-col
-        ><b-col cols="4"> <label class="mt-2">Activity</label></b-col>
+        ><b-col cols="4"> <label class="mt-2">Sub Activity</label></b-col>
         <b-col cols="8" class="mb-3">
           <b-form-input v-model="editedData.activity" /> </b-col
       ></b-row>
     </b-modal>
 
-    <b-modal v-model="showModalSection" centered title="Add Row" @ok="addRow">
+    <b-modal v-model="showModalSection" centered title="Add Activity" @ok="addRow">
       <b-row>
-        <b-col cols="4"> <label class="mt-2">Section</label></b-col>
+        <b-col cols="4"> <label class="mt-2">Activity</label></b-col>
         <b-col cols="8" class="mb-3">
           <b-form-input v-model="editedSection"/></b-col></b-row
     ></b-modal>
@@ -124,7 +139,20 @@ export default {
         activity: null
       },
       editedSection: null,
-      formSchema: {}
+      formSchema: {},
+      leftHeaders: [
+        { field: "Observation Number", value: "auto generate" },
+        { field: "Observation Date (dd/mm/yyyy)", value: "auto generate" },
+        { field: "Observation Start Time (hh/mm)", value: "select time" },
+        { field: "Observation End Time (hh/mm)", value: "select time" },
+        { field: "A/C / Engine / Component Type", value: "free text" },
+        { field: "Process / Task Being Observed", value: "free text" }
+      ],
+      rightHeaders: [
+        { field: "Observation Team", value: "observer name (auto generate)" },
+        { field: "", value: "observer name (searched)" },
+        { field: "Location / Station (airport code)", value: "free text" }
+      ]
     };
   },
   components: {

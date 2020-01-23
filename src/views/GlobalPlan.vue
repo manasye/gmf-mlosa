@@ -129,6 +129,7 @@
               md="6"
               v-for="p in globalPlans[dateSelected]"
               class="mb-3"
+              :key="p.id"
             >
               <card-calendar-info
                 :due="p.due_date"

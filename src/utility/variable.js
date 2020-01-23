@@ -82,3 +82,39 @@ export const statusObservation = [
     text: "Closed"
   }
 ];
+
+export const safetyRisk = [
+  { value: null, text: "-" },
+  { value: "S", text: "Safety" },
+  { value: "AR", text: "At Risk" },
+  { value: "DNO", text: "Didn't Observe" }
+];
+
+export const hazardCode = [
+  { value: null, text: "-" },
+  { value: "A", text: "A. Information" },
+  { value: "B", text: "B. Equipment / Tools / Safety Equipment" },
+  { value: "C", text: "C. Aircraft Design / Configuration / Parts" },
+  { value: "D", text: "D. Job / Task" },
+  { value: "E", text: "E. Knowledge / Skills" },
+  { value: "F", text: "F. Individual Factors" },
+  { value: "G", text: "G. Environment / Facilities" },
+  { value: "H", text: "H. Organization Factors" },
+  { value: "I", text: "I. Leadership / Supervision" },
+  { value: "J", text: "J. Communication" },
+  { value: "K", text: "K. Inspection / Double Check" },
+  { value: "L", text: "L. Other Contributing Factors" }
+];
+
+export const hazardEffManaged = [
+  { value: null, text: "-" },
+  { value: "N", text: "No" },
+  { value: "Y", text: "Yes" }
+];
+
+export const errorOutcome = [
+  { value: null, text: "-" },
+  { value: "Inconsequential", text: "Inconsequential" },
+  { value: "Undesired state", text: "Undesired state" },
+  { value: "Additional error", text: "Additional error" }
+];
