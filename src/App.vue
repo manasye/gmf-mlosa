@@ -18,6 +18,12 @@ export default {
 </script>
 
 <style lang="scss">
+.prev,
+.next {
+  opacity: 0;
+  cursor: default !important;
+}
+
 @font-face {
   font-family: "circularstd";
   src: url("./assets/font/CircularStd-Book.otf");

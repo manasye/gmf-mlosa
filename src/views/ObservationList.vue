@@ -103,7 +103,7 @@
             icon="download"
             class="ml-2"
             style="cursor: pointer"
-            v-if="data.value === 'View'"
+            v-if="data.value === 'Closed' || data.value === 'Verified'"
             @click.stop="downloadObservation(data.item)"
           />
         </p>
@@ -141,7 +141,7 @@
             icon="download"
             class="ml-2"
             style="cursor: pointer"
-            v-if="data.value === 'View' || data.value === 'Verified'"
+            v-if="data.value === 'Closed' || data.value === 'Verified'"
             @click.stop="downloadObservation(data.item)"
           />
         </template>
@@ -269,8 +269,8 @@ export default {
         .then(res => {
           this.observations = res.data.data.map(d => {
             let action;
-            if (d.status === "Open") action = "View";
-            else action = "Follow Up";
+            if (d.status === "Open") action = "Follow Up";
+            else action = "View";
             return { ...d, action };
           });
         })

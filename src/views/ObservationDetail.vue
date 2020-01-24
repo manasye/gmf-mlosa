@@ -20,8 +20,8 @@
           <b-col cols="12" md="6"
             ><VueCtkDateTimePicker
               v-model="headers.start_time"
-              format="hh:mm"
-              formatted="hh:mm"
+              format="HH:mm"
+              formatted="HH:mm"
               inputSize="sm"
               :onlyTime="true"
               label="Select Time"
@@ -33,8 +33,8 @@
           <b-col cols="12" md="6"
             ><VueCtkDateTimePicker
               v-model="headers.end_time"
-              format="hh:mm"
-              formatted="hh:mm"
+              format="HH:mm"
+              formatted="HH:mm"
               inputSize="sm"
               :onlyTime="true"
               label="Select Time"
@@ -61,7 +61,21 @@
             ><b-form-input
               v-model="headers.search_team"
               placeholder="Search Team"
-          /></b-col>
+              @keyup="searchUser"
+            />
+            <div v-for="u in teamNames" class="mt-2">{{ u }}</div>
+            <hr class="mb-2 mt-2" />
+            <div v-for="u in userResults" class="mt-2">
+              <b-row>
+                <b-col cols="6" md="8">{{ u.fullname }}</b-col>
+                <b-col cols="6" md="4"
+                  ><b-button variant="primary" size="sm" @click="addTeam(u)"
+                    >Add</b-button
+                  ></b-col
+                >
+              </b-row>
+            </div>
+          </b-col>
         </b-row>
         <b-row class="mt-2">
           <b-col cols="12" md="6">Location / Station (airport code)</b-col>
@@ -89,19 +103,21 @@
             <td style="width: 25%">{{ s.description }}</td>
             <td>
               <b-form-select
-                v-model="s.inputs.safety_risk_id"
+                v-model="s.inputs.safety_risk"
                 :options="safetyRisk"
               />
             </td>
             <td style="width: 10%;cursor: pointer" @click="openThreatCodes(s)">
-              {{ s.inputs.sub_threat_codes_id || "-" }}
+              <div class="risk-index">
+                {{ s.inputs.sub_threat_codes_name || "-" }}
+              </div>
             </td>
             <td style="cursor: pointer" @click="openRiskIndex(s)">
               <div
                 class="risk-index"
-                :style="{ 'background-color': risks[s.inputs.risk_index_id] }"
+                :style="{ 'background-color': risks[s.inputs.risk_index] }"
               >
-                {{ s.inputs.risk_index_id || "-" }}
+                {{ s.inputs.risk_index || "-" }}
               </div>
             </td>
             <td style="width: 13%">
@@ -168,20 +184,73 @@
         <b-form-file multiple v-model="attachedFiles"> </b-form-file
       ></b-col>
       <b-col cols="12" md="6">
-        <b-button variant="success" class="mr-3">SAVE</b-button>
-        <b-button variant="primary" class="mr-3">SUBMIT</b-button>
-        <b-button variant="danger" class="mr-3">CANCEL</b-button></b-col
+        <b-button
+          variant="success"
+          class="mr-3"
+          @click="postObservation('On Progress')"
+          >SAVE</b-button
+        >
+        <b-button
+          variant="primary"
+          class="mr-3"
+          @click="postObservation('Closed')"
+          v-if="headers.no"
+          >SUBMIT</b-button
+        >
+        <b-button
+          variant="danger"
+          class="mr-3"
+          @click="postObservation('Open')"
+          v-if="headers.no"
+          >CANCEL</b-button
+        ></b-col
       >
     </b-row>
 
-    <b-modal
-      v-model="showModalThreat"
-      centered
-      size="lg"
-      hide-footer
-      hide-header
-    >
+    <b-modal v-model="showModalThreat" centered hide-footer hide-header>
       <h4 class="mb-4 primary-color">Hazard (Threat) Code</h4>
+      <b-card no-body v-for="t in threatCodes" :key="t.id" class="mb-3">
+        <b-card-header header-tag="header" class="p-1" role="tab">
+          <b-button
+            block
+            href="#"
+            v-b-toggle="`accordion-${t.id}`"
+            variant="primary"
+            >{{ t.code }}. {{ t.description }}</b-button
+          >
+        </b-card-header>
+        <b-collapse
+          :id="`accordion-${t.id}`"
+          accordion="my-accordion"
+          role="tabpanel"
+        >
+          <b-card-body class="pb-3 pt-3">
+            <b-card-text
+              v-for="s in t.sub_threat_code"
+              style="cursor: pointer"
+              @click="subThreatCode = s"
+            >
+              {{ s.code }}. {{ s.description }}
+            </b-card-text>
+          </b-card-body>
+        </b-collapse>
+      </b-card>
+      <p class="mb-0">
+        Chosen Sub Threat Code : {{ subThreatCode ? subThreatCode.code : "-" }}
+      </p>
+      <b-row class="text-right mt-4">
+        <b-col cols="12">
+          <b-button
+            variant="danger"
+            @click="showModalThreat = false"
+            class="mr-3"
+            >Cancel</b-button
+          >
+          <b-button variant="primary" @click="submitThreatCode"
+            >Submit</b-button
+          >
+        </b-col>
+      </b-row>
     </b-modal>
 
     <b-modal v-model="showModalRisk" centered size="xl" hide-footer hide-header>
@@ -364,7 +433,7 @@
             class="mr-3"
             >Cancel</b-button
           >
-          <b-button variant="primary" @click="s.safety_risk_id = 'SA'"
+          <b-button variant="primary" @click="s.safety_risk = 'SA'"
             >Submit</b-button
           >
         </b-col>
@@ -383,17 +452,18 @@ import {
   hazardEffManaged,
   errorOutcome
 } from "@/utility/variable.js";
+import moment from "moment";
+import swal from "sweetalert";
+import debounce from "lodash/debounce";
 
 export default {
   mounted() {
     this.getAllCodes();
-
     axios
       .get(`/observation/${this.$route.query.obs_id}`)
       .then(res => {
         const data = res.data.data;
-        this.headers.observation_date = data.observation_date;
-        this.headers.no = data.observation_no;
+        this.headers.no = data.observation_no || null;
       })
       .catch(() => {});
     axios
@@ -423,7 +493,6 @@ export default {
       if (s.inputs.error_outcome) this.chosenError = [...this.chosenError, s];
       else this.chosenError = this.chosenError.filter(e => e.id !== s.id);
     },
-
     chooseProbability(p) {
       if (p.id === this.probabilityChosenId) this.probabilityChosenId = 0;
       else this.probabilityChosenId = p.id;
@@ -433,10 +502,71 @@ export default {
       else this.severityChosenId = s.id;
     },
     submitRisk() {
-      this.subActChosen.inputs.risk_index_id = this.tempRisk;
+      this.subActChosen.inputs.risk_index = this.tempRisk;
       this.showModalRisk = false;
     },
-
+    submitThreatCode() {
+      this.subActChosen.inputs.sub_threat_codes_id = this.subThreatCode.id;
+      this.subActChosen.inputs.sub_threat_codes_name = this.subThreatCode.code;
+      this.showModalThreat = false;
+    },
+    postObservation(status) {
+      const data = {
+        observation: {
+          ...this.headers,
+          status,
+          due_date: null,
+          mp_id: this.maintenance_process.id,
+          team: this.teamProject,
+          id: +this.$route.query.obs_id,
+          uic_id: 1
+        },
+        maintenance_process: this.maintenance_process,
+        activities: this.activities
+      };
+      axios
+        .post("/observation", data)
+        .then(res => {
+          swal("Success", res.data.message, "success");
+          this.$store.dispatch("goToPage", "/observation-list");
+        })
+        .catch(err => {
+          swal("Error", err.response.data.message, "error");
+        });
+    },
+    debouncedSearchUser() {
+      return debounce(this.searchUser, 500, {
+        leading: true,
+        trailing: false
+      });
+    },
+    searchUser() {
+      axios
+        .get(
+          `/user?uic_id=${localStorage.getItem("uic_id")}&search=${
+            this.headers.search_team
+          }`
+        )
+        .then(res => {
+          let userResults = res.data.data;
+          this.teamNames.map(u => {
+            userResults = userResults.filter(r => r.fullname !== u);
+          });
+          this.userResults = userResults;
+        })
+        .catch(() => {});
+    },
+    addTeam(s) {
+      const data = {
+        user_id: s.id,
+        observation_id: +this.$route.query.obs_id || null
+      };
+      if (!this.teamProject.find(t => t.user_id === data.user_id)) {
+        this.teamProject = [...this.teamProject, data];
+        this.userResults = this.userResults.filter(r => r.id !== s.id);
+        this.teamNames = [...this.teamNames, s.fullname];
+      }
+    },
     getAllCodes() {
       axios
         .get("/threat_codes")
@@ -471,9 +601,18 @@ export default {
       threatCodes: [],
       probabilities: [],
       severities: [],
+      userResults: [],
+      teamProject: [
+        {
+          observation_id: +this.$route.query.obs_id || null,
+          user_id: localStorage.getItem("user_id")
+        }
+      ],
+      teamNames: [this.getFullname()],
       risks: {},
       probabilityChosenId: 0,
       severityChosenId: 0,
+      subThreatCode: null,
       acceptOptions: [
         { value: "Accept", text: "Accept" },
         { value: "Threat", text: "Threat" }
@@ -490,8 +629,8 @@ export default {
       ],
       activities: [],
       headers: {
-        no: "",
-        observation_date: "",
+        no: null,
+        observation_date: moment(new Date()).format("YYYY-MM-DD"),
         start_time: "",
         end_time: "",
         component_type: "",

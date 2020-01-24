@@ -94,6 +94,8 @@ export default {
             localStorage.setItem("photo", res.data.data.photo);
             localStorage.setItem("username", this.username);
             localStorage.setItem("fullname", res.data.data.fullname);
+            localStorage.setItem("uic_id", res.data.data.uic_id);
+            localStorage.setItem("user_id", res.data.data.id);
             if (this.remember) {
               localStorage.setItem("remember", true);
             }

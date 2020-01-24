@@ -88,7 +88,12 @@
       ></b-row>
     </b-modal>
 
-    <b-modal v-model="showModalSection" centered title="Add Activity" @ok="addRow">
+    <b-modal
+      v-model="showModalSection"
+      centered
+      title="Add Activity"
+      @ok="addRow"
+    >
       <b-row>
         <b-col cols="4"> <label class="mt-2">Activity</label></b-col>
         <b-col cols="8" class="mb-3">

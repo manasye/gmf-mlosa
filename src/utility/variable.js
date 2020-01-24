@@ -114,7 +114,7 @@ export const hazardEffManaged = [
 
 export const errorOutcome = [
   { value: null, text: "-" },
-  { value: "Inconsequential", text: "Inconsequential" },
-  { value: "Undesired state", text: "Undesired state" },
-  { value: "Additional error", text: "Additional error" }
+  { value: "1", text: "Inconsequential" },
+  { value: "2", text: "Undesired state" },
+  { value: "3", text: "Additional error" }
 ];
