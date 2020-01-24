@@ -25,12 +25,23 @@
           <label for="username">Username</label>
           <b-form-input id="username" v-model="username" />
           <label for="password" class="mt-4">Password</label>
-          <b-form-input
-            id="password"
-            type="password"
-            class="mb-4"
-            v-model="password"
-          />
+          <b-row no-gutters>
+            <b-col cols="10">
+              <b-form-input
+                id="password"
+                :type="eye ? 'text' : 'password'"
+                class="mb-4"
+                v-model="password"
+              />
+            </b-col>
+            <b-col cols="2" class="text-center">
+              <font-awesome-icon
+                :icon="!eye ? 'eye' : 'eye-slash'"
+                class="mt-2 cursor-pointer"
+                @click="eye = !eye"
+              ></font-awesome-icon>
+            </b-col>
+          </b-row>
 
           <b-row>
             <b-col cols="12">
@@ -77,7 +88,8 @@ export default {
     return {
       remember: false,
       username: null,
-      password: null
+      password: null,
+      eye: false
     };
   },
   methods: {

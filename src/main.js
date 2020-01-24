@@ -22,7 +22,9 @@ import {
   faFile,
   faArchive,
   faDownload,
-  faQuestionCircle
+  faQuestionCircle,
+  faEye,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueFroala from "vue-froala-wysiwyg";
@@ -51,6 +53,8 @@ library.add(faFile);
 library.add(faArchive);
 library.add(faDownload);
 library.add(faQuestionCircle);
+library.add(faEye);
+library.add(faEyeSlash);
 
 Vue.config.productionTip = false;
 
