@@ -4,7 +4,7 @@
 
     <b-row>
       <b-col cols="12" md="6">
-        <h3 class="header-title">
+        <h3 class="header-title text-uppercase">
           {{
             this.$route.params.id === "form"
               ? "Observation Form"

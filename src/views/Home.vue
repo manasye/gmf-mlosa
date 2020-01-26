@@ -1,6 +1,6 @@
 <template>
   <div class="container-app">
-    <h3 class="header-title">DASHBOARD</h3>
+    <h3 class="header-title  text-uppercase">Dashboard</h3>
     <slick ref="slick" :options="slickOptions">
       <div class="chart-wrapper" v-for="i in 2">
         <apexchart
@@ -13,7 +13,7 @@
     </slick>
     <b-row class="mt-4">
       <b-col cols="12" md="6"
-        ><h3 class="header-title mb-2 mb-md-4">MLOSA PLAN</h3>
+        ><h3 class="header-title mb-2 mb-md-4  text-uppercase">Mlosa Plan</h3>
         <b-row>
           <b-col cols="12" md="5">
             <datepicker
@@ -40,7 +40,7 @@
       </b-col>
 
       <b-col cols="12" md="6"
-        ><h3 class="header-title mb-2 mb-md-4">OBSERVATION</h3>
+        ><h3 class="header-title mb-2 mb-md-4 text-uppercase">Observation</h3>
         <b-table
           style="margin-top: 20px;"
           striped

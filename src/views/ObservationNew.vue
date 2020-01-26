@@ -2,11 +2,7 @@
   <div class="container-app">
     <b-breadcrumb :items="breadcrumbs" />
     <h3 class="header-title text-uppercase">
-      {{
-        $route.params.type
-          ? this.convertSnakeCaseToText($route.params.type)
-          : "New Observation Form"
-      }}
+      {{ $route.params.type ? this.title : "New Observation Form" }}
     </h3>
     <b-row class="mt-4 mb-3">
       <b-col cols="12" md="6">
@@ -55,12 +51,26 @@
           <tr :key="a.id">
             <th />
             <th>{{ convertSnakeCaseToText(a.name) }}</th>
-            <th v-for="i in fields.length - 2" :key="a.id + '-' + i" />
+            <th v-for="i in fields.length - 3" :key="a.id + '-' + i" />
+            <th>
+              <font-awesome-icon
+                icon="trash"
+                class="cursor-pointer"
+                @click="deleteActivity(a)"
+              />
+            </th>
           </tr>
           <tr v-for="(s, idx) in a.sub_activities" :key="a.id + '-' + s.id">
             <td>{{ idx + 1 }}</td>
             <td style="width: 25%">{{ s.description }}</td>
-            <th v-for="i in fields.length - 2" :key="a.id + '-' + i" />
+            <th v-for="i in fields.length - 3" :key="a.id + '-' + i" />
+            <th>
+              <font-awesome-icon
+                icon="trash"
+                class="cursor-pointer"
+                @click="deleteSubActivity(s, a)"
+              />
+            </th>
           </tr>
         </template>
       </tbody>
@@ -78,8 +88,16 @@
     <!--    />-->
 
     <div class="text-right">
-      <b-button variant="danger" class="mr-3">Delete</b-button>
-      <b-button variant="primary">Update</b-button>
+      <b-button
+        variant="danger"
+        class="mr-3"
+        v-if="$route.params.type"
+        @click="deleteForm"
+        >Delete</b-button
+      >
+      <b-button variant="primary" @click="postForm">{{
+        $route.params.type ? "Update" : "Create"
+      }}</b-button>
     </div>
 
     <b-modal
@@ -149,6 +167,18 @@ export default {
   mounted() {
     this.getActivities();
     this.getSubActs();
+
+    if (this.$route.params.type) {
+      axios
+        .get(`/observation/${this.$route.params.type}/form`)
+        .then(res => {
+          const name = res.data.maintenance_process.name;
+          this.title = name;
+          this.breadcrumbs[2].text = name;
+          this.activities = res.data.activities;
+        })
+        .catch(() => {});
+    }
   },
   methods: {
     changeForm(schema) {
@@ -177,7 +207,7 @@ export default {
             sub_activities: []
           }
         ];
-        this.getActivities();
+        this.closeModalAct();
       } else if (this.newActivity) {
         axios
           .post("/activity", { name: this.newActivity })
@@ -191,6 +221,7 @@ export default {
               }
             ];
             this.getActivities();
+            this.closeModalAct();
           })
           .catch(() => {});
       }
@@ -198,7 +229,6 @@ export default {
     addSubActivity() {
       if (!this.editedData.activity) return;
       let idxAct = this.getActIdxFromId(this.editedData.activity);
-      console.log(idxAct);
 
       if (idxAct === null) {
         this.activities.push({
@@ -223,8 +253,52 @@ export default {
           )
         };
         this.activities[idxAct].sub_activities.push(data);
+        this.closeModalAct();
       } else if (this.editedData.new_sub_activity) {
+        axios
+          .post("/sub_activity", {
+            description: this.editedData.new_sub_activity
+          })
+          .then(res => {
+            const data = {
+              id: res.data.data.id,
+              description: this.editedData.new_sub_activity
+            };
+            this.activities[idxAct].sub_activities.push(data);
+            this.getSubActs();
+            this.closeModalAct();
+          })
+          .catch(() => {});
       }
+    },
+    postForm() {
+      if (!this.title) return;
+      if (this.$route.params.type) {
+      } else {
+        axios
+          .post("/maintenance_process", {
+            name: this.title,
+            activities: this.activities
+          })
+          .then(() => {
+            this.$store.dispatch("goToPage", "/observation-type/form");
+          })
+          .catch(() => {});
+      }
+    },
+    deleteForm() {
+      axios
+        .delete(`/maintenance_process/${this.$route.params.type}`)
+        .then(() => {
+          this.$store.dispatch("goToPage", "/observation-type/form");
+        })
+        .catch(() => {});
+    },
+    deleteActivity(a) {
+      this.activities = this.activities.filter(act => act !== a);
+    },
+    deleteSubActivity(s, a) {
+      a.sub_activities = a.sub_activities.filter(subAct => subAct !== s);
     },
     getNameFromId(id, arr) {
       for (let i = 0; i < arr.length; i++) {
@@ -306,25 +380,9 @@ export default {
         "Hazard (Threat) Effectively Managed",
         "Error Outcome",
         "Remarks",
-        "Verify"
+        "Delete"
       ],
-      activities: [
-        {
-          id: 1,
-          name: "Safety",
-          sub_activities: [
-            {
-              id: 18,
-              description: "Removal procedures followed"
-            },
-            {
-              id: 26,
-              description:
-                "Personnel use correct manual handling, ergonomics (e.g., proper lifting techniques)"
-            }
-          ]
-        }
-      ],
+      activities: [],
       showModal: false,
       showModalSection: false,
       editedData: {

@@ -1,7 +1,7 @@
 <template>
   <div class="container-app">
     <b-breadcrumb :items="breadcrumbs" />
-    <h3 class="header-title">
+    <h3 class="header-title text-uppercase">
       {{ convertSnakeCaseToText(breadcrumbs[1].text) || "" }}
     </h3>
 
