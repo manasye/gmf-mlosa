@@ -36,7 +36,7 @@
             </b-col>
             <b-col cols="2" class="text-center">
               <font-awesome-icon
-                :icon="!eye ? 'eye' : 'eye-slash'"
+                :icon="eye ? 'eye' : 'eye-slash'"
                 class="mt-2 cursor-pointer"
                 @click="eye = !eye"
               ></font-awesome-icon>
