@@ -63,17 +63,21 @@
               placeholder="Search Team"
               @keyup="searchUser"
             />
-            <div v-for="u in teamNames" class="mt-2">{{ u }}</div>
+            <div class="search-container">
+              <div v-for="u in teamNames" class="mt-2">{{ u }}</div>
+            </div>
             <hr class="mb-2 mt-2" />
-            <div v-for="u in userResults" class="mt-2">
-              <b-row>
-                <b-col cols="6" md="8">{{ u.fullname }}</b-col>
-                <b-col cols="6" md="4"
-                  ><b-button variant="primary" size="sm" @click="addTeam(u)"
-                    >Add</b-button
-                  ></b-col
-                >
-              </b-row>
+            <div class="search-container">
+              <div v-for="u in userResults" class="mt-2">
+                <b-row>
+                  <b-col cols="6" md="8">{{ u.fullname }}</b-col>
+                  <b-col cols="6" md="4"
+                    ><b-button variant="primary" size="sm" @click="addTeam(u)"
+                      >Add</b-button
+                    ></b-col
+                  >
+                </b-row>
+              </div>
             </div>
           </b-col>
         </b-row>
@@ -160,7 +164,7 @@
       v-for="e in chosenError"
       :key="e.id"
       class="mb-3"
-      v-if="e.inputs.error_outcome === 'Undesired state'"
+      v-if="e.inputs.error_outcome === '2'"
     >
       <label> {{ e.description }}</label>
       <b-form-textarea v-model="e.hazardCrewError" />
@@ -460,7 +464,6 @@ import debounce from "lodash/debounce";
 export default {
   mounted() {
     this.getAllCodes();
-    this.searchUser();
     axios
       .get(`/observation/${this.$route.query.obs_id}`)
       .then(res => {
@@ -546,11 +549,7 @@ export default {
     },
     searchUser() {
       axios
-        .get(
-          `/user?uic_id=${localStorage.getItem("uic_id")}&search=${
-            this.headers.search_team
-          }`
-        )
+        .get(`/user?search=${this.headers.search_team}`)
         .then(res => {
           let userResults = res.data.data;
           this.teamNames.map(u => {
@@ -727,5 +726,9 @@ export default {
   padding: 5px 15px;
   border-radius: 5px;
   display: inline-block;
+}
+.search-container {
+  max-height: 20vh;
+  overflow-x: hidden;
 }
 </style>

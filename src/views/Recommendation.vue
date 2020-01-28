@@ -113,7 +113,7 @@ export default {
       monthOptions: [
         {
           value: null,
-          text: "All End Month"
+          text: "All Months"
         },
         ...months
       ],

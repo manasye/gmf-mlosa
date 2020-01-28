@@ -152,6 +152,7 @@ export default {
     getUics().then(res => {
       this.uicOptions = this.uicOptions.concat(res);
     });
+    this.getReports();
   },
   methods: {
     getReports() {
@@ -161,6 +162,12 @@ export default {
           queryParams += `${key}=${this.selectVal[key]}&`;
         }
       }
+      axios
+        .get(`/report?${queryParams}`)
+        .then(res => {
+          this.reports = res.data.data;
+        })
+        .catch(() => {});
     },
     showReport(row) {
       this.$store.dispatch("goToPage", `/report/${row.report_id}`);
@@ -204,7 +211,7 @@ export default {
       monthOptions: [
         {
           value: null,
-          text: "All End Month"
+          text: "All Months"
         },
         ...months
       ],
