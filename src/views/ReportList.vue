@@ -138,9 +138,54 @@
 </template>
 
 <script>
-import { perPageOptions } from "@/utility/variable.js";
+import {
+  perPageOptions,
+  statusObservation,
+  statusReport,
+  months
+} from "@/utility/variable.js";
+import { getUics } from "@/utility/func.js";
+import axios from "axios";
 
 export default {
+  mounted() {
+    getUics().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
+  },
+  methods: {
+    getReports() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+    },
+    showReport(row) {
+      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
+    },
+    getReportBadgesVariant(val) {
+      if (val === "Need Checking") return "primary";
+      else if (val === "Revised") return "warning";
+      else if (val === "Approved") return "success";
+      else return "secondary";
+    },
+    getRecomBadgesVariant(val) {
+      if (val === "Open") return "primary";
+      else if (val === "Onprogress") return "warning";
+      else if (val === "Close") return "success";
+      else if (val === "Overdue") return "danger";
+      else return "secondary";
+    },
+    actionClick(item) {
+      if (item.action === "View") {
+        this.observationChosen = item;
+        this.showModal = true;
+      }
+    },
+    downloadReport(item) {}
+  },
   data() {
     return {
       selectVal: {
@@ -160,19 +205,22 @@ export default {
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
       reportOptions: [
         {
           value: null,
           text: "All Statuses"
-        }
+        },
+        ...statusReport
       ],
       followUpOptions: [
         {
           value: null,
           text: "All Statuses"
-        }
+        },
+        ...statusObservation
       ],
       uicOptions: [
         {
@@ -226,31 +274,6 @@ export default {
     fieldKeys() {
       return Object.keys(this.reports[0]);
     }
-  },
-  methods: {
-    showReport(row) {
-      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
-    },
-    getReportBadgesVariant(val) {
-      if (val === "Need Checking") return "primary";
-      else if (val === "Revised") return "warning";
-      else if (val === "Approved") return "success";
-      else return "secondary";
-    },
-    getRecomBadgesVariant(val) {
-      if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
-      else if (val === "Close") return "success";
-      else if (val === "Overdue") return "danger";
-      else return "secondary";
-    },
-    actionClick(item) {
-      if (item.action === "View") {
-        this.observationChosen = item;
-        this.showModal = true;
-      }
-    },
-    downloadReport(item) {}
   }
 };
 </script>

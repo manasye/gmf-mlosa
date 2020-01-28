@@ -1,10 +1,15 @@
 import axios from "axios";
+import swal from "sweetalert";
 
 export const shortenText = (text, limit) => {
   if (text.length > limit) {
     return text.slice(0, limit) + "...";
   }
   return text;
+};
+
+export const displayError = err => {
+  swal("Error", err.response.data.message || "An error has occured", "error");
 };
 
 export const convertSnakeCaseToText = text => {
@@ -27,6 +32,14 @@ export const getPhoto = () => {
 
 export const getFullname = () => {
   return localStorage.getItem("fullname");
+};
+
+export const getUic = () => {
+  return localStorage.getItem("uic_id");
+};
+
+export const isAdmin = () => {
+  return false;
 };
 
 export const getUics = () => {

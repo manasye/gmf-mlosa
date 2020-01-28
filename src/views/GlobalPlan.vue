@@ -205,7 +205,12 @@ import axios from "axios";
 import Datepicker from "vuejs-datepicker";
 import CardCalendarInfo from "@/components/CardCalendarInfo";
 import { months, statusObservation } from "@/utility/variable.js";
-import { getUics, getMaintenances, getYearOptions } from "@/utility/func.js";
+import {
+  getUics,
+  getMaintenances,
+  getYearOptions,
+  displayError
+} from "@/utility/func.js";
 import moment from "moment";
 
 export default {
@@ -266,7 +271,9 @@ export default {
           this.getGlobalPlan();
           this.getChart();
         })
-        .catch(() => {});
+        .catch(err => {
+          displayError(err);
+        });
     },
     showMonthDetail(i) {
       this.monthDetail = i;
@@ -290,7 +297,9 @@ export default {
             this.uicOptions = this.uicOptions.concat(res);
           });
         })
-        .catch(() => {});
+        .catch(err => {
+          displayError(err);
+        });
     },
     getChart() {
       axios

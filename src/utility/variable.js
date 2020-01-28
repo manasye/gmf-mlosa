@@ -83,6 +83,25 @@ export const statusObservation = [
   }
 ];
 
+export const statusReport = [
+  {
+    value: "Need Checking",
+    text: "Need Checking"
+  },
+  {
+    value: "Need Approval",
+    text: "Need Approval"
+  },
+  {
+    value: "Revised",
+    text: "Revised"
+  },
+  {
+    value: "Approved",
+    text: "Approved"
+  }
+];
+
 export const safetyRisk = [
   { value: null, text: "-" },
   { value: "S", text: "Safety" },

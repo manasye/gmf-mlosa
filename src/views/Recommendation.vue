@@ -68,9 +68,34 @@
 </template>
 
 <script>
-import { perPageOptions } from "@/utility/variable.js";
+import { perPageOptions, statusReport, months } from "@/utility/variable.js";
+import { getUics } from "@/utility/func.js";
 
 export default {
+  mounted() {
+    getUics().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
+  },
+  methods: {
+    getRecommendations() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+    },
+    showReport(row) {
+      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
+    },
+    getBadgesVariant(val) {
+      if (val === "Open") return "primary";
+      else if (val === "Onprogress") return "warning";
+      else if (val === "Close") return "success";
+      else return "danger";
+    }
+  },
   data() {
     return {
       selectVal: {
@@ -89,14 +114,16 @@ export default {
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
 
       followUpOptions: [
         {
           value: null,
           text: "All Statuses"
-        }
+        },
+        ...statusReport
       ],
       uicOptions: [
         {
@@ -134,17 +161,6 @@ export default {
     },
     fieldKeys() {
       return Object.keys(this.recoms[0]);
-    }
-  },
-  methods: {
-    showReport(row) {
-      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
-    },
-    getBadgesVariant(val) {
-      if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
-      else if (val === "Close") return "success";
-      else return "danger";
     }
   }
 };

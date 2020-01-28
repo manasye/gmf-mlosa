@@ -108,6 +108,13 @@
           />
         </p>
       </template>
+      <template v-slot:cell(delete)="data">
+        <font-awesome-icon
+          icon="trash"
+          class="cursor-pointer"
+          @click="deleteObservation(data.item.id)"
+          v-if="isAdmin() || data.item.uic_id === +getUic()"
+      /></template>
     </b-table>
 
     <b-pagination
@@ -123,6 +130,7 @@
       centered
       hide-footer
       title="Observation Log"
+      size="lg"
     >
       <b-table
         show-empty
@@ -131,6 +139,9 @@
         :items="histories"
         :fields="historyField"
       >
+        <template v-slot:cell(date_log)="data">{{
+          data.value.split(" ")[0]
+        }}</template>
         <template v-slot:cell(status)="data">
           <b-badge :variant="getBadgesVariant(data.value)">
             <p class="status-badges" :class="getBadgesVariant(data.value)">
@@ -141,7 +152,7 @@
             icon="download"
             class="ml-2"
             style="cursor: pointer"
-            v-if="data.value === 'Closed' || data.value === 'Verified'"
+            v-if="data.item.link_download"
             @click.stop="downloadObservation(data.item)"
           />
         </template>
@@ -157,7 +168,12 @@ import {
   statusObservation
 } from "@/utility/variable.js";
 import axios from "axios";
-import { getUics, getMaintenances, getYearOptions } from "@/utility/func.js";
+import {
+  getUics,
+  getMaintenances,
+  getYearOptions,
+  displayError
+} from "@/utility/func.js";
 
 export default {
   mounted() {
@@ -229,12 +245,13 @@ export default {
           sortable: true
         },
         { key: "status", label: "Status", sortable: true },
-        { key: "action", label: "Action", sortable: true }
+        { key: "action", label: "Action", sortable: true },
+        { key: "delete", label: "Delete" }
       ],
       observations: [],
       showModal: false,
-      histories: [{ status: "Verified" }],
-      historyField: ["date", "activity", "status"],
+      histories: [],
+      historyField: [{ key: "date_log", label: "Date" }, "activity", "status"],
       observationChosen: null
     };
   },
@@ -288,8 +305,14 @@ export default {
     },
     actionClick(item) {
       if (item.action === "View") {
-        this.observationChosen = item;
-        this.showModal = true;
+        axios
+          .get(`/observation/${item.id}/logs`)
+          .then(res => {
+            this.histories = res.data.data;
+            this.observationChosen = item;
+            this.showModal = true;
+          })
+          .catch(() => {});
       } else {
         this.$store.dispatch(
           "goToPage",
@@ -297,7 +320,19 @@ export default {
         );
       }
     },
-    downloadObservation(item) {}
+    downloadObservation(obs) {
+      window.location =
+        axios.defaults.baseURL +
+        `/observation/download/logs?observation_id=${obs.id}`;
+    },
+    deleteObservation(id) {
+      axios
+        .delete(`/observation/${id}`)
+        .then(() => {
+          this.getObservations();
+        })
+        .catch(err => displayError(err));
+    }
   }
 };
 </script>

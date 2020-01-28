@@ -160,11 +160,13 @@
 
 <script>
 import FormHeader from "@/components/FormHeader";
+import { displayError } from "@/utility/func";
 import { FormBuilder } from "vue-formio";
 import axios from "axios";
 
 export default {
   mounted() {
+    axios.get(`/maintenance_process/${this.$route.params.type}/relation`);
     this.getActivities();
     this.getSubActs();
 
@@ -223,7 +225,9 @@ export default {
             this.getActivities();
             this.closeModalAct();
           })
-          .catch(() => {});
+          .catch(err => {
+            displayError(err);
+          });
       }
     },
     addSubActivity() {
@@ -268,22 +272,35 @@ export default {
             this.getSubActs();
             this.closeModalAct();
           })
-          .catch(() => {});
+          .catch(err => {
+            displayError(err);
+          });
       }
     },
     postForm() {
       if (!this.title) return;
+      const data = {
+        name: this.title,
+        activities: this.activities
+      };
       if (this.$route.params.type) {
-      } else {
         axios
-          .post("/maintenance_process", {
-            name: this.title,
-            activities: this.activities
-          })
+          .put(`/maintenance_process/${this.$route.params.type}`, data)
           .then(() => {
             this.$store.dispatch("goToPage", "/observation-type/form");
           })
-          .catch(() => {});
+          .catch(err => {
+            displayError(err);
+          });
+      } else {
+        axios
+          .post("/maintenance_process", data)
+          .then(() => {
+            this.$store.dispatch("goToPage", "/observation-type/form");
+          })
+          .catch(err => {
+            displayError(err);
+          });
       }
     },
     deleteForm() {
@@ -292,7 +309,9 @@ export default {
         .then(() => {
           this.$store.dispatch("goToPage", "/observation-type/form");
         })
-        .catch(() => {});
+        .catch(err => {
+          displayError(err);
+        });
     },
     deleteActivity(a) {
       this.activities = this.activities.filter(act => act !== a);

@@ -185,20 +185,20 @@
       ></b-col>
       <b-col cols="12" md="6">
         <b-button
-          variant="success"
+          variant="primary"
           class="mr-3"
           @click="postObservation('On Progress')"
           >SAVE</b-button
         >
         <b-button
-          variant="primary"
+          variant="success"
           class="mr-3"
           @click="postObservation('Closed')"
           v-if="headers.no"
           >SUBMIT</b-button
         >
         <b-button
-          variant="danger"
+          variant="light"
           class="mr-3"
           @click="postObservation('Open')"
           v-if="headers.no"
@@ -229,6 +229,7 @@
               v-for="s in t.sub_threat_code"
               style="cursor: pointer"
               @click="subThreatCode = s"
+              :key="s.code"
             >
               {{ s.code }}. {{ s.description }}
             </b-card-text>
@@ -443,7 +444,8 @@
 </template>
 
 <script>
-import FormHeader from "../components/FormHeader";
+import FormHeader from "@/components/FormHeader";
+import { displayError } from "@/utility/func";
 import { Form } from "vue-formio";
 import axios from "axios";
 import {
@@ -453,12 +455,12 @@ import {
   errorOutcome
 } from "@/utility/variable.js";
 import moment from "moment";
-import swal from "sweetalert";
 import debounce from "lodash/debounce";
 
 export default {
   mounted() {
     this.getAllCodes();
+    this.searchUser();
     axios
       .get(`/observation/${this.$route.query.obs_id}`)
       .then(res => {
@@ -511,6 +513,13 @@ export default {
       this.showModalThreat = false;
     },
     postObservation(status) {
+      let action;
+      let name = this.getFullname();
+      if (status === "Open") action = name + " create MLOSA Plan";
+      else if (status === "On Progress")
+        action = name + " follow up MLOSA Plan";
+      else if (status === "Close") action = name + " submit observation";
+
       const data = {
         observation: {
           ...this.headers,
@@ -519,10 +528,11 @@ export default {
           mp_id: this.maintenance_process.id,
           team: this.teamProject,
           id: +this.$route.query.obs_id,
-          uic_id: 1
+          uic_id: +this.getUic()
         },
         maintenance_process: this.maintenance_process,
-        activities: this.activities
+        activities: this.activities,
+        action
       };
       axios
         .post("/observation", data)
@@ -531,14 +541,8 @@ export default {
           this.$store.dispatch("goToPage", "/observation-list");
         })
         .catch(err => {
-          swal("Error", err.response.data.message, "error");
+          displayError(err);
         });
-    },
-    debouncedSearchUser() {
-      return debounce(this.searchUser, 500, {
-        leading: true,
-        trailing: false
-      });
     },
     searchUser() {
       axios

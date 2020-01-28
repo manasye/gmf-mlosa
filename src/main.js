@@ -44,7 +44,9 @@ import {
   convertSnakeCaseToText,
   getUsername,
   getPhoto,
-  getFullname
+  getFullname,
+  getUic,
+  isAdmin
 } from "@/utility/func.js";
 
 library.add(faHome);
@@ -66,7 +68,9 @@ Vue.mixin({
     convertSnakeCaseToText,
     getUsername,
     getPhoto,
-    getFullname
+    getFullname,
+    getUic,
+    isAdmin
   }
 });
 
