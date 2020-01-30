@@ -260,7 +260,7 @@
 
     <b-modal v-model="showModalRisk" centered size="xl" hide-footer hide-header>
       <b-row>
-        <b-col cols="12" md="3">
+        <b-col cols="12">
           <h5 class="mb-3">Probability of occurrence</h5>
           <b-table
             :fields="probabilityFields"
@@ -282,7 +282,7 @@
             </template>
           </b-table>
         </b-col>
-        <b-col cols="12" md="9">
+        <b-col cols="12">
           <h5 class="mb-3">Severity of occurrence</h5>
           <b-table
             :fields="severityFields"
@@ -296,6 +296,14 @@
               >{{ data.value }} ({{ data.item.code }})</template
             >
             <template v-slot:cell(people)="data">
+              <li v-if="data.item.id !== severityChosenId">
+                {{ data.value[0] }}
+              </li>
+              <li v-else v-for="m in data.value">
+                {{ m }}
+              </li>
+            </template>
+            <template v-slot:cell(environment)="data">
               <li v-if="data.item.id !== severityChosenId">
                 {{ data.value[0] }}
               </li>
@@ -662,13 +670,14 @@ export default {
         "Verify"
       ],
       probabilityFields: [
-        { key: "definition", label: "Qual" },
+        { key: "definition", label: "Qualitative" },
         "meaning",
         { key: "value", label: "Value" }
       ],
       severityFields: [
         "aviation",
         "people",
+        "environment",
         "security",
         "asset",
         "operational",

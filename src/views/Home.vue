@@ -92,6 +92,7 @@ export default {
   mounted() {
     getMaintenancesName().then(res => {
       this.maintenanceOptions = res;
+      this.getThreatChart();
     });
     this.getGlobalPlan();
     this.getObservations();
@@ -100,7 +101,6 @@ export default {
   methods: {
     getCharts() {
       this.getSafetyChart();
-      this.getThreatChart();
       this.getParetoChart();
       this.getEquipmentChart();
     },
@@ -243,6 +243,7 @@ export default {
       globalPlans: [],
       slickOptions: {
         slidesToShow: 2,
+        slidesToScroll: 2,
         dots: true,
         infinite: false,
         arrows: true,

@@ -70,6 +70,7 @@ export default {
   mounted() {
     getMaintenancesName().then(res => {
       this.maintenanceOptions = this.maintenanceOptions.concat(res);
+      this.getChart();
     });
     getYearOptions().then(res => {
       this.yearOptions = this.yearOptions.concat(res);
@@ -77,8 +78,6 @@ export default {
     getThreatCodes().then(res => {
       this.codeOptions = this.codeOptions.concat(res);
     });
-
-    this.getChart();
   },
   methods: {
     getChart() {
