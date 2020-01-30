@@ -106,7 +106,8 @@ export const safetyRisk = [
   { value: null, text: "-" },
   { value: "S", text: "Safety" },
   { value: "AR", text: "At Risk" },
-  { value: "DNO", text: "Didn't Observe" }
+  { value: "DNO", text: "Didn't Observe" },
+  { value: "N/A", text: "Not Applicable" }
 ];
 
 export const hazardCode = [

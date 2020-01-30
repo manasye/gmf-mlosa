@@ -3,26 +3,43 @@
     <b-row>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Year</label>
-        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+        <b-form-select
+          v-model="selectVal.year"
+          :options="yearOptions"
+          @input="getChart"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Start Month</label>
-        <b-form-select v-model="selectVal.start" :options="startOptions" />
+        <b-form-select
+          v-model="selectVal.start_month"
+          :options="startOptions"
+          @input="getChart"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>End Month</label>
-        <b-form-select v-model="selectVal.end" :options="endOptions" />
+        <b-form-select
+          v-model="selectVal.end_month"
+          :options="endOptions"
+          @input="getChart"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
-          v-model="selectVal.maintenance"
+          v-model="selectVal.maintenance_process"
           :options="maintenanceOptions"
+          @input="getChart"
         />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Threat Code</label>
-        <b-form-select v-model="selectVal.code" :options="codeOptions" />
+        <b-form-select
+          v-model="selectVal.threat"
+          :options="codeOptions"
+          @input="getChart"
+        />
       </b-col>
     </b-row>
 
@@ -42,16 +59,49 @@
 
 <script>
 import axios from "axios";
+import { months } from "@/utility/variable.js";
+import {
+  getMaintenancesName,
+  getYearOptions,
+  getThreatCodes
+} from "@/utility/func.js";
 
 export default {
+  mounted() {
+    getMaintenancesName().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
+    getThreatCodes().then(res => {
+      this.codeOptions = this.codeOptions.concat(res);
+    });
+
+    this.getChart();
+  },
+  methods: {
+    getChart() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+      axios
+        .get(`/chart/pareto?${queryParams}`)
+        .then(res => {})
+        .catch(() => {});
+    }
+  },
   data() {
     return {
       selectVal: {
         year: null,
-        start: null,
-        end: null,
-        maintenance: null,
-        code: null
+        start_month: null,
+        end_month: null,
+        maintenance_process: null,
+        threat: null
       },
       yearOptions: [
         {
@@ -63,13 +113,15 @@ export default {
         {
           value: null,
           text: "All Start Month"
-        }
+        },
+        ...months
       ],
       endOptions: [
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
       maintenanceOptions: [
         {
@@ -97,15 +149,19 @@ export default {
         {
           name: "Social Media",
           type: "line",
-          data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 16]
+          data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 120]
         }
       ],
       chartOptions: {
+        noData: {
+          text: "No Data",
+          verticalAlign: "top"
+        },
         stroke: {
           width: [0, 4]
         },
         title: {
-          text: "Parento Diagram of Threat Distribution Maintance Period",
+          text: "Pareto Diagram of Threat Distribution Maintenance",
           align: "center",
           margin: 0,
           style: {

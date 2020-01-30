@@ -459,7 +459,6 @@ import {
   errorOutcome
 } from "@/utility/variable.js";
 import moment from "moment";
-import debounce from "lodash/debounce";
 
 export default {
   mounted() {
@@ -495,8 +494,13 @@ export default {
       this.showModalVerify = true;
     },
     addErrorOutcome(s) {
-      if (s.inputs.error_outcome) this.chosenError = [...this.chosenError, s];
-      else this.chosenError = this.chosenError.filter(e => e.id !== s.id);
+      const find = this.chosenError.findIndex(e => e.id === s.id);
+      if (find === -1) {
+        if (s.inputs.error_outcome) this.chosenError = [...this.chosenError, s];
+        else this.chosenError = this.chosenError.filter(e => e.id !== s.id);
+      } else {
+        this.chosenError[find] = s;
+      }
     },
     chooseProbability(p) {
       if (p.id === this.probabilityChosenId) this.probabilityChosenId = 0;

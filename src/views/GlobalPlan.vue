@@ -170,7 +170,10 @@
         >
         <b-col cols="4"><label class="mt-2">Due Date</label></b-col>
         <b-col cols="8" class="mb-3">
-          <datepicker v-model="editedData.due_date" />
+          <datepicker
+            v-model="editedData.due_date"
+            calendar-class="modal-calendar"
+          />
         </b-col>
         <b-col cols="4"><label class="mt-2">Subtitle</label></b-col>
         <b-col cols="8" class="mb-3">

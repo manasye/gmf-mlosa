@@ -2,12 +2,12 @@
   <div class="container-app">
     <h3 class="header-title  text-uppercase">Dashboard</h3>
     <slick ref="slick" :options="slickOptions">
-      <div class="chart-wrapper" v-for="i in 2">
+      <div class="chart-wrapper" v-for="c in charts" :key="c">
         <apexchart
-          type="bar"
+          :type="c.type"
           height="350"
-          :options="chartOptions"
-          :series="series"
+          :options="c.chartOptions"
+          :series="c.series"
         />
       </div>
     </slick>
@@ -22,6 +22,8 @@
               :minimumView="'day'"
               :maximumView="'day'"
               :highlighted="highlighted"
+              calendar-class="modal-calendar"
+              @changedMonth="changeMonth"
               @selected="changeSelectedDate"
             />
           </b-col>
@@ -47,6 +49,8 @@
           hover
           :items="observations"
           :fields="observationFields"
+          :per-page="5"
+          :current-page="currentPage"
           responsive
           show-empty
         >
@@ -61,6 +65,13 @@
             </b-badge>
           </template>
         </b-table>
+
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="5"
+          align="right"
+        />
       </b-col>
     </b-row>
   </div>
@@ -73,109 +84,26 @@ import Datepicker from "vuejs-datepicker";
 import CardCalendarInfo from "@/components/CardCalendarInfo";
 import moment from "moment";
 import axios from "axios";
+import { safetyRisk } from "@/utility/variable.js";
+import { getMaintenancesName } from "@/utility/func.js";
 
 export default {
   name: "home",
   mounted() {
+    getMaintenancesName().then(res => {
+      this.maintenanceOptions = res;
+    });
     this.getGlobalPlan();
     this.getObservations();
-  },
-  components: {
-    apexchart: VueApexCharts,
-    Slick,
-    Datepicker,
-    CardCalendarInfo
-  },
-  data() {
-    return {
-      dateSelected: null,
-      highlighted: { dates: [] },
-      observations: [],
-      observationFields: [
-        { key: "observation_date", label: "Date", sortable: true },
-        { key: "observation_no", label: "No", sortable: true },
-        { key: "uic.uic_code", label: "UIC", sortable: true },
-        {
-          key: "maintenance.name",
-          label: "Maintenance",
-          sortable: true
-        },
-        { key: "status", label: "Status", sortable: true }
-      ],
-      globalPlans: [],
-      slickOptions: {
-        slidesToShow: 2,
-        dots: true,
-        infinite: false,
-        arrows: true,
-        responsive: [
-          {
-            breakpoint: 700,
-            settings: {
-              slidesToShow: 1
-            }
-          }
-        ]
-      },
-      series: [
-        {
-          name: "Marine Sprite",
-          data: [44, 55, 41, 37, 22, 43, 21]
-        },
-        {
-          name: "Striking Calf",
-          data: [53, 32, 33, 52, 13, 43, 32]
-        },
-        {
-          name: "Tank Picture",
-          data: [12, 17, 11, 9, 15, 11, 20]
-        },
-        {
-          name: "Bucket Slope",
-          data: [9, 7, 5, 8, 6, 9, 4]
-        },
-        {
-          name: "Reborn Kid",
-          data: [25, 12, 19, 32, 25, 24, 10]
-        }
-      ],
-      chartOptions: {
-        chart: {
-          stacked: true,
-          width: "100%"
-        },
-        plotOptions: {
-          bar: {
-            horizontal: true
-          }
-        },
-        stroke: {
-          width: 1,
-          colors: ["#fff"]
-        },
-        title: {
-          text: "Fiction Books Sales"
-        },
-        xaxis: {
-          categories: [2008, 2009, 2010, 2011, 2012, 2013, 2014]
-        },
-        yaxis: {
-          title: {
-            text: undefined
-          }
-        },
-        fill: {
-          opacity: 1
-        },
-        legend: {
-          position: "bottom",
-          horizontalAlign: "left",
-          offsetX: 40
-        }
-      }
-    };
+    this.getCharts();
   },
   methods: {
+    getCharts() {
+      this.getSafetyChart();
+      this.getThreatChart();
+      this.getParetoChart();
+      this.getEquipmentChart();
+    },
     showObservation(row) {
       this.$store.dispatch("goToPage", `/observation/${row.id}`);
     },
@@ -187,6 +115,9 @@ export default {
     },
     changeSelectedDate(date) {
       this.dateSelected = moment(date).format("YYYY-MM-DD");
+    },
+    changeMonth() {
+      this.dateSelected = null;
     },
     getGlobalPlan() {
       axios
@@ -216,6 +147,263 @@ export default {
           this.observations = res.data.data;
         })
         .catch(() => {});
+    },
+    getSafetyChart() {
+      axios
+        .get("/chart/safety")
+        .then(res => {
+          let series = safetyRisk.slice(1).map(m => {
+            return { name: m.text, data: [] };
+          });
+          const data = res.data;
+          for (let m in data) {
+            if (data[m].S) {
+              series[0].data.push(data[m].S);
+            }
+            if (data[m].AR) {
+              series[1].data.push(data[m].AR);
+            }
+            if (data[m].DNO) {
+              series[2].data.push(data[m].DNO);
+            }
+            if (data[m]["N/A"]) {
+              series[3].data.push(data[m]["N/A"]);
+            }
+          }
+          this.charts[0].chartOptions = {
+            ...this.charts[0].chartOptions,
+            xaxis: {
+              ...this.charts[0].chartOptions.xaxis,
+              categories: Object.keys(data)
+            }
+          };
+          this.charts[0].series = series;
+        })
+        .catch(() => {});
+    },
+    getThreatChart() {
+      axios
+        .get(`/chart/threat`)
+        .then(res => {
+          const data = res.data;
+          let series = this.maintenanceOptions.map(m => {
+            return { name: m.text, data: [] };
+          });
+          console.log(series);
+          for (let t in data) {
+            for (let m in data[t]) {
+              let find = series.findIndex(s => s.name === m);
+              series[find].data.push(data[t][m]);
+            }
+          }
+          this.charts[1].chartOptions = {
+            ...this.charts[1].chartOptions,
+            xaxis: {
+              ...this.charts[1].chartOptions.xaxis,
+              categories: Object.keys(data)
+            }
+          };
+          this.charts[1].series = series;
+        })
+        .catch(() => {});
+    },
+    getParetoChart() {},
+    getEquipmentChart() {
+      axios
+        .get(`/chart/equipment`)
+        .then(res => {
+          const data = res.data;
+          this.charts[3].chartOptions = {
+            ...this.charts[3].chartOptions,
+            labels: data.map(d => d.threat)
+          };
+          this.charts[3].series = data.map(d => d.total);
+        })
+        .catch(() => {});
+    }
+  },
+  data() {
+    return {
+      currentPage: 1,
+      dateSelected: null,
+      maintenanceOptions: [],
+      highlighted: { dates: [] },
+      observations: [],
+      observationFields: [
+        { key: "observation_date", label: "Date", sortable: true },
+        { key: "observation_no", label: "No", sortable: true },
+        { key: "uic.uic_code", label: "UIC", sortable: true },
+        {
+          key: "maintenance.name",
+          label: "Maintenance",
+          sortable: true
+        },
+        { key: "status", label: "Status", sortable: true }
+      ],
+      globalPlans: [],
+      slickOptions: {
+        slidesToShow: 2,
+        dots: true,
+        infinite: false,
+        arrows: true,
+        responsive: [
+          {
+            breakpoint: 700,
+            settings: {
+              slidesToShow: 1
+            }
+          }
+        ]
+      },
+      charts: [
+        {
+          type: "bar",
+          series: [],
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            chart: {
+              stacked: true,
+              width: "100%"
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true
+              }
+            },
+            stroke: {
+              width: 1,
+              colors: ["#fff"]
+            },
+            title: {
+              text: "Safety / At Risk Distribution in Maintenance Process",
+              align: "center",
+              margin: 0,
+              style: {
+                fontSize: "16px",
+                fontWeight: "700"
+              }
+            },
+            xaxis: {
+              categories: []
+            },
+            yaxis: {
+              title: {
+                text: undefined
+              }
+            },
+            fill: {
+              opacity: 1
+            },
+            legend: {
+              position: "bottom",
+              horizontalAlign: "left",
+              offsetX: 40
+            }
+          }
+        },
+        {
+          type: "bar",
+          series: [],
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            chart: {
+              stacked: true,
+              width: "100%"
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true
+              }
+            },
+            stroke: {
+              width: 1,
+              colors: ["#fff"]
+            },
+            title: {
+              text: "Number of Threat in Maintenance Process",
+              align: "center",
+              margin: 0,
+              style: {
+                fontSize: "16px",
+                fontWeight: "700"
+              }
+            },
+            xaxis: {
+              categories: []
+            },
+            yaxis: {
+              title: {
+                text: undefined
+              }
+            },
+            fill: {
+              opacity: 1
+            },
+            legend: {
+              position: "bottom",
+              horizontalAlign: "left",
+              offsetX: 40
+            }
+          }
+        },
+        {
+          type: "line",
+          series: [],
+          chartOptions: {}
+        },
+        {
+          type: "pie",
+          series: [],
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            title: {
+              text: "Equipment Tools Breakdown",
+              align: "center",
+              margin: 10,
+              style: {
+                fontSize: "16px",
+                fontWeight: "700"
+              }
+            },
+            labels: [],
+            responsive: [
+              {
+                breakpoint: 480,
+                options: {
+                  legend: {
+                    position: "bottom"
+                  }
+                }
+              }
+            ],
+            legend: {
+              position: "bottom",
+              horizontalAlign: "left",
+              offsetX: 40
+            }
+          }
+        }
+      ]
+    };
+  },
+  components: {
+    apexchart: VueApexCharts,
+    Slick,
+    Datepicker,
+    CardCalendarInfo
+  },
+  computed: {
+    rows() {
+      return this.observations.length;
     }
   }
 };

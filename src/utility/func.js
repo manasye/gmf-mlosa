@@ -74,6 +74,22 @@ export const getMaintenances = () => {
     });
 };
 
+export const getMaintenancesName = () => {
+  return axios
+    .get("/maintenance_process")
+    .then(res => {
+      let maintenances = [];
+      const data = res.data.data;
+      data.map(m => {
+        if (m.name) maintenances.push({ value: m.name, text: m.name });
+      });
+      return maintenances;
+    })
+    .catch(() => {
+      return [];
+    });
+};
+
 export const getYearOptions = () => {
   return axios
     .get("/year")
@@ -84,6 +100,22 @@ export const getYearOptions = () => {
         if (y) years.push({ value: y, text: y });
       });
       return years;
+    })
+    .catch(() => {
+      return [];
+    });
+};
+
+export const getThreatCodes = () => {
+  return axios
+    .get("/threat_codes")
+    .then(res => {
+      let threats = [];
+      const data = res.data.data;
+      data.map(t => {
+        if (t.code) threats.push({ value: t.description, text: t.description });
+      });
+      return threats;
     })
     .catch(() => {
       return [];

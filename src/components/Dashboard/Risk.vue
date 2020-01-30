@@ -6,41 +6,47 @@
         <b-form-select
           v-model="selectVal.year"
           :options="yearOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Start Month</label>
         <b-form-select
-          v-model="selectVal.start"
+          v-model="selectVal.start_month"
           :options="startOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>End Month</label>
         <b-form-select
-          v-model="selectVal.end"
+          v-model="selectVal.end_month"
           :options="endOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
-          v-model="selectVal.maintenance"
+          v-model="selectVal.maintenance_process"
           :options="maintenanceOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Threat Code</label>
         <b-form-select
-          v-model="selectVal.code"
+          v-model="selectVal.threat"
           :options="codeOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Risk Value</label>
         <b-form-select
-          v-model="selectVal.risk"
+          v-model="selectVal.safety_risk"
           :options="riskOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
     </b-row>
@@ -128,17 +134,50 @@
 
 <script>
 import axios from "axios";
+import { months } from "@/utility/variable.js";
+import {
+  getMaintenancesName,
+  getYearOptions,
+  getThreatCodes
+} from "@/utility/func.js";
 
 export default {
+  mounted() {
+    getMaintenancesName().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
+    getThreatCodes().then(res => {
+      this.codeOptions = this.codeOptions.concat(res);
+    });
+
+    this.getChart();
+  },
+  methods: {
+    getChart() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+      axios
+        .get(`/chart/equipment?${queryParams}`)
+        .then(res => {})
+        .catch(() => {});
+    }
+  },
   data() {
     return {
       selectVal: {
         year: null,
-        start: null,
-        end: null,
-        maintenance: null,
-        code: null,
-        risk: null
+        start_month: null,
+        end_month: null,
+        maintenance_process: null,
+        threat: null,
+        safety_risk: null
       },
       yearOptions: [
         {
@@ -150,13 +189,15 @@ export default {
         {
           value: null,
           text: "All Start Month"
-        }
+        },
+        ...months
       ],
       endOptions: [
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
       maintenanceOptions: [
         {
@@ -179,6 +220,10 @@ export default {
       riskValueTables: [],
       register1: {
         chartOptions: {
+          noData: {
+            text: "No Data",
+            verticalAlign: "top"
+          },
           plotOptions: {
             bar: {
               horizontal: true
@@ -215,6 +260,10 @@ export default {
       },
       register2: {
         chartOptions: {
+          noData: {
+            text: "No Data",
+            verticalAlign: "top"
+          },
           plotOptions: {
             bar: {
               horizontal: true
@@ -251,6 +300,10 @@ export default {
       },
       dimension: {
         chartOptions: {
+          noData: {
+            text: "No Data",
+            verticalAlign: "top"
+          },
           chart: {
             height: 350,
             type: "bar"
@@ -304,6 +357,10 @@ export default {
       },
       value: {
         chartOptions: {
+          noData: {
+            text: "No Data",
+            verticalAlign: "top"
+          },
           chart: {
             stacked: true,
             width: "100%"
@@ -368,6 +425,10 @@ export default {
       },
       threat: {
         chartOptions: {
+          noData: {
+            text: "No Data",
+            verticalAlign: "top"
+          },
           chart: {
             stacked: true,
             toolbar: {

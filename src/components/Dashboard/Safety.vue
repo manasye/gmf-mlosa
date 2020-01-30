@@ -6,34 +6,39 @@
         <b-form-select
           v-model="selectVal.year"
           :options="yearOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Start Month</label>
         <b-form-select
-          v-model="selectVal.start"
+          v-model="selectVal.start_month"
           :options="startOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>End Month</label>
         <b-form-select
-          v-model="selectVal.end"
+          v-model="selectVal.end_month"
           :options="endOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
-          v-model="selectVal.maintenance"
+          v-model="selectVal.maintenance_process"
           :options="maintenanceOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Safety Risk</label>
         <b-form-select
-          v-model="selectVal.risk"
+          v-model="selectVal.safety_risk"
           :options="riskOptions"
+          @input="getChart"
         ></b-form-select>
       </b-col>
     </b-row>
@@ -54,16 +59,69 @@
 
 <script>
 import axios from "axios";
+import { months, safetyRisk } from "@/utility/variable.js";
+import { getMaintenancesName, getYearOptions } from "@/utility/func.js";
 
 export default {
+  mounted() {
+    getMaintenancesName().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
+
+    this.getChart();
+  },
+  methods: {
+    getChart() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+      axios
+        .get(`/chart/safety?${queryParams}`)
+        .then(res => {
+          let series = this.riskOptions.slice(1).map(m => {
+            return { name: m.text, data: [] };
+          });
+          const data = res.data;
+          for (let m in data) {
+            if (data[m].S) {
+              series[0].data.push(data[m].S);
+            }
+            if (data[m].AR) {
+              series[1].data.push(data[m].AR);
+            }
+            if (data[m].DNO) {
+              series[2].data.push(data[m].DNO);
+            }
+            if (data[m]["N/A"]) {
+              series[3].data.push(data[m]["N/A"]);
+            }
+          }
+          this.chartOptions = {
+            ...this.chartOptions,
+            xaxis: {
+              ...this.chartOptions.xaxis,
+              categories: Object.keys(data)
+            }
+          };
+          this.series = series;
+        })
+        .catch(() => {});
+    }
+  },
   data() {
     return {
       selectVal: {
         year: null,
-        start: null,
-        end: null,
-        maintenance: null,
-        risk: null
+        start_month: null,
+        end_month: null,
+        maintenance_process: null,
+        safety_risk: null
       },
       yearOptions: [
         {
@@ -75,13 +133,15 @@ export default {
         {
           value: null,
           text: "All Start Month"
-        }
+        },
+        ...months
       ],
       endOptions: [
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
       maintenanceOptions: [
         {
@@ -93,9 +153,14 @@ export default {
         {
           value: null,
           text: "All Safety Risks"
-        }
+        },
+        ...safetyRisk.slice(1)
       ],
       chartOptions: {
+        noData: {
+          text: "No Data",
+          verticalAlign: "top"
+        },
         chart: {
           stacked: true,
           width: "100%"
@@ -110,7 +175,7 @@ export default {
           colors: ["#fff"]
         },
         title: {
-          text: "Safety / At Risk Distribution in Maintenance Process Period",
+          text: "Safety / At Risk Distribution in Maintenance Process",
           align: "center",
           margin: 0,
           style: {
@@ -119,7 +184,7 @@ export default {
           }
         },
         xaxis: {
-          categories: [2008, 2009, 2010, 2011, 2012, 2013, 2014]
+          categories: []
         },
         yaxis: {
           title: {
@@ -135,28 +200,7 @@ export default {
           offsetX: 40
         }
       },
-      series: [
-        {
-          name: "Marine Sprite",
-          data: [44, 55, 41, 37, 22, 43, 21]
-        },
-        {
-          name: "Striking Calf",
-          data: [53, 32, 33, 52, 13, 43, 32]
-        },
-        {
-          name: "Tank Picture",
-          data: [12, 17, 11, 9, 15, 11, 20]
-        },
-        {
-          name: "Bucket Slope",
-          data: [9, 7, 5, 8, 6, 9, 4]
-        },
-        {
-          name: "Reborn Kid",
-          data: [25, 12, 19, 32, 25, 24, 10]
-        }
-      ]
+      series: []
     };
   }
 };

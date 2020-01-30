@@ -24,6 +24,14 @@ export default {
   cursor: default !important;
 }
 
+.modal-calendar {
+  .prev,
+  .next {
+    opacity: 1;
+    cursor: pointer !important;
+  }
+}
+
 @font-face {
   font-family: "circularstd";
   src: url("./assets/font/CircularStd-Book.otf");

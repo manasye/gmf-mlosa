@@ -24,6 +24,9 @@ import Equipment from "@/components/Dashboard/Equipment";
 import Risk from "@/components/Dashboard/Risk";
 
 export default {
+  mounted() {
+    this.tabActive = this.$route.params.type;
+  },
   data() {
     return {
       tabs: [
