@@ -2,13 +2,19 @@
   <div class="container-app">
     <h3 class="header-title  text-uppercase">Dashboard</h3>
     <slick ref="slick" :options="slickOptions">
-      <div class="chart-wrapper" v-for="c in charts" :key="c">
+      <div class="chart-wrapper" v-for="(c, idx) in charts" :key="idx">
         <apexchart
+          v-if="c.type !== 'pareto'"
           :type="c.type"
           height="350"
           :options="c.chartOptions"
           :series="c.series"
         />
+        <bar-chart
+          :chart-data="c.series"
+          :options="c.chartOptions"
+          v-else
+        ></bar-chart>
       </div>
     </slick>
     <b-row class="mt-4">
@@ -86,6 +92,7 @@ import moment from "moment";
 import axios from "axios";
 import { safetyRisk } from "@/utility/variable.js";
 import { getMaintenancesName } from "@/utility/func.js";
+import BarChart from "@/components/BarChart.vue";
 
 export default {
   name: "home",
@@ -157,18 +164,10 @@ export default {
           });
           const data = res.data;
           for (let m in data) {
-            if (data[m].S) {
-              series[0].data.push(data[m].S);
-            }
-            if (data[m].AR) {
-              series[1].data.push(data[m].AR);
-            }
-            if (data[m].DNO) {
-              series[2].data.push(data[m].DNO);
-            }
-            if (data[m]["N/A"]) {
-              series[3].data.push(data[m]["N/A"]);
-            }
+            series[0].data.push(data[m].S);
+            series[1].data.push(data[m].AR);
+            series[2].data.push(data[m].DNO);
+            series[3].data.push(data[m]["N/A"]);
           }
           this.charts[0].chartOptions = {
             ...this.charts[0].chartOptions,
@@ -189,7 +188,6 @@ export default {
           let series = this.maintenanceOptions.map(m => {
             return { name: m.text, data: [] };
           });
-          console.log(series);
           for (let t in data) {
             for (let m in data[t]) {
               let find = series.findIndex(s => s.name === m);
@@ -207,7 +205,46 @@ export default {
         })
         .catch(() => {});
     },
-    getParetoChart() {},
+    getParetoChart() {
+      axios
+        .get(`/chart/pareto`)
+        .then(res => {
+          const data = res.data;
+          this.charts[2].series = {
+            ...this.charts[2].series,
+            labels: data.map(d => d.maintenance_process),
+            datasets: [
+              {
+                type: "line",
+                label: "Cumulative",
+                borderColor: "#A9A9A9",
+                backgroundColor: "#A9A9A9",
+                pointBorderWidth: 5,
+                fill: false,
+                data: data.map(d => d.cumulative),
+                yAxisID: "y-axis-2"
+              },
+              {
+                type: "bar",
+                label: "Percentage",
+                borderColor: "#FC7E58",
+                backgroundColor: "#FC7E58",
+                data: data.map(d => (d.percentage * d.total) / 100),
+                yAxisID: "y-axis-1"
+              },
+              {
+                type: "bar",
+                label: "Total",
+                borderColor: "#4BAFEB",
+                backgroundColor: "#4BAFEB",
+                data: data.map(d => d.total),
+                yAxisID: "y-axis-1"
+              }
+            ]
+          };
+        })
+        .catch(() => {});
+    },
     getEquipmentChart() {
       axios
         .get(`/chart/equipment`)
@@ -354,9 +391,41 @@ export default {
           }
         },
         {
-          type: "line",
+          type: "pareto",
           series: [],
-          chartOptions: {}
+          chartOptions: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              xAxes: [
+                {
+                  stacked: true
+                }
+              ],
+              yAxes: [
+                {
+                  type: "linear",
+                  position: "left",
+                  id: "y-axis-1",
+                  stacked: true,
+                  ticks: {
+                    suggestedMin: 0
+                  }
+                },
+                {
+                  type: "linear",
+                  position: "right",
+                  id: "y-axis-2",
+                  ticks: {
+                    suggestedMin: 0,
+                    callback: function(value) {
+                      return value + "%";
+                    }
+                  }
+                }
+              ]
+            }
+          }
         },
         {
           type: "pie",
@@ -400,7 +469,8 @@ export default {
     apexchart: VueApexCharts,
     Slick,
     Datepicker,
-    CardCalendarInfo
+    CardCalendarInfo,
+    BarChart
   },
   computed: {
     rows() {

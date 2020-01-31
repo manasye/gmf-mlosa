@@ -43,13 +43,22 @@
       </b-col>
     </b-row>
 
-    <apexchart
-      type="line"
-      height="350"
-      :options="chartOptions"
-      :series="series"
-      class="mt-4"
-    />
+    <p class="text-center mt-3">Pareto Diagram of Threat Distribution</p>
+    <bar-chart :chart-data="dataChart" :options="options"></bar-chart>
+
+    <b-table
+      style="margin-top: 20px;"
+      striped
+      hover
+      :items="pareto"
+      :fields="paretoFields"
+      :per-page="5"
+      responsive
+      show-empty
+    >
+      <template v-slot:cell(percentage)="data">{{ data.value }} %</template>
+      <template v-slot:cell(cumulative)="data">{{ data.value }} %</template>
+    </b-table>
 
     <div class="text-right">
       <b-button variant="primary" size="sm">View Details</b-button>
@@ -60,6 +69,7 @@
 <script>
 import axios from "axios";
 import { months } from "@/utility/variable.js";
+import BarChart from "@/components/BarChart.vue";
 import {
   getMaintenancesName,
   getYearOptions,
@@ -67,6 +77,9 @@ import {
 } from "@/utility/func.js";
 
 export default {
+  components: {
+    BarChart
+  },
   mounted() {
     getMaintenancesName().then(res => {
       this.maintenanceOptions = this.maintenanceOptions.concat(res);
@@ -89,12 +102,88 @@ export default {
       }
       axios
         .get(`/chart/pareto?${queryParams}`)
-        .then(res => {})
+        .then(res => {
+          const data = res.data;
+          this.dataChart = {
+            ...this.dataChart,
+            labels: data.map(d => d.maintenance_process),
+            datasets: [
+              {
+                type: "line",
+                label: "Cumulative",
+                borderColor: "#A9A9A9",
+                backgroundColor: "#A9A9A9",
+                pointBorderWidth: 5,
+                fill: false,
+                data: data.map(d => d.cumulative),
+                yAxisID: "y-axis-2"
+              },
+              {
+                type: "bar",
+                label: "Percentage",
+                borderColor: "#FC7E58",
+                backgroundColor: "#FC7E58",
+                data: data.map(d => (d.percentage * d.total) / 100),
+                yAxisID: "y-axis-1"
+              },
+              {
+                type: "bar",
+                label: "Total",
+                borderColor: "#4BAFEB",
+                backgroundColor: "#4BAFEB",
+                data: data.map(d => d.total),
+                yAxisID: "y-axis-1"
+              }
+            ]
+          };
+          this.pareto = data;
+        })
         .catch(() => {});
     }
   },
   data() {
     return {
+      pareto: [],
+      paretoFields: [
+        "maintenance_process",
+        "total",
+        "percentage",
+        "cumulative"
+      ],
+      dataChart: {},
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [
+            {
+              stacked: true
+            }
+          ],
+          yAxes: [
+            {
+              type: "linear",
+              position: "left",
+              id: "y-axis-1",
+              stacked: true,
+              ticks: {
+                suggestedMin: 0
+              }
+            },
+            {
+              type: "linear",
+              position: "right",
+              id: "y-axis-2",
+              ticks: {
+                suggestedMin: 0,
+                callback: function(value) {
+                  return value + "%";
+                }
+              }
+            }
+          ]
+        }
+      },
       selectVal: {
         year: null,
         start_month: null,
@@ -133,72 +222,7 @@ export default {
           value: null,
           text: "All Threat Codes"
         }
-      ],
-      series: [
-        {
-          name: "Website Blog",
-          type: "column",
-          data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160]
-        },
-        {
-          name: "Website Blog",
-          type: "column",
-          data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160]
-        },
-        {
-          name: "Social Media",
-          type: "line",
-          data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 120]
-        }
-      ],
-      chartOptions: {
-        noData: {
-          text: "No Data",
-          verticalAlign: "top"
-        },
-        stroke: {
-          width: [0, 4]
-        },
-        title: {
-          text: "Pareto Diagram of Threat Distribution Maintenance",
-          align: "center",
-          margin: 0,
-          style: {
-            fontSize: "16px",
-            fontWeight: "700"
-          }
-        },
-        labels: [
-          "01 Jan 2001",
-          "02 Jan 2001",
-          "03 Jan 2001",
-          "04 Jan 2001",
-          "05 Jan 2001",
-          "06 Jan 2001",
-          "07 Jan 2001",
-          "08 Jan 2001",
-          "09 Jan 2001",
-          "10 Jan 2001",
-          "11 Jan 2001",
-          "12 Jan 2001"
-        ],
-        xaxis: {
-          type: "datetime"
-        },
-        yaxis: [
-          {
-            title: {
-              text: "Website Blog"
-            }
-          },
-          {
-            opposite: true,
-            title: {
-              text: "Social Media"
-            }
-          }
-        ]
-      }
+      ]
     };
   }
 };

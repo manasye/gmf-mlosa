@@ -89,18 +89,10 @@ export default {
           });
           const data = res.data;
           for (let m in data) {
-            if (data[m].S) {
-              series[0].data.push(data[m].S);
-            }
-            if (data[m].AR) {
-              series[1].data.push(data[m].AR);
-            }
-            if (data[m].DNO) {
-              series[2].data.push(data[m].DNO);
-            }
-            if (data[m]["N/A"]) {
-              series[3].data.push(data[m]["N/A"]);
-            }
+            series[0].data.push(data[m].S);
+            series[1].data.push(data[m].AR);
+            series[2].data.push(data[m].DNO);
+            series[3].data.push(data[m]["N/A"]);
           }
           this.chartOptions = {
             ...this.chartOptions,

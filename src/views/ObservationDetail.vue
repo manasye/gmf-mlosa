@@ -265,7 +265,7 @@
           <b-table
             :fields="probabilityFields"
             :items="probabilities"
-            @row-clicked="chooseProbability"
+            @row-hovered="chooseProbability"
             show-empty
             responsive
           >
@@ -287,7 +287,7 @@
           <b-table
             :fields="severityFields"
             :items="severities"
-            @row-clicked="chooseSeverity"
+            @row-hovered="chooseSeverity"
             responsive
             style="width: 100%"
             show-empty
