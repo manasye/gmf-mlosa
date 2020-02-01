@@ -67,7 +67,7 @@
       @row-clicked="showReport"
       show-empty
     >
-      <template v-slot:cell(report_status)="data">
+      <template v-slot:cell(status)="data">
         <b-badge
           :variant="getReportBadgesVariant(data.value)"
           style="margin-right: 30px"
@@ -76,6 +76,9 @@
             {{ data.value }}
           </p>
         </b-badge>
+      </template>
+      <template v-slot:cell(uic)="data">
+        <span v-for="u in data.value">{{ u }} </span>
       </template>
       <template v-slot:cell(recommendation)="data">
         <b-badge :variant="getRecomBadgesVariant(data.value)" class="mr-3">
@@ -165,7 +168,12 @@ export default {
       axios
         .get(`/report?${queryParams}`)
         .then(res => {
-          this.reports = res.data.data;
+          this.reports = res.data.data.map(d => {
+            let action;
+            if (d.status === "Revised") action = "Follow Up";
+            else action = "View";
+            return { ...d, action };
+          });
         })
         .catch(() => {});
     },
@@ -218,14 +226,14 @@ export default {
       reportOptions: [
         {
           value: null,
-          text: "All Statuses"
+          text: "All Status"
         },
         ...statusReport
       ],
       followUpOptions: [
         {
           value: null,
-          text: "All Statuses"
+          text: "All Status"
         },
         ...statusObservation
       ],
@@ -241,23 +249,16 @@ export default {
       currentPage: 1,
       reportFields: [
         { key: "date", label: "Date", sortable: true },
-        { key: "report_id", label: "Report No", sortable: true },
+        { key: "report_no", label: "Report No", sortable: true },
         { key: "prepared_by", sortable: true },
         { key: "checked_by", sortable: true },
         { key: "approved_by", sortable: true },
-        { key: "report_status", sortable: true },
+        { key: "status", label: "Report Status", sortable: true },
         { key: "action", sortable: true },
         { key: "uic", label: "UIC", sortable: true },
         { key: "recommendation", sortable: true }
       ],
-      reports: [
-        {
-          report_id: 1,
-          report_status: "Approved",
-          recommendation: "Close",
-          action: "View"
-        }
-      ],
+      reports: [],
       showModal: false,
       histories: [{ status: "Verified" }],
       historyField: ["date", "activity", "status"],

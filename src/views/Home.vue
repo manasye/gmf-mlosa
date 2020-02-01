@@ -118,6 +118,7 @@ export default {
       if (val === "Open") return "primary";
       else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
+      else if (val === "Verified") return "info";
       else return "danger";
     },
     changeSelectedDate(date) {

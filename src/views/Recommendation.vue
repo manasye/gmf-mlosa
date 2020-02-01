@@ -121,7 +121,7 @@ export default {
       followUpOptions: [
         {
           value: null,
-          text: "All Statuses"
+          text: "All Status"
         },
         ...statusReport
       ],

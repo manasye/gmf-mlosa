@@ -185,7 +185,12 @@
 
     <b-row class="mt-4 mb-3">
       <b-col cols="12" md="4">
-        <b-form-file multiple v-model="attachedFiles"> </b-form-file
+        <b-form-file
+          multiple
+          v-model="attachedFiles"
+          :file-name-formatter="formatNames"
+        >
+        </b-form-file
       ></b-col>
       <b-col cols="12" md="6">
         <b-button
@@ -535,6 +540,24 @@ export default {
         action = name + " follow up MLOSA Plan";
       else if (status === "Close") action = name + " submit observation";
 
+      let threats = [],
+        errors = [];
+
+      this.chosenError.map(e => {
+        if (e.hazardRemarks) {
+          threats.push({
+            sub_activity_id: e.id,
+            description: e.hazardRemarks
+          });
+        }
+        if (e.hazardCrewError) {
+          errors.push({
+            sub_activity_id: e.id,
+            description: e.hazardCrewError
+          });
+        }
+      });
+
       const data = {
         observation: {
           ...this.headers,
@@ -543,21 +566,33 @@ export default {
           mp_id: this.maintenance_process.id,
           team: this.teamProject,
           id: +this.$route.query.obs_id,
-          uic_id: +this.getUic()
+          uic_id: +this.getUic(),
+          describe_threat: threats,
+          describe_crew_error: errors,
+          comment: this.comment
         },
         maintenance_process: this.maintenance_process,
         activities: this.activities,
         action
       };
+
+      console.log(data);
+      console.log(this.attachedFiles);
       axios
         .post("/observation", data)
         .then(res => {
-          swal("Success", res.data.message, "success");
-          this.$store.dispatch("goToPage", "/observation-list");
+          const id = res.data.observation_id;
+          let formData = new FormData();
+          formData.append("file", this.attachedFiles);
+          axios
+            .post(`/observation/${id}/upload`, formData)
+            .then(() => {
+              swal("Success", res.data.message, "success");
+              this.$store.dispatch("goToPage", "/observation-list");
+            })
+            .catch(err => displayError(err));
         })
-        .catch(err => {
-          displayError(err);
-        });
+        .catch(err => displayError(err));
     },
     searchUser() {
       axios
@@ -602,6 +637,13 @@ export default {
           this.risks = risks;
         })
         .catch(() => {});
+    },
+    formatNames(files) {
+      if (files.length === 1) {
+        return this.shortenText(files[0].name, 25);
+      } else {
+        return `${files.length} files selected`;
+      }
     }
   },
   data() {
