@@ -62,7 +62,9 @@
         />
         <p>Average Risk Value :</p>
         <div class="text-right">
-          <b-button variant="primary" size="sm">View Details</b-button>
+          <b-button variant="primary" size="sm" @click="goToDetail"
+            >View Details</b-button
+          >
         </div>
       </b-col>
       <b-col cols="12" md="6">
@@ -75,7 +77,9 @@
         />
         <p>Average Risk Value :</p>
         <div class="text-right">
-          <b-button variant="primary" size="sm">View Details</b-button>
+          <b-button variant="primary" size="sm" @click="goToDetail"
+            >View Details</b-button
+          >
         </div>
       </b-col>
     </b-row>
@@ -106,7 +110,9 @@
     ></b-table>
 
     <div class="text-right">
-      <b-button variant="primary" size="sm">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail"
+        >View Details</b-button
+      >
     </div>
 
     <apexchart
@@ -127,7 +133,9 @@
     ></b-table>
 
     <div class="text-right">
-      <b-button variant="primary" size="sm">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail"
+        >View Details</b-button
+      >
     </div>
   </div>
 </template>
@@ -140,6 +148,7 @@ import {
   getYearOptions,
   getThreatCodes
 } from "@/utility/func.js";
+import queryString from "query-string";
 
 export default {
   mounted() {
@@ -167,6 +176,10 @@ export default {
         .get(`/chart/equipment?${queryParams}`)
         .then(res => {})
         .catch(() => {});
+    },
+    goToDetail() {
+      const query = queryString.stringify(this.selectVal);
+      this.$store.dispatch("goToPage", `/dashboard-detail?${query}&c=risk`);
     }
   },
   data() {

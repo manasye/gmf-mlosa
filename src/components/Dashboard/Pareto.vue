@@ -61,7 +61,7 @@
     </b-table>
 
     <div class="text-right">
-      <b-button variant="primary" size="sm">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail">View Details</b-button>
     </div>
   </div>
 </template>
@@ -75,6 +75,7 @@ import {
   getYearOptions,
   getThreatCodes
 } from "@/utility/func.js";
+import queryString from "query-string";
 
 export default {
   components: {
@@ -139,6 +140,10 @@ export default {
           this.pareto = data;
         })
         .catch(() => {});
+    },
+    goToDetail() {
+      const query = queryString.stringify(this.selectVal);
+      this.$store.dispatch("goToPage", `/dashboard-detail?${query}&c=pareto`);
     }
   },
   data() {

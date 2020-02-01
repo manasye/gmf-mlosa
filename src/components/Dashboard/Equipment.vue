@@ -44,7 +44,9 @@
     />
 
     <div class="text-right">
-      <b-button variant="primary" size="sm">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail"
+        >View Details</b-button
+      >
     </div>
   </div>
 </template>
@@ -53,6 +55,7 @@
 import axios from "axios";
 import { months } from "@/utility/variable.js";
 import { getMaintenancesName, getYearOptions } from "@/utility/func.js";
+import queryString from "query-string";
 
 export default {
   mounted() {
@@ -84,6 +87,10 @@ export default {
           this.series = data.map(d => d.total);
         })
         .catch(() => {});
+    },
+    goToDetail() {
+      const query = queryString.stringify(this.selectVal);
+      this.$store.dispatch("goToPage", `/dashboard-detail?${query}&c=equipment`);
     }
   },
   data() {

@@ -52,7 +52,9 @@
     />
 
     <div class="text-right">
-      <b-button variant="primary" size="sm">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail"
+        >View Details</b-button
+      >
     </div>
   </div>
 </template>
@@ -61,6 +63,7 @@
 import axios from "axios";
 import { months, safetyRisk } from "@/utility/variable.js";
 import { getMaintenancesName, getYearOptions } from "@/utility/func.js";
+import queryString from "query-string";
 
 export default {
   mounted() {
@@ -70,7 +73,7 @@ export default {
     getYearOptions().then(res => {
       this.yearOptions = this.yearOptions.concat(res);
     });
-
+    this.selectVal = { ...this.selectVal, ...this.$route.query };
     this.getChart();
   },
   methods: {
@@ -104,6 +107,10 @@ export default {
           this.series = series;
         })
         .catch(() => {});
+    },
+    goToDetail() {
+      const query = queryString.stringify(this.selectVal);
+      this.$store.dispatch("goToPage", `/dashboard-detail?${query}&c=safety`);
     }
   },
   data() {

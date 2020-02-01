@@ -576,8 +576,6 @@ export default {
         action
       };
 
-      console.log(data);
-      console.log(this.attachedFiles);
       axios
         .post("/observation", data)
         .then(res => {

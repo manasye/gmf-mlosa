@@ -23,6 +23,7 @@
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
+    "query-string": "^6.10.1",
     "register-service-worker": "^1.6.2",
     "slick-carousel": "^1.8.1",
     "sweetalert": "^2.1.2",
