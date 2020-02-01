@@ -581,9 +581,12 @@ export default {
         .then(res => {
           const id = res.data.observation_id;
           let formData = new FormData();
-          formData.append("file", this.attachedFiles);
+          for (let i = 0; i < this.attachedFiles.length; i++) {
+            formData.append(`file[${i}]`, this.attachedFiles[i]);
+          }
+          const config = { headers: { "Content-Type": "multipart/form-data" } };
           axios
-            .post(`/observation/${id}/upload`, formData)
+            .post(`/observation/${id}/upload`, formData, config)
             .then(() => {
               swal("Success", res.data.message, "success");
               this.$store.dispatch("goToPage", "/observation-list");
