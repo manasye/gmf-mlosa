@@ -28,7 +28,7 @@ const routes = [
     name: "dashboard",
     component: () =>
       import(
-        /* webpackChunkName: "dashboard detail" */ "../components/Dashboard/Detail.vue"
+        /* webpackChunkName: "dashboard-detail" */ "../components/Dashboard/Detail.vue"
       )
   },
   {
