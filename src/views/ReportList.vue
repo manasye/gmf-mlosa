@@ -18,38 +18,60 @@
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
         ><label>Year</label>
-        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+        <b-form-select
+          v-model="selectVal.year"
+          :options="yearOptions"
+          @input="getReports"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Month</label>
-        <b-form-select v-model="selectVal.month" :options="monthOptions" />
+        <b-form-select
+          v-model="selectVal.month"
+          :options="monthOptions"
+          @input="getReports"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>UIC</label>
-        <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+        <b-form-select
+          v-model="selectVal.uic_code"
+          :options="uicOptions"
+          @input="getReports"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Report Status</label>
-        <b-form-select v-model="selectVal.report" :options="reportOptions" />
+        <b-form-select
+          v-model="selectVal.status"
+          :options="reportOptions"
+          @input="getReports"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Follow Up Status</label>
         <b-form-select
-          v-model="selectVal.followUp"
+          v-model="selectVal.recom_status"
           :options="followUpOptions"
+          @input="getReports"
         />
       </b-col>
       <b-col cols="12" md="1" class="mb-3"
         ><label>Per Page</label>
-        <b-form-select v-model="perPage" :options="perPageOptions" />
+        <b-form-select
+          v-model="perPage"
+          :options="perPageOptions"
+          @input="getReports"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Search</label>
-        <b-nav-form>
+        <b-nav-form @submit.prevent="getReports">
           <b-form-input
             v-model="searchQuery"
             placeholder="Search..."
             style="width: 100%"
+            @keyup="getReports"
           />
         </b-nav-form>
       </b-col>
@@ -78,9 +100,9 @@
         </b-badge>
       </template>
       <template v-slot:cell(uic)="data">
-        <span v-for="u in data.value">{{ u }} </span>
+        {{ data.value.join(", ") }}
       </template>
-      <template v-slot:cell(recommendation)="data">
+      <template v-slot:cell(recom_status)="data">
         <b-badge :variant="getRecomBadgesVariant(data.value)" class="mr-3">
           <p class="status-badges" :class="getRecomBadgesVariant(data.value)">
             {{ data.value }}
@@ -147,15 +169,25 @@ import {
   statusReport,
   months
 } from "@/utility/variable.js";
-import { getUics } from "@/utility/func.js";
+import { getUicCodes } from "@/utility/func.js";
 import axios from "axios";
 
 export default {
   mounted() {
-    getUics().then(res => {
+    getUicCodes().then(res => {
       this.uicOptions = this.uicOptions.concat(res);
     });
     this.getReports();
+
+    axios
+      .get("/report/filter/filteroption")
+      .then(res => {
+        let years = res.data.year.map(y => {
+          return { value: y, text: y };
+        });
+        this.yearOptions = this.yearOptions.concat(years);
+      })
+      .catch(() => {});
   },
   methods: {
     getReports() {
@@ -165,8 +197,11 @@ export default {
           queryParams += `${key}=${this.selectVal[key]}&`;
         }
       }
+      if (this.searchQuery) {
+        queryParams += `search=${this.searchQuery}`;
+      }
       axios
-        .get(`/report?${queryParams}`)
+        .get(`/report/filter/filterreport?${queryParams}`)
         .then(res => {
           this.reports = res.data.data.map(d => {
             let action;
@@ -206,9 +241,9 @@ export default {
       selectVal: {
         year: null,
         month: null,
-        report: null,
-        uic: null,
-        followUp: null
+        status: null,
+        uic_code: null,
+        recom_status: null
       },
       yearOptions: [
         {
@@ -256,7 +291,7 @@ export default {
         { key: "status", label: "Report Status", sortable: true },
         { key: "action", sortable: true },
         { key: "uic", label: "UIC", sortable: true },
-        { key: "recommendation", sortable: true }
+        { key: "recom_status", label: "Recommendation", sortable: true }
       ],
       reports: [],
       showModal: false,

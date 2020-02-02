@@ -281,6 +281,9 @@ export default {
           queryParams += `${key}=${this.selectVal[key]}&`;
         }
       }
+      if (this.searchQuery) {
+        queryParams += `search=${this.searchQuery}`;
+      }
       axios
         .get(`/observation?${queryParams}`)
         .then(res => {

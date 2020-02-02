@@ -58,6 +58,22 @@ export const getUics = () => {
     });
 };
 
+export const getUicCodes = () => {
+  return axios
+    .get("/uic")
+    .then(res => {
+      let uics = [];
+      const data = res.data.data;
+      data.map(d => {
+        if (d.uic_name) uics.push({ value: d.uic_code, text: d.uic_name });
+      });
+      return uics;
+    })
+    .catch(() => {
+      return [];
+    });
+};
+
 export const getMaintenances = () => {
   return axios
     .get("/maintenance_process")

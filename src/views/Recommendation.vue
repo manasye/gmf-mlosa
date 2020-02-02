@@ -7,21 +7,34 @@
     <b-row class="mt-3">
       <b-col cols="12" md="1" class="mb-3"
         ><label>Year</label>
-        <b-form-select v-model="selectVal.year" :options="yearOptions" />
+        <b-form-select
+          v-model="selectVal.year"
+          :options="yearOptions"
+          @input="getRecommendations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Month</label>
-        <b-form-select v-model="selectVal.month" :options="monthOptions" />
+        <b-form-select
+          v-model="selectVal.month"
+          :options="monthOptions"
+          @input="getRecommendations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>UIC</label>
-        <b-form-select v-model="selectVal.uic" :options="uicOptions" />
+        <b-form-select
+          v-model="selectVal.uic_code"
+          :options="uicOptions"
+          @input="getRecommendations"
+        />
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Follow Up Status</label>
         <b-form-select
-          v-model="selectVal.followUp"
+          v-model="selectVal.status"
           :options="followUpOptions"
+          @input="getRecommendations"
         />
       </b-col>
       <b-col cols="12" md="2" />
@@ -31,11 +44,12 @@
       </b-col>
       <b-col cols="12" md="2" class="mb-3"
         ><label>Search</label>
-        <b-nav-form>
+        <b-nav-form @submit.prevent="getRecommendations">
           <b-form-input
             v-model="searchQuery"
             placeholder="Search..."
             style="width: 100%"
+            @keyup="getRecommendations"
           />
         </b-nav-form>
       </b-col>
@@ -63,19 +77,35 @@
           </p>
         </b-badge>
       </template>
+      <template v-slot:cell(uic)="data"> {{ data.value.join(", ") }}</template>
     </b-table>
   </div>
 </template>
 
 <script>
-import { perPageOptions, statusReport, months } from "@/utility/variable.js";
-import { getUics } from "@/utility/func.js";
+import {
+  perPageOptions,
+  statusObservation,
+  months
+} from "@/utility/variable.js";
+import { getUicCodes } from "@/utility/func.js";
+import axios from "axios";
 
 export default {
   mounted() {
-    getUics().then(res => {
+    getUicCodes().then(res => {
       this.uicOptions = this.uicOptions.concat(res);
     });
+    axios
+      .get("/recommendation/filter/filteroption")
+      .then(res => {
+        let years = res.data.year.map(y => {
+          return { value: y, text: y };
+        });
+        this.yearOptions = this.yearOptions.concat(years);
+      })
+      .catch(() => {});
+    this.getRecommendations();
   },
   methods: {
     getRecommendations() {
@@ -85,6 +115,15 @@ export default {
           queryParams += `${key}=${this.selectVal[key]}&`;
         }
       }
+      if (this.searchQuery) {
+        queryParams += `search=${this.searchQuery}`;
+      }
+      axios
+        .get(`/recommendation/filter/filterrecommendation?${queryParams}`)
+        .then(res => {
+          this.recoms = res.data.data;
+        })
+        .catch(() => {});
     },
     showReport(row) {
       this.$store.dispatch("goToPage", `/report/${row.report_id}`);
@@ -101,8 +140,8 @@ export default {
       selectVal: {
         year: null,
         month: null,
-        uic: null,
-        followUp: null
+        uic_code: null,
+        status: null
       },
       yearOptions: [
         {
@@ -117,13 +156,12 @@ export default {
         },
         ...months
       ],
-
       followUpOptions: [
         {
           value: null,
           text: "All Status"
         },
-        ...statusReport
+        ...statusObservation
       ],
       uicOptions: [
         {
@@ -142,7 +180,7 @@ export default {
         { key: "uic", label: "UIC", sortable: true },
         { key: "status", sortable: true }
       ],
-      recoms: [{ status: "Open" }]
+      recoms: []
     };
   },
   computed: {

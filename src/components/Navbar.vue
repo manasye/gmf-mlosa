@@ -212,6 +212,7 @@
 <script>
 import axios from "axios";
 // import moment from "moment";
+import { socketHost } from "@/utility/config.js";
 
 export default {
   mounted() {
@@ -226,6 +227,9 @@ export default {
   },
   data() {
     return {
+      socketClient: require("socket.io-client")(socketHost, {
+        transports: ["websocket"]
+      }),
       showModal: false,
       showModalDb: false,
       showModalApp: false,

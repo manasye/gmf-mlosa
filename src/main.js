@@ -2,17 +2,17 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import "./registerServiceWorker";
 import BootstrapVue from "bootstrap-vue";
 import VueApexCharts from "vue-apexcharts";
 import VueQuillEditor from "vue-quill-editor";
-import "froala-editor/css/froala_editor.pkgd.min.css";
-import "froala-editor/js/froala_editor.min.js";
-import "froala-editor/css/froala_style.min.css";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import axios from "axios";
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
+import "froala-editor/css/froala_editor.pkgd.min.css";
+import "froala-editor/js/froala_editor.min.js";
+import "froala-editor/css/froala_style.min.css";
 import "vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css";
+import "./registerServiceWorker";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -76,7 +76,7 @@ Vue.mixin({
 
 Vue.use(BootstrapVue);
 Vue.use(VueApexCharts);
-Vue.use(VueQuillEditor /* { default global options } */);
+Vue.use(VueQuillEditor);
 Vue.use(CKEditor);
 Vue.use(VueFroala);
 
