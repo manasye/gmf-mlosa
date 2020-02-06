@@ -1,14 +1,31 @@
 <template>
   <div class="container-app">
     <b-breadcrumb :items="breadcrumbs" />
-    <h3 class="header-title">
-      REPORT {{ convertSnakeCaseToText(this.$route.params.id) }}
-    </h3>
+    <h3 class="header-title text-uppercase">REPORT {{ title }}</h3>
+    <b-row class="mt-3">
+      <b-col cols="12" md="6">
+        <recom-card v-for="r in report.recommendation" :recom="r" :key="r.id"></recom-card>
+      </b-col>
+      <b-col cols="12" md="6"></b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import RecomCard from "@/components/RecomCard.vue";
+
 export default {
+  mounted() {
+    axios
+      .get(`/report/${this.$route.params.id}`)
+      .then(res => {
+        this.title = res.data.data.report_no;
+        this.breadcrumbs[1].text = res.data.data.report_no;
+        this.report = res.data.data;
+      })
+      .catch(() => {});
+  },
   data() {
     return {
       breadcrumbs: [
@@ -17,11 +34,16 @@ export default {
           href: "/#/report-list"
         },
         {
-          text: this.convertSnakeCaseToText(this.$route.params.id),
+          text: "Loading...",
           active: true
         }
-      ]
+      ],
+      title: "Loading...",
+      report: {}
     };
+  },
+  components: {
+    RecomCard
   }
 };
 </script>

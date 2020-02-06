@@ -130,7 +130,7 @@ export default {
     },
     getBadgesVariant(val) {
       if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
+      else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else return "danger";
     }

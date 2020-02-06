@@ -136,6 +136,7 @@
                 :description="p.subtitle"
                 :featured="p.uic ? p.uic.uic_name : ''"
                 v-if="globalPlans[dateSelected].length > 0"
+                :status="p.status"
               />
             </b-col>
             <p v-if="!globalPlans[dateSelected]">No plan on this date</p>
@@ -227,6 +228,7 @@ export default {
     getYearOptions().then(res => {
       this.yearOptions = this.yearOptions.concat(res);
     });
+    this.statusOptions = this.statusOptions.filter(o => o.value !== "Verified");
     this.getGlobalPlan();
     this.getChart();
   },

@@ -80,6 +80,10 @@ export const statusObservation = [
   {
     value: "Closed",
     text: "Closed"
+  },
+  {
+    value: "Verified",
+    text: "Verified"
   }
 ];
 

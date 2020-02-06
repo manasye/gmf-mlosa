@@ -61,7 +61,9 @@
     </b-table>
 
     <div class="text-right">
-      <b-button variant="primary" size="sm" @click="goToDetail">View Details</b-button>
+      <b-button variant="primary" size="sm" @click="goToDetail"
+        >View Details</b-button
+      >
     </div>
   </div>
 </template>
@@ -92,6 +94,7 @@ export default {
     getThreatCodes().then(res => {
       this.codeOptions = this.codeOptions.concat(res);
     });
+    this.selectVal = { ...this.selectVal, ...this.$route.query };
   },
   methods: {
     getChart() {

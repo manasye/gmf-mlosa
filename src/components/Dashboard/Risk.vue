@@ -44,7 +44,7 @@
       <b-col cols="12" md="2" class="mb-3"
         ><label>Risk Value</label>
         <b-form-select
-          v-model="selectVal.safety_risk"
+          v-model="selectVal.risk_value"
           :options="riskOptions"
           @input="getChart"
         ></b-form-select>
@@ -163,6 +163,7 @@ export default {
     });
 
     this.getChart();
+    this.selectVal = { ...this.selectVal, ...this.$route.query };
   },
   methods: {
     getChart() {
@@ -173,7 +174,7 @@ export default {
         }
       }
       axios
-        .get(`/chart/equipment?${queryParams}`)
+        .get(`/chart/risk_register?${queryParams}`)
         .then(res => {})
         .catch(() => {});
     },
@@ -190,7 +191,7 @@ export default {
         end_month: null,
         maintenance_process: null,
         threat: null,
-        safety_risk: null
+        risk_value: null
       },
       yearOptions: [
         {

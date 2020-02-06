@@ -141,7 +141,11 @@
               <b-form-textarea v-model="s.inputs.remark" />
             </td>
             <td>
-              <b-button size="sm" variant="primary" @click="openVerify(s)"
+              <b-button
+                v-if="checkVerif(s)"
+                size="sm"
+                variant="primary"
+                @click="openVerify(s)"
                 >Verify</b-button
               >
             </td>
@@ -270,20 +274,14 @@
           <b-table
             :fields="probabilityFields"
             :items="probabilities"
-            @row-hovered="chooseProbability"
             show-empty
             responsive
           >
-            <template v-slot:cell(qualititative)="data">{{
+            <template v-slot:cell(qualitative)="data">{{
               data.value
             }}</template>
             <template v-slot:cell(meaning)="data">
-              <li v-if="data.item.id !== probabilityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
           </b-table>
         </b-col>
@@ -292,7 +290,6 @@
           <b-table
             :fields="severityFields"
             :items="severities"
-            @row-hovered="chooseSeverity"
             responsive
             style="width: 100%"
             show-empty
@@ -475,6 +472,7 @@ import moment from "moment";
 
 export default {
   mounted() {
+    axios.get("/risk");
     this.getAllCodes();
     axios
       .get(`/observation/${this.$route.query.obs_id}`)
@@ -516,8 +514,9 @@ export default {
       }
     },
     chooseProbability(p) {
-      if (p.id === this.probabilityChosenId) this.probabilityChosenId = 0;
-      else this.probabilityChosenId = p.id;
+      if (p.qualitative === this.probabilityChosenId)
+        this.probabilityChosenId = 0;
+      else this.probabilityChosenId = p.qualitative;
     },
     chooseSeverity(s) {
       if (s.id === this.severityChosenId) this.severityChosenId = 0;
@@ -626,10 +625,15 @@ export default {
         })
         .catch(() => {});
       axios
+        .get("/risk/index")
+        .then(res => {
+          this.probabilities = res.data.probability_of_occurence;
+          this.severities = res.data.severity_of_occurence;
+        })
+        .catch(() => {});
+      axios
         .get("/risk")
         .then(res => {
-          this.probabilities = res.data.probability;
-          this.severities = res.data.severity;
           let risks = {};
           res.data.risk_colors.map(r => {
             const key = r.probability_value + r.severity_code;
@@ -645,6 +649,17 @@ export default {
       } else {
         return `${files.length} files selected`;
       }
+    },
+    checkVerif(s) {
+      const inputs = s.inputs;
+
+      return (
+        inputs.safety_risk &&
+        inputs.sub_threat_codes_id &&
+        inputs.risk_index &&
+        inputs.effectively_managed &&
+        inputs.error_outcome
+      );
     }
   },
   data() {
@@ -713,7 +728,7 @@ export default {
         "Verify"
       ],
       probabilityFields: [
-        { key: "definition", label: "Qualitative" },
+        { key: "qualitative", label: "Qualitative" },
         "meaning",
         { key: "value", label: "Value" }
       ],
@@ -776,6 +791,12 @@ export default {
   }
 };
 </script>
+
+<style>
+.probability-html p {
+  margin-bottom: 0;
+}
+</style>
 
 <style scoped>
 .risk-index {

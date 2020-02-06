@@ -213,7 +213,7 @@ export default {
         .catch(() => {});
     },
     showReport(row) {
-      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
+      this.$store.dispatch("goToPage", `/report/${row.id}`);
     },
     getReportBadgesVariant(val) {
       if (val === "Need Checking") return "primary";
@@ -223,7 +223,7 @@ export default {
     },
     getRecomBadgesVariant(val) {
       if (val === "Open") return "primary";
-      else if (val === "Onprogress") return "warning";
+      else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else if (val === "Overdue") return "danger";
       else return "secondary";

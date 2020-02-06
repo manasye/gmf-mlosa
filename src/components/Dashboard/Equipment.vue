@@ -67,6 +67,7 @@ export default {
     });
 
     this.getChart();
+    this.selectVal = { ...this.selectVal, ...this.$route.query };
   },
   methods: {
     getChart() {
@@ -90,7 +91,10 @@ export default {
     },
     goToDetail() {
       const query = queryString.stringify(this.selectVal);
-      this.$store.dispatch("goToPage", `/dashboard-detail?${query}&c=equipment`);
+      this.$store.dispatch(
+        "goToPage",
+        `/dashboard-detail?${query}&c=equipment`
+      );
     }
   },
   data() {

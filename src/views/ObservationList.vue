@@ -324,9 +324,10 @@ export default {
       }
     },
     downloadObservation(obs) {
+      console.log(obs);
       window.location =
-        axios.defaults.baseURL +
-        `/observation/download/logs?observation_id=${obs.id}`;
+        axios.defaults.baseURL.substring(0, axios.defaults.baseURL.length - 3) +
+        obs.link_download;
     },
     deleteObservation(id) {
       axios

@@ -9,9 +9,7 @@
         />
         <span class="ml-3 logo-name">MLOSA</span>
       </b-navbar-brand>
-
       <b-navbar-toggle target="nav-collapse" />
-
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <div v-for="nav in navItems" :key="nav.name" :data-intro="nav.intro">
@@ -196,7 +194,6 @@
             @click="downloadApp('android')"
             >Download Android
           </b-button>
-
           <b-button
             variant="outline-secondary"
             size="sm"
@@ -213,6 +210,17 @@
 import axios from "axios";
 // import moment from "moment";
 import { socketHost } from "@/utility/config.js";
+import Echo from "laravel-echo";
+
+window.Pusher = require("pusher-js");
+//
+// window.Echo = new Echo({
+//   broadcaster: "pusher",
+//   key: "myKey",
+//   wsHost: "http://172.16.41.172/",
+//   wsPort: 6001,
+//   disableStats: true
+// });
 
 export default {
   mounted() {
@@ -224,12 +232,41 @@ export default {
       .catch(() => {
         this.$store.dispatch("goToPage", "/login");
       });
+    // console.log(Echo);
+  },
+  methods: {
+    startWalkthrough() {
+      this.$store.commit("changeWalkthrough", true);
+      const introJS = require("intro.js");
+      introJS
+        .introJs()
+        .setOption("doneLabel", "Next page")
+        .start()
+        .oncomplete(function() {
+          window.location.href = "/#/project-customer/a";
+        });
+    },
+    logout() {
+      axios
+        .get("/signout")
+        .then(() => {
+          localStorage.removeItem("username");
+          this.$store.dispatch("goToPage", "/login");
+        })
+        .catch(() => {});
+    },
+    triggerDb() {
+      this.showModalDb = true;
+    },
+    triggerApp() {
+      this.showModalApp = true;
+    },
+    downloadApp(type) {
+      console.log(type);
+    }
   },
   data() {
     return {
-      socketClient: require("socket.io-client")(socketHost, {
-        transports: ["websocket"]
-      }),
       showModal: false,
       showModalDb: false,
       showModalApp: false,
@@ -322,37 +359,6 @@ export default {
         }
       ]
     };
-  },
-  methods: {
-    startWalkthrough() {
-      this.$store.commit("changeWalkthrough", true);
-      const introJS = require("intro.js");
-      introJS
-        .introJs()
-        .setOption("doneLabel", "Next page")
-        .start()
-        .oncomplete(function() {
-          window.location.href = "/#/project-customer/a";
-        });
-    },
-    logout() {
-      axios
-        .get("/signout")
-        .then(() => {
-          localStorage.removeItem("username");
-          this.$store.dispatch("goToPage", "/login");
-        })
-        .catch(() => {});
-    },
-    triggerDb() {
-      this.showModalDb = true;
-    },
-    triggerApp() {
-      this.showModalApp = true;
-    },
-    downloadApp(type) {
-      console.log(type);
-    }
   },
   computed: {
     activeRoutes() {

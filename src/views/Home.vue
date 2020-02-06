@@ -40,6 +40,7 @@
               :due="p.due_date"
               :description="p.subtitle"
               :featured="p.uic ? p.uic.uic_name : ''"
+              :status="p.status"
               v-if="globalPlans[dateSelected].length > 0"
               class="mb-3"
             />

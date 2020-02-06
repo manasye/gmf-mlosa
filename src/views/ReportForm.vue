@@ -94,7 +94,7 @@
         ></b-col
       >
     </b-row>
-    <b-row v-for="r in recommendations" class="mb-3">
+    <b-row v-for="(r, idx) in recommendations" :key="idx" class="mb-3">
       <b-col cols="12" md="8">
         <ckeditor
           :editor="editor"

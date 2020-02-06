@@ -2,7 +2,7 @@
   <div class="container-app">
     <h3 class="header-title mb-3">DASHBOARD</h3>
     <b-row>
-      <b-col cols="12" md="1" class="mb-3"
+      <b-col cols="12" md="2" class="mb-3"
         ><label>Year</label>
         <b-form-select
           v-model="selectVal.year"
@@ -10,7 +10,7 @@
           @input="getObservations"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="1" class="mb-3"
+      <b-col cols="12" md="2" class="mb-3"
         ><label>Start</label>
         <b-form-select
           v-model="selectVal.start_month"
@@ -18,7 +18,7 @@
           @input="getObservations"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="1" class="mb-3"
+      <b-col cols="12" md="2" class="mb-3"
         ><label>End</label>
         <b-form-select
           v-model="selectVal.end_month"
@@ -34,30 +34,7 @@
           @input="getObservations"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
-        ><label>Safety Risk</label>
-        <b-form-select
-          v-model="selectVal.safety_risk"
-          :options="riskOptions"
-          @input="getObservations"
-        ></b-form-select>
-      </b-col>
-      <b-col cols="12" md="2" class="mb-3"
-        ><label>Threat Code</label>
-        <b-form-select
-          v-model="selectVal.threat"
-          :options="codeOptions"
-          @input="getObservations"
-        ></b-form-select>
-      </b-col>
-      <b-col cols="12" md="2" class="mb-3"
-        ><label>Risk Value</label>
-        <b-form-select
-          v-model="selectVal.threat"
-          :options="codeOptions"
-          @input="getObservations"
-        ></b-form-select>
-      </b-col>
+
       <b-col cols="12" md="1" class="mb-3"
         ><label>Back</label
         ><b-button variant="primary" @click="back">Chart</b-button>
@@ -157,9 +134,7 @@ export default {
         year: null,
         start_month: null,
         end_month: null,
-        maintenance_process: null,
-        safety_risk: null,
-        threat: null
+        maintenance_process: null
       },
       observations: [],
       observationFields: [
