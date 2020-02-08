@@ -298,60 +298,25 @@
               >{{ data.value }} ({{ data.item.code }})</template
             >
             <template v-slot:cell(people)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(environment)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(security)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(asset)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(operational)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(it_system)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
             <template v-slot:cell(reputational)="data">
-              <li v-if="data.item.id !== severityChosenId">
-                {{ data.value[0] }}
-              </li>
-              <li v-else v-for="m in data.value">
-                {{ m }}
-              </li>
+              <span class="probability-html" v-html="data.value"></span>
             </template>
           </b-table>
         </b-col>

@@ -127,7 +127,7 @@
       style="margin-top: 20px;"
       striped
       hover
-      :items="riskValueTables"
+      :items="threatTables"
       responsive
       show-empty
     ></b-table>
@@ -175,7 +175,212 @@ export default {
       }
       axios
         .get(`/chart/risk_register?${queryParams}`)
-        .then(res => {})
+        .then(res => {
+          this.register1 = {
+            ...this.register1,
+            chartOptions: {
+              ...this.register1.chartOptions,
+              xaxis: {
+                ...this.register1.chartOptions.xaxis,
+                categories: res.data.corporate_current_risk.map(
+                  c => c.risk_value + " " + c.category
+                )
+              }
+            }
+          };
+          this.register1 = {
+            ...this.register1,
+            series: [
+              { data: res.data.corporate_current_risk.map(c => c.count) }
+            ]
+          };
+
+          const dimension = res.data.risk_dimension_distribution;
+          this.dimension = {
+            ...this.dimension,
+            chartOptions: {
+              ...this.dimension.chartOptions,
+              xaxis: {
+                ...this.dimension.chartOptions.xaxis,
+                categories: Object.keys(dimension)
+              }
+            }
+          };
+          this.dimension = {
+            ...this.dimension,
+            series: [{ data: Object.values(dimension) }]
+          };
+
+          const value = res.data.risk_value_dist;
+          this.value = {
+            ...this.value,
+            chartOptions: {
+              ...this.value.chartOptions,
+              xaxis: {
+                ...this.value.chartOptions.xaxis,
+                categories: Object.keys(value)
+              }
+            }
+          };
+          let valueSeries = [[], [], [], [], []];
+          let riskTables = [
+            { risk: "Negligible" },
+            { risk: "Low Risk" },
+            { risk: "Medium Risk" },
+            { risk: "High Risk" },
+            { risk: "Extreme Risk" }
+          ];
+          for (let key in value) {
+            for (let risk in value[key]) {
+              if (risk === "Negligible") {
+                valueSeries[0].push(value[key][risk]);
+                riskTables[0] = {
+                  ...riskTables[0],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Low")) {
+                valueSeries[1].push(value[key][risk]);
+                riskTables[1] = {
+                  ...riskTables[1],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Medium")) {
+                valueSeries[2].push(value[key][risk]);
+                riskTables[2] = {
+                  ...riskTables[2],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("High")) {
+                valueSeries[3].push(value[key][risk]);
+                riskTables[3] = {
+                  ...riskTables[3],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Extreme")) {
+                valueSeries[4].push(value[key][risk]);
+                riskTables[4] = {
+                  ...riskTables[4],
+                  [key]: value[key][risk]
+                };
+              }
+            }
+          }
+          this.riskValueTables = riskTables;
+          this.value = {
+            ...this.value,
+            series: [
+              {
+                name: "Negligible",
+                data: valueSeries[0]
+              },
+              {
+                name: "Low Risk",
+                data: valueSeries[1]
+              },
+              {
+                name: "Medium Risk",
+                data: valueSeries[2]
+              },
+              {
+                name: "High Risk",
+                data: valueSeries[3]
+              },
+              {
+                name: "Extreme Risk",
+                data: valueSeries[4]
+              }
+            ]
+          };
+
+          const threat = res.data.theat_subject;
+          this.threat = {
+            ...this.threat,
+            chartOptions: {
+              ...this.threat.chartOptions,
+              xaxis: {
+                ...this.threat.chartOptions.xaxis,
+                categories: Object.keys(threat)
+              }
+            }
+          };
+          let threatSeries = [[], [], [], [], []];
+          let threatTables = [
+            { risk: "Negligible" },
+            { risk: "Low Risk" },
+            { risk: "Medium Risk" },
+            { risk: "High Risk" },
+            { risk: "Extreme Risk" }
+          ];
+          for (let key in threat) {
+            for (let risk in threat[key]) {
+              if (risk === "Negligible") {
+                threatSeries[0].push(threat[key][risk]);
+                threatTables[0] = {
+                  ...threatTables[0],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Low")) {
+                threatSeries[1].push(threat[key][risk]);
+                threatTables[1] = {
+                  ...threatTables[1],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Medium")) {
+                threatSeries[2].push(threat[key][risk]);
+                threatTables[2] = {
+                  ...threatTables[2],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("High")) {
+                threatSeries[3].push(threat[key][risk]);
+                threatTables[3] = {
+                  ...threatTables[3],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Extreme")) {
+                threatSeries[4].push(threat[key][risk]);
+                threatTables[4] = {
+                  ...threatTables[4],
+                  [key]: threat[key][risk]
+                };
+              }
+            }
+          }
+          this.threatTables = threatTables;
+          this.threat = {
+            ...this.threat,
+            series: [
+              {
+                name: "Negligible",
+                data: threatSeries[0]
+              },
+              {
+                name: "Low Risk",
+                data: threatSeries[1]
+              },
+              {
+                name: "Medium Risk",
+                data: threatSeries[2]
+              },
+              {
+                name: "High Risk",
+                data: threatSeries[3]
+              },
+              {
+                name: "Extreme Risk",
+                data: threatSeries[4]
+              }
+            ]
+          };
+        })
         .catch(() => {});
     },
     goToDetail() {
@@ -232,6 +437,7 @@ export default {
         }
       ],
       riskValueTables: [],
+      threatTables: [],
       register1: {
         chartOptions: {
           noData: {
@@ -252,23 +458,12 @@ export default {
             enabled: false
           },
           xaxis: {
-            categories: [
-              "South Korea",
-              "Canada",
-              "United Kingdom",
-              "Netherlands",
-              "Italy",
-              "France",
-              "Japan",
-              "United States",
-              "China",
-              "Germany"
-            ]
+            categories: []
           }
         },
         series: [
           {
-            data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
+            data: []
           }
         ]
       },
@@ -292,23 +487,12 @@ export default {
             enabled: false
           },
           xaxis: {
-            categories: [
-              "South Korea",
-              "Canada",
-              "United Kingdom",
-              "Netherlands",
-              "Italy",
-              "France",
-              "Japan",
-              "United States",
-              "China",
-              "Germany"
-            ]
+            categories: []
           }
         },
         series: [
           {
-            data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380]
+            data: []
           }
         ]
       },
@@ -330,20 +514,7 @@ export default {
             }
           },
           xaxis: {
-            categories: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec"
-            ],
+            categories: [],
             position: "bottom"
           },
           fill: {
@@ -365,7 +536,7 @@ export default {
         },
         series: [
           {
-            data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2]
+            data: []
           }
         ]
       },
@@ -398,7 +569,7 @@ export default {
             }
           },
           xaxis: {
-            categories: [2008, 2009, 2010, 2011, 2012, 2013, 2014]
+            categories: []
           },
           yaxis: {
             title: {
@@ -414,28 +585,7 @@ export default {
             offsetX: 40
           }
         },
-        series: [
-          {
-            name: "Marine Sprite",
-            data: [44, 55, 41, 37, 22, 43, 21]
-          },
-          {
-            name: "Striking Calf",
-            data: [53, 32, 33, 52, 13, 43, 32]
-          },
-          {
-            name: "Tank Picture",
-            data: [12, 17, 11, 9, 15, 11, 20]
-          },
-          {
-            name: "Bucket Slope",
-            data: [9, 7, 5, 8, 6, 9, 4]
-          },
-          {
-            name: "Reborn Kid",
-            data: [25, 12, 19, 32, 25, 24, 10]
-          }
-        ]
+        series: []
       },
       threat: {
         chartOptions: {
@@ -469,16 +619,17 @@ export default {
               horizontal: false
             }
           },
+          title: {
+            text: "Threat Subject (Impact To) for Each Department",
+            align: "center",
+            margin: 0,
+            style: {
+              fontSize: "16px",
+              fontWeight: "700"
+            }
+          },
           xaxis: {
-            type: "datetime",
-            categories: [
-              "01/01/2011 GMT",
-              "01/02/2011 GMT",
-              "01/03/2011 GMT",
-              "01/04/2011 GMT",
-              "01/05/2011 GMT",
-              "01/06/2011 GMT"
-            ]
+            categories: []
           },
           legend: {
             position: "right",
@@ -488,24 +639,7 @@ export default {
             opacity: 1
           }
         },
-        series: [
-          {
-            name: "PRODUCT A",
-            data: [44, 55, 41, 67, 22, 43]
-          },
-          {
-            name: "PRODUCT B",
-            data: [13, 23, 20, 8, 13, 27]
-          },
-          {
-            name: "PRODUCT C",
-            data: [11, 17, 15, 15, 21, 14]
-          },
-          {
-            name: "PRODUCT D",
-            data: [21, 7, 25, 13, 22, 8]
-          }
-        ]
+        series: []
       }
     };
   }
