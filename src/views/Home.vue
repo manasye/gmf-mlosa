@@ -10,10 +10,13 @@
           :options="c.chartOptions"
           :series="c.series"
         />
+        <p class="text-center" v-if="c.type === 'pareto'">
+          Pareto Diagram of Threat Distribution
+        </p>
         <bar-chart
           :chart-data="c.series"
           :options="c.chartOptions"
-          v-else
+          v-if="c.type === 'pareto'"
         ></bar-chart>
       </div>
     </slick>

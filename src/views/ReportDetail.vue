@@ -11,7 +11,38 @@
           :getDetail="getDetail"
         ></recom-card>
       </b-col>
-      <b-col cols="12" md="6"></b-col>
+      <b-col cols="12" md="6">
+        <b-row class="detail-report pt-2">
+          <b-col cols="12" md="6">
+            <p class="mb-2" v-for="l in left">
+              {{ l.text }} : {{ report[l.key] }}
+            </p>
+          </b-col>
+          <b-col cols="12" md="6">
+            <p class="mb-2" v-for="r in right">
+              {{ r.text }} : {{ report[r.key] }}
+            </p></b-col
+          >
+          <b-col cols="12">
+            <label class="mt-3">I. Introduction</label>
+            <div v-html="report.introduction"></div>
+            <label class="mt-3">II. Brief Summary</label>
+            <div v-html="report.brief_summary"></div>
+            <label class="mt-3">III. Section Summaries</label><br />
+            <label>III.1 MLOSA Demographic</label>
+            <div></div>
+            <label class="mt-3">III.2 Regression Analysis</label>
+            <div v-html="report.regression_analysis"></div>
+            <label class="mt-3">III.3 Threat and Error Management Result</label>
+            <div v-html="report.threat_error"></div>
+            <label class="mt-3">IV. Recommendation</label>
+            <div v-for="r in report.recommendation" class="mb-3">
+              <p class="mb-1">{{ r.uic.join(", ") }}</p>
+              <div v-html="r.recommendation"></div>
+            </div>
+          </b-col>
+        </b-row>
+      </b-col>
     </b-row>
   </div>
 </template>
@@ -49,7 +80,21 @@ export default {
         }
       ],
       title: "Loading...",
-      report: {}
+      report: {},
+      left: [
+        { text: "Title", key: "title" },
+        { text: "Subject", key: "subject" },
+        { text: "Distribution", key: "title" },
+        { text: "No", key: "report_no" },
+        { text: "Date", key: "date" }
+      ],
+      right: [
+        { text: "Attention", key: "attention" },
+        { text: "Issued", key: "issued" },
+        { text: "Prepared By", key: "prepared_by" },
+        { text: "Checked By", key: "checked_by" },
+        { text: "Approved By", key: "approved_by" }
+      ]
     };
   },
   components: {
@@ -58,4 +103,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.detail-report {
+  border: 1px solid #949699;
+}
+</style>
