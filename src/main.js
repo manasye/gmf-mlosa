@@ -5,6 +5,7 @@ import store from "./store";
 import BootstrapVue from "bootstrap-vue";
 import VueApexCharts from "vue-apexcharts";
 import VueQuillEditor from "vue-quill-editor";
+import VCalendar from "v-calendar";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import axios from "axios";
 import VueCtkDateTimePicker from "vue-ctk-date-time-picker";
@@ -79,6 +80,7 @@ Vue.use(VueApexCharts);
 Vue.use(VueQuillEditor);
 Vue.use(CKEditor);
 Vue.use(VueFroala);
+Vue.use(VCalendar, {});
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("apexchart", VueApexCharts);

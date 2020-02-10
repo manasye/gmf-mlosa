@@ -24,19 +24,16 @@
       <b-col cols="12" md="6"
         ><h3 class="header-title mb-2 mb-md-4  text-uppercase">Mlosa Plan</h3>
         <b-row>
-          <b-col cols="12" md="5">
-            <datepicker
-              :inline="true"
-              class="mb-4 mb-md-0 calendar"
-              :minimumView="'day'"
-              :maximumView="'day'"
-              :highlighted="highlighted"
-              calendar-class="modal-calendar"
-              @changedMonth="changeMonth"
-              @selected="changeSelectedDate"
-            />
+          <b-col cols="12" md="6">
+            <v-calendar
+              :attributes="attrs"
+              :disable-page-swipe="true"
+              @dayclick="changeSelectedDate"
+              @update:frompage="changeMonth"
+              @update:page="changeMonth"
+            ></v-calendar>
           </b-col>
-          <b-col cols="12" md="7" class="mb-4 mb-md-0">
+          <b-col cols="12" md="6" class="mb-4 mb-md-0">
             <card-calendar-info
               v-for="p in globalPlans[dateSelected]"
               :key="p.id"
@@ -125,10 +122,10 @@ export default {
       else if (val === "Verified") return "info";
       else return "danger";
     },
-    changeSelectedDate(date) {
+    changeSelectedDate({ date }) {
       this.dateSelected = moment(date).format("YYYY-MM-DD");
     },
-    changeMonth() {
+    changeMonth(page) {
       this.dateSelected = null;
     },
     getGlobalPlan() {
@@ -137,18 +134,62 @@ export default {
         .then(res => {
           this.globalPlans = res.data.data;
           const data = Object.keys(res.data.data);
-          let dates = [];
+          let labels = [
+            {
+              key: "Open",
+              highlight: {
+                class: "status-open"
+              },
+              dates: []
+            },
+            {
+              key: "On Progress",
+              highlight: {
+                class: "status-onprogress"
+              },
+              dates: []
+            },
+            {
+              key: "Close",
+              highlight: {
+                class: "status-close"
+              },
+              dates: []
+            },
+            {
+              key: "Overdue",
+              highlight: {
+                class: "status-overdue"
+              },
+              dates: []
+            },
+            {
+              key: "Verified",
+              highlight: {
+                class: "status-verified"
+              },
+              dates: []
+            }
+          ];
           data.map(d => {
             if (d) {
               const year = d.split("-")[0];
               const month = d.split("-")[1];
               const date = d.split("-")[2];
-              dates.push(new Date(year, month - 1, date));
+              const status = this.globalPlans[d][0].status;
+              if (status === "On Progress")
+                labels[1].dates.push(new Date(year, month - 1, date));
+              if (status === "Open")
+                labels[0].dates.push(new Date(year, month - 1, date));
+              if (status === "Verified")
+                labels[4].dates.push(new Date(year, month - 1, date));
+              if (status === "Close")
+                labels[2].dates.push(new Date(year, month - 1, date));
+              if (status === "Overdue")
+                labels[3].dates.push(new Date(year, month - 1, date));
             }
           });
-          this.highlighted = {
-            dates
-          };
+          this.attrs = labels;
         })
         .catch(() => {});
     },
@@ -266,6 +307,7 @@ export default {
   },
   data() {
     return {
+      attrs: [],
       currentPage: 1,
       dateSelected: null,
       maintenanceOptions: [],
@@ -484,6 +526,24 @@ export default {
   }
 };
 </script>
+
+<style>
+.status-open {
+  background-color: #0072b8 !important;
+}
+.status-onprogress {
+  background-color: #ffa813 !important;
+}
+.status-close {
+  background-color: #00a65a !important;
+}
+.status-overdue {
+  background-color: #f56854 !important;
+}
+.status-verified {
+  background-color: #a9a9a9 !important;
+}
+</style>
 
 <style scoped lang="scss">
 .chart-wrapper {

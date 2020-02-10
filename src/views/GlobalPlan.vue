@@ -62,7 +62,7 @@
     </b-row>
 
     <b-row>
-      <b-col cols="12" md="8" class="calendar-wrapper mt-3 mb-2">
+      <b-col cols="12" md="9" class="calendar-wrapper mt-3 mb-2">
         <b-row>
           <b-col
             cols="12"
@@ -70,34 +70,45 @@
             v-for="i in 12"
             class="mb-4"
             :key="i"
-            @click="showMonthDetail(i)"
             v-if="monthInRange(i)"
           >
-            <datepicker
-              :inline="true"
-              class="mb-4 mb-md-0 calendar"
-              :minimumView="'day'"
-              :maximumView="'day'"
-              :open-date="
+            <!--            <datepicker-->
+            <!--              :inline="true"-->
+            <!--              class="mb-4 mb-md-0 calendar"-->
+            <!--              :minimumView="'day'"-->
+            <!--              :maximumView="'day'"-->
+            <!--              :open-date="-->
+            <!--                new Date(selectVal.year || new Date().getFullYear(), i - 1, 15)-->
+            <!--              "-->
+            <!--              @selected="changeSelectedDate"-->
+            <!--              :highlighted="highlighted"-->
+            <!--            />-->
+            <v-calendar
+              :attributes="attrs"
+              :min-page="{
+                month: i,
+                year: new Date(selectVal.year || new Date().getFullYear())
+              }"
+              :max-page="{
+                month: i,
+                year: new Date(selectVal.year || new Date().getFullYear())
+              }"
+              :from-date="
                 new Date(selectVal.year || new Date().getFullYear(), i - 1, 15)
               "
-              @selected="changeSelectedDate"
-              :highlighted="highlighted"
-            />
+              :disable-page-swipe="true"
+              @dayclick="changeSelectedDate"
+            ></v-calendar>
           </b-col>
         </b-row>
       </b-col>
 
-      <b-col cols="12" md="4" class="mt-3">
+      <b-col cols="12" md="3" class="mt-3">
         <p class="text-center primary-color font-weight-bold">
           MLOSA IMPLEMENTATION
         </p>
-        <apexchart
-          type="pie"
-          height="350"
-          :options="chartOptions"
-          :series="series"
-        />
+        <doughnut ref="skills_chart" :chart-data="chartData" :options="options">
+        </doughnut>
       </b-col>
     </b-row>
 
@@ -112,15 +123,18 @@
     >
       <b-row>
         <b-col cols="12" md="3">
-          <datepicker
-            :inline="true"
-            class="mb-4 mb-md-0 calendar"
-            :minimumView="'day'"
-            :maximumView="'day'"
-            :open-date="new Date(new Date().getFullYear(), monthDetail - 1, 16)"
-            :highlighted="highlightedDetail"
-            @selected="changeSelectedDate"
-          />
+          <v-calendar
+            :attributes="attrs"
+            :from-date="
+              new Date(
+                selectVal.year || new Date().getFullYear(),
+                monthDetail - 1,
+                15
+              )
+            "
+            :disable-page-swipe="true"
+            @dayclick="changeSelectedDate"
+          ></v-calendar>
         </b-col>
         <b-col cols="12" md="9" class="info-wrapper">
           <b-row>
@@ -216,6 +230,28 @@ import {
   displayError
 } from "@/utility/func.js";
 import moment from "moment";
+import Doughnut from "@/components/DoughnutChart.vue";
+
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: {
+    animateRotate: false
+  },
+  tooltips: {
+    callbacks: {
+      label: function(tooltipItem, data) {
+        let dataset = data.datasets[tooltipItem.datasetIndex];
+        let total = dataset.data.reduce(function(previousValue, currentValue) {
+          return previousValue + currentValue;
+        });
+        let currentValue = dataset.data[tooltipItem.index];
+        let percentage = Math.floor((currentValue / total) * 100 + 0.5);
+        return " " + currentValue + " (" + percentage + "%)";
+      }
+    }
+  }
+};
 
 export default {
   mounted() {
@@ -232,7 +268,7 @@ export default {
     this.getGlobalPlan();
     this.getChart();
   },
-  components: { Datepicker, CardCalendarInfo },
+  components: { Datepicker, CardCalendarInfo, Doughnut },
   methods: {
     getGlobalPlan() {
       let queryParams = "";
@@ -246,17 +282,94 @@ export default {
         .then(res => {
           this.globalPlans = res.data.data;
           const data = Object.keys(res.data.data);
-          let dates = [];
+          let labels = [
+            {
+              key: "Open",
+              highlight: {
+                class: "status-open"
+              },
+              dates: []
+            },
+            {
+              key: "On Progress",
+              highlight: {
+                class: "status-onprogress"
+              },
+              dates: []
+            },
+            {
+              key: "Close",
+              highlight: {
+                class: "status-close"
+              },
+              dates: []
+            },
+            {
+              key: "Overdue",
+              highlight: {
+                class: "status-overdue"
+              },
+              dates: []
+            },
+            {
+              key: "Verified",
+              highlight: {
+                class: "status-verified"
+              },
+              dates: []
+            }
+          ];
           data.map(d => {
             if (d) {
               const year = d.split("-")[0];
               const month = d.split("-")[1];
               const date = d.split("-")[2];
-              dates.push(new Date(year, month - 1, date));
+              const status = this.globalPlans[d][0].status;
+              if (status === "On Progress")
+                labels[1].dates.push(new Date(year, month - 1, date));
+              if (status === "Open")
+                labels[0].dates.push(new Date(year, month - 1, date));
+              if (status === "Verified")
+                labels[4].dates.push(new Date(year, month - 1, date));
+              if (status === "Close")
+                labels[2].dates.push(new Date(year, month - 1, date));
+              if (status === "Overdue")
+                labels[3].dates.push(new Date(year, month - 1, date));
             }
           });
-          this.highlighted = {
-            dates
+          this.attrs = labels;
+        })
+        .catch(() => {});
+    },
+    getChart() {
+      axios
+        .get("/mlosa_implementation")
+        .then(res => {
+          const data = res.data.data;
+          let counts = new Array(5).fill(0);
+          data.map(d => {
+            if (d.status === "On Progress") counts[1] = d.count;
+            if (d.status === "Open") counts[0] = d.count;
+            if (d.status === "Verified") counts[4] = d.count;
+            if (d.status === "Close") counts[2] = d.count;
+            if (d.status === "Overdue") counts[3] = d.count;
+          });
+          let datasets = [
+            {
+              backgroundColor: [
+                "#0072B8",
+                "#FFA813",
+                "#00A65A",
+                "#F56854",
+                "#a9a9a9"
+              ],
+              data: counts
+            }
+          ];
+          this.chartData = {
+            ...this.chartData,
+            labels: ["Open", "On Progress", "Close", "Overdue", "Verified"],
+            datasets
           };
         })
         .catch(() => {});
@@ -306,25 +419,12 @@ export default {
           displayError(err);
         });
     },
-    getChart() {
-      axios
-        .get("/mlosa_implementation")
-        .then(res => {
-          const data = res.data.data;
-          const labels = data.map(d => d.status);
-          this.series = data.map(d => d.count);
-          this.chartOptions = {
-            ...this.chartOptions,
-            labels
-          };
-        })
-        .catch(() => {});
-    },
-    changeSelectedDate(date) {
+    changeSelectedDate({ date }) {
       this.dateSelected = moment(date).format("YYYY-MM-DD");
       const yearSplit = this.dateSelected.split("-")[0];
       const monthSplit = this.dateSelected.split("-")[1];
       const dateSplit = this.dateSelected.split("-")[2];
+      this.showMonthDetail(monthSplit);
       this.highlightedDetail = {
         dates: [new Date(yearSplit, monthSplit - 1, dateSplit)]
       };
@@ -332,6 +432,7 @@ export default {
   },
   data() {
     return {
+      attrs: [],
       globalPlans: null,
       dateSelected: null,
       highlighted: { dates: [] },
@@ -397,17 +498,13 @@ export default {
           text: "All UICs"
         }
       ],
-      series: [],
-      chartOptions: {
+      options,
+      chartData: {
         labels: [],
-        responsive: [
+        datasets: [
           {
-            breakpoint: 2000,
-            options: {
-              legend: {
-                position: "bottom"
-              }
-            }
+            backgroundColor: [],
+            data: []
           }
         ]
       }
@@ -416,14 +513,32 @@ export default {
 };
 </script>
 
+<style>
+.status-open {
+  background-color: #0072b8 !important;
+}
+.status-onprogress {
+  background-color: #ffa813 !important;
+}
+.status-close {
+  background-color: #00a65a !important;
+}
+.status-overdue {
+  background-color: #f56854 !important;
+}
+.status-verified {
+  background-color: #a9a9a9 !important;
+}
+</style>
+
 <style scoped>
 .calendar-wrapper {
-  height: 60vh;
+  height: 70vh;
   overflow-y: scroll;
 }
 
 .info-wrapper {
-  height: 60vh;
+  height: 70vh;
   overflow-y: scroll;
 }
 

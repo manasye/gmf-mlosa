@@ -1,5 +1,10 @@
 <template>
-  <b-card :header="featured" header-tag="header">
+  <b-card
+    :header="featured"
+    header-tag="header"
+    :header-bg-variant="headerBg"
+    header-text-variant="white"
+  >
     <b-card-text>
       <span class="grey-text">Due Date</span><br />{{ due }}
     </b-card-text>
@@ -14,7 +19,16 @@
 
 <script>
 export default {
-  props: ["due", "description", "featured", "status"]
+  props: ["due", "description", "featured", "status"],
+  computed: {
+    headerBg() {
+      if (this.status === "Open") return "primary";
+      if (this.status === "On Progress") return "warning";
+      if (this.status === "Overdue") return "danger";
+      if (this.status === "Verified") return "secondary";
+      if (this.status === "Close") return "success";
+    }
+  }
 };
 </script>
 

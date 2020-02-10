@@ -49,7 +49,8 @@ export const getUics = () => {
       let uics = [];
       const data = res.data.data;
       data.map(d => {
-        if (d.uic_name) uics.push({ value: d.id, text: d.uic_name });
+        if (d.uic_name)
+          uics.push({ value: d.id, text: d.uic_code + " - " + d.uic_name });
       });
       return uics;
     })

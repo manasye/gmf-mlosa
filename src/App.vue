@@ -18,6 +18,21 @@ export default {
 </script>
 
 <style lang="scss">
+.status-open {
+  background-color: #0072b8;
+}
+.status-onprogress {
+  background-color: #ffa813;
+}
+.status-close {
+  background-color: #00a65a;
+}
+.status-overdue {
+  background-color: #f56854;
+}
+.status-verified {
+  background-color: #a9a9a9;
+}
 .prev,
 .next {
   opacity: 0;

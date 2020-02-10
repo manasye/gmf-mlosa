@@ -1,7 +1,9 @@
 <template>
   <div class="p-3 recom-container mb-4">
     <b-row>
-      <b-col cols="9"> <h5 class="header-title">Title</h5></b-col>
+      <b-col cols="9">
+        <h5 class="header-title">{{ recom.uic.join(", ") }}</h5></b-col
+      >
       <b-col cols="3" class="text-right"
         ><b-button :variant="getColorButton('Verify')" size="sm"
           >Verify</b-button
