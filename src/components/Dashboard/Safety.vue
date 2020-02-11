@@ -9,7 +9,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Start Month</label>
         <b-form-select
           v-model="selectVal.start_month"
@@ -17,7 +17,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>End Month</label>
         <b-form-select
           v-model="selectVal.end_month"
@@ -25,7 +25,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
           v-model="selectVal.maintenance_process"
@@ -33,7 +33,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Safety Risk</label>
         <b-form-select
           v-model="selectVal.safety_risk"
@@ -41,6 +41,14 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
+      <b-col
+        cols="12"
+        :md="this.halfSize ? 2 : 1"
+        class="mb-3 d-flex justify-content-end"
+        ><b-button variant="primary" @click="getChart" class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
     </b-row>
 
     <apexchart
@@ -66,6 +74,7 @@ import { getMaintenancesName, getYearOptions } from "@/utility/func.js";
 import queryString from "query-string";
 
 export default {
+  props: ["halfSize"],
   mounted() {
     getMaintenancesName().then(res => {
       this.maintenanceOptions = this.maintenanceOptions.concat(res);

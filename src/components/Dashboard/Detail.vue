@@ -34,10 +34,18 @@
           @input="getObservations"
         ></b-form-select>
       </b-col>
-
-      <b-col cols="12" md="1" class="mb-3"
-        ><label>Back</label
-        ><b-button variant="primary" @click="back">Chart</b-button>
+      <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
+        ><b-button
+          variant="primary"
+          @click="getObservations"
+          class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
+      <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
+        ><b-button variant="primary" class="align-self-end" @click="back"
+          >Chart
+        </b-button>
       </b-col>
     </b-row>
 

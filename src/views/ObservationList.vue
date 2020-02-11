@@ -46,7 +46,7 @@
           @input="getObservations"
         />
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" md="1" class="mb-3"
         ><label>Status</label>
         <b-form-select
           v-model="selectVal.status"
@@ -54,6 +54,14 @@
           @input="getObservations"
         />
       </b-col>
+      <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
+        ><b-button
+          variant="primary"
+          @click="getObservations"
+          class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
       <b-col cols="12" md="1" class="mb-3"
         ><label>Per Page</label>
         <b-form-select v-model="perPage" :options="perPageOptions" />
@@ -324,7 +332,6 @@ export default {
       }
     },
     downloadObservation(obs) {
-      console.log(obs);
       window.location =
         axios.defaults.baseURL.substring(0, axios.defaults.baseURL.length - 3) +
         obs.link_download;

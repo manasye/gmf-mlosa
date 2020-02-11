@@ -30,7 +30,13 @@
             <div v-html="report.brief_summary"></div>
             <label class="mt-3">III. Section Summaries</label><br />
             <label>III.1 MLOSA Demographic</label>
-            <div></div>
+            <div>
+              <safety :halfSize="true"></safety>
+              <threat :halfSize="true"></threat>
+              <pareto :halfSize="true"></pareto>
+              <equipment :halfSize="true"></equipment>
+              <risk :halfSize="true"></risk>
+            </div>
             <label class="mt-3">III.2 Regression Analysis</label>
             <div v-html="report.regression_analysis"></div>
             <label class="mt-3">III.3 Threat and Error Management Result</label>
@@ -50,6 +56,11 @@
 <script>
 import axios from "axios";
 import RecomCard from "@/components/RecomCard.vue";
+import Safety from "@/components/Dashboard/Safety.vue";
+import Threat from "@/components/Dashboard/Threat.vue";
+import Pareto from "@/components/Dashboard/Pareto.vue";
+import Equipment from "@/components/Dashboard/Equipment.vue";
+import Risk from "@/components/Dashboard/Risk.vue";
 
 export default {
   mounted() {
@@ -98,7 +109,12 @@ export default {
     };
   },
   components: {
-    RecomCard
+    RecomCard,
+    Safety,
+    Threat,
+    Pareto,
+    Equipment,
+    Risk
   }
 };
 </script>

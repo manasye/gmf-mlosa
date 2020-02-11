@@ -27,11 +27,18 @@
       {{ recom.recommendation }}
     </p>
     <hr />
+    <div v-for="reply in recom.replies" class="mb-2">
+      <b-badge>Admin</b-badge>
+      <p class="mb-0">{{ reply.reply }}</p>
+      <a href="" v-if="reply.file">File</a>
+    </div>
+
     <b-form-textarea
       v-model="reply"
       placeholder="Reply here..."
       v-if="recom.status !== 'Closed'"
     ></b-form-textarea>
+
     <b-row class="mt-3" v-if="recom.status !== 'Closed'">
       <b-col cols="6">
         <b-form-file v-model="attachedFile" />
@@ -48,6 +55,7 @@
 <script>
 import { displayError } from "@/utility/func.js";
 import swal from "sweetalert";
+import axios from "axios";
 
 export default {
   props: ["recom", "getDetail"],
@@ -65,15 +73,17 @@ export default {
     },
     sendReply() {
       let formData = new FormData();
-      formData.append("recommendation_id", recom.id);
-      // formData.append("user_id", this.getUs);
+      formData.append("recommendation_id", this.recom.id);
+      formData.append("user_id", localStorage.getItem("user_id"));
       formData.append("reply", this.reply);
-      formData.append("file", this.attachedFiles);
+      if (this.attachedFile instanceof File)
+        formData.append("file", this.attachedFile);
       axios
         .post("/recommendation_replies", formData)
         .then(() => {
           swal("Success", "Reply successfully sent", "success");
           this.getDetail();
+          this.attachedFile = null;
         })
         .catch(err => displayError(err));
     }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 2 : 1" class="mb-3"
         ><label>Year</label>
         <b-form-select
           v-model="selectVal.year"
@@ -9,7 +9,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Start Month</label>
         <b-form-select
           v-model="selectVal.start_month"
@@ -17,7 +17,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>End Month</label>
         <b-form-select
           v-model="selectVal.end_month"
@@ -25,7 +25,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Maintenance Process</label>
         <b-form-select
           v-model="selectVal.maintenance_process"
@@ -33,7 +33,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Threat Code</label>
         <b-form-select
           v-model="selectVal.threat"
@@ -41,7 +41,7 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
         ><label>Risk Value</label>
         <b-form-select
           v-model="selectVal.risk_value"
@@ -49,10 +49,18 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
+      <b-col
+        cols="12"
+        :md="this.halfSize ? 2 : 1"
+        class="mb-3 d-flex justify-content-end"
+        ><b-button variant="primary" @click="getChart" class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
     </b-row>
 
     <b-row>
-      <b-col cols="12" md="6">
+      <b-col cols="12" :md="this.halfSize ? 12 : 6">
         <apexchart
           type="bar"
           height="350"
@@ -67,7 +75,7 @@
           >
         </div>
       </b-col>
-      <b-col cols="12" md="6">
+      <b-col cols="12" :md="this.halfSize ? 12 : 6">
         <apexchart
           type="bar"
           height="350"
@@ -151,6 +159,7 @@ import {
 import queryString from "query-string";
 
 export default {
+  props: ["halfSize"],
   mounted() {
     getMaintenancesName().then(res => {
       this.maintenanceOptions = this.maintenanceOptions.concat(res);
@@ -632,8 +641,7 @@ export default {
             categories: []
           },
           legend: {
-            position: "right",
-            offsetY: 40
+            position: "bottom",
           },
           fill: {
             opacity: 1

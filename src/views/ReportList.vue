@@ -32,7 +32,7 @@
           @input="getReports"
         />
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" md="1" class="mb-3"
         ><label>UIC</label>
         <b-form-select
           v-model="selectVal.uic_code"
@@ -56,6 +56,11 @@
           @input="getReports"
         />
       </b-col>
+      <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
+        ><b-button variant="primary" @click="getReports" class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
       <b-col cols="12" md="1" class="mb-3"
         ><label>Per Page</label>
         <b-form-select

@@ -37,7 +37,15 @@
           @input="getRecommendations"
         />
       </b-col>
-      <b-col cols="12" md="2" />
+      <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
+        ><b-button
+          variant="primary"
+          @click="getRecommendations"
+          class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
+      <b-col cols="12" md="1" />
       <b-col cols="12" md="1" class="mb-3"
         ><label>Per Page</label>
         <b-form-select v-model="perPage" :options="perPageOptions" />

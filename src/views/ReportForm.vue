@@ -73,7 +73,9 @@
 
     <ckeditor :editor="editor" v-model="regression" :config="editorConfig" />
 
-    <label class="mt-4">III.3 Threat and Error Management Result</label>
+    <label class="mt-4"
+      >III.{{ !checked ? "2" : "3" }} Threat and Error Management Result</label
+    >
     <ckeditor :editor="editor" v-model="threat" :config="editorConfig" />
 
     <b-row class="mt-4">
@@ -237,7 +239,7 @@ export default {
           value: "(Auto Generate)"
         }
       ],
-      checked: false,
+      checked: true,
       distSelected: [],
       distOptions: [
         {

@@ -43,7 +43,7 @@
           @input="getGlobalPlan"
         />
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
+      <b-col cols="12" md="1" class="mb-3"
         ><label>Status</label>
         <b-form-select
           v-model="selectVal.status"
@@ -51,6 +51,14 @@
           @input="getGlobalPlan"
         />
       </b-col>
+      <b-col cols="12" md="1" class="mb-3  d-flex justify-content-end"
+        ><b-button
+          variant="primary"
+          @click="getGlobalPlan"
+          class="align-self-end"
+          >Filter</b-button
+        ></b-col
+      >
       <b-col cols="12" md="2" class="mb-3 d-flex justify-content-end">
         <b-button
           variant="primary"
@@ -72,27 +80,8 @@
             :key="i"
             v-if="monthInRange(i)"
           >
-            <!--            <datepicker-->
-            <!--              :inline="true"-->
-            <!--              class="mb-4 mb-md-0 calendar"-->
-            <!--              :minimumView="'day'"-->
-            <!--              :maximumView="'day'"-->
-            <!--              :open-date="-->
-            <!--                new Date(selectVal.year || new Date().getFullYear(), i - 1, 15)-->
-            <!--              "-->
-            <!--              @selected="changeSelectedDate"-->
-            <!--              :highlighted="highlighted"-->
-            <!--            />-->
             <v-calendar
               :attributes="attrs"
-              :min-page="{
-                month: i,
-                year: new Date(selectVal.year || new Date().getFullYear())
-              }"
-              :max-page="{
-                month: i,
-                year: new Date(selectVal.year || new Date().getFullYear())
-              }"
               :from-date="
                 new Date(selectVal.year || new Date().getFullYear(), i - 1, 15)
               "
