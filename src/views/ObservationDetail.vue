@@ -87,8 +87,6 @@
             <b-form-input v-model="headers.location"/></b-col></b-row></b-col
     ></b-row>
 
-    <form-header />
-
     <table class="table mt-5 table-responsive">
       <thead>
         <tr>
@@ -109,6 +107,7 @@
               <b-form-select
                 v-model="s.inputs.safety_risk"
                 :options="safetyRisk"
+                @input="safetyInput(s)"
               />
             </td>
             <td style="width: 10%;cursor: pointer" @click="openThreatCodes(s)">
@@ -154,38 +153,27 @@
       </tbody>
     </table>
 
-    <p class="mb-3">
+    <p class="mb-3" v-if="chosenError.length > 0">
       Describe the hazard/threat(s). How did the crew manage/mismanage the
       hazard/threat(s)?
     </p>
-    <div v-for="e in chosenError" :key="e.id" class="mb-3">
-      <label> {{ e.description }}</label>
-      <b-form-textarea v-model="e.hazardRemarks" />
+    <div v-if="chosenError.length > 0" class="mb-3">
+      <b-form-textarea v-model="hazardRemarks" />
     </div>
-    <hr />
-    <p class="mb-3">Describe crew error(s) and associated undesired state</p>
-    <div
-      v-for="e in chosenError"
-      :key="e.id"
+    <p
       class="mb-3"
-      v-if="e.inputs.error_outcome === '2'"
+      v-if="chosenError.filter(e => e.inputs.error_outcome === '2').length > 0"
     >
-      <label> {{ e.description }}</label>
-      <b-form-textarea v-model="e.hazardCrewError" />
+      Describe crew error(s) and associated undesired state
+    </p>
+    <div
+      class="mb-3"
+      v-if="chosenError.filter(e => e.inputs.error_outcome === '2').length > 0"
+    >
+      <b-form-textarea v-model="hazardCrewError" />
     </div>
-    <hr />
     <p class="mb-3">Comment - Good or bad (please provide examples)</p>
     <b-form-textarea v-model="comment" />
-    <hr />
-    <!--    <form-io-->
-    <!--      src=""-->
-    <!--      url=""-->
-
-    <!--      :form="formSchema"-->
-    <!--      submission=""-->
-    <!--      options=""-->
-    <!--      v-on:submit=""-->
-    <!--    />-->
 
     <b-row class="mt-4 mb-3">
       <b-col cols="12" md="4">
@@ -241,7 +229,7 @@
             <b-card-text
               v-for="s in t.sub_threat_code"
               style="cursor: pointer"
-              @click="subThreatCode = s"
+              @click="chooseThreatCode(s)"
               :key="s.code"
             >
               {{ s.code }}. {{ s.description }}
@@ -250,7 +238,12 @@
         </b-collapse>
       </b-card>
       <p class="mb-0">
-        Chosen Sub Threat Code : {{ subThreatCode ? subThreatCode.code : "-" }}
+        Chosen Sub Threat Code :
+        {{
+          subThreatCodes.length > 0
+            ? subThreatCodes.map(s => s.code).join(", ")
+            : "-"
+        }}
       </p>
       <b-row class="text-right mt-4">
         <b-col cols="12">
@@ -283,9 +276,26 @@
             <template v-slot:cell(meaning)="data">
               <span class="probability-html" v-html="data.value"></span>
             </template>
+            <template v-slot:cell(choose)="data"
+              ><b-button
+                variant="primary"
+                @click="
+                  () => {
+                    tempRisk = {
+                      ...tempRisk,
+                      probability: data.item.value
+                    };
+                    if (tempRisk.probability && tempRisk.severity) submitRisk();
+                  }
+                "
+                size="sm"
+                >Choose</b-button
+              ></template
+            >
           </b-table>
+          <p>Chosen Probability : {{ tempRisk.probability || "-" }}</p>
         </b-col>
-        <b-col cols="12">
+        <b-col cols="12" class="mt-3">
           <h5 class="mb-3">Severity of occurrence</h5>
           <b-table
             :fields="severityFields"
@@ -318,17 +328,24 @@
             <template v-slot:cell(reputational)="data">
               <span class="probability-html" v-html="data.value"></span>
             </template>
+            <template v-slot:cell(choose)="data"
+              ><b-button
+                variant="primary"
+                @click="
+                  () => {
+                    tempRisk = {
+                      ...tempRisk,
+                      severity: data.item.code
+                    };
+                    if (tempRisk.probability && tempRisk.severity) submitRisk();
+                  }
+                "
+                size="sm"
+                >Choose</b-button
+              ></template
+            >
           </b-table>
-        </b-col>
-      </b-row>
-
-      <b-row>
-        <b-col cols="0" md="6" />
-        <b-col cols="12" md="3" class="text-md-right"
-          >Risk Index (e.g. 5A)</b-col
-        >
-        <b-col cols="12" md="3">
-          <b-form-input v-model="tempRisk" size="sm" />
+          <p class="mb-1">Chosen Severity : {{ tempRisk.severity || "-" }}</p>
         </b-col>
       </b-row>
 
@@ -344,13 +361,19 @@
 
     <b-modal v-model="showModalVerify" centered hide-footer hide-header>
       <h4 class="mb-4 primary-color">Verification</h4>
-
       <b-row class="mb-3">
         <b-col cols="12" md="6">
           Current Risk Index
         </b-col>
         <b-col cols="12" md="6">
-          <div class="risk-index" style="background-color: yellow">a</div>
+          <div
+            class="risk-index"
+            :style="{
+              'background-color': risks[subActChosen.inputs.risk_index]
+            }"
+          >
+            {{ subActChosen.inputs.risk_index || "-" }}
+          </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Control Effectiveness
@@ -368,19 +391,58 @@
           Proposed Risk Index
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          <div class="risk-index" style="background-color: red">a</div>
+          <div
+            class="risk-index"
+            :style="{
+              'background-color': risks[verification.proposed_risk_index]
+            }"
+            @click="
+              () => {
+                riskIndexId = 2;
+                showModalRisk = true;
+              }
+            "
+          >
+            {{ verification.proposed_risk_index || "-" }}
+          </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Risk Index Actual
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          <div class="risk-index" style="background-color: red">a</div>
+          <div
+            class="risk-index"
+            :style="{
+              'background-color': risks[verification.risk_index_actual]
+            }"
+            @click="
+              () => {
+                riskIndexId = 3;
+                showModalRisk = true;
+              }
+            "
+          >
+            {{ verification.risk_index_actual || "-" }}
+          </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Revised Risk Index
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          <div class="risk-index" style="background-color: red">a</div>
+          <div
+            class="risk-index"
+            :style="{
+              'background-color': risks[verification.revised_risk_index]
+            }"
+            @click="
+              () => {
+                riskIndexId = 4;
+                showModalRisk = true;
+              }
+            "
+          >
+            {{ verification.revised_risk_index || "-" }}
+          </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Revised Control Effectiveness
@@ -423,7 +485,6 @@
 </template>
 
 <script>
-import FormHeader from "@/components/FormHeader";
 import { displayError } from "@/utility/func";
 import { Form } from "vue-formio";
 import axios from "axios";
@@ -461,7 +522,7 @@ export default {
       this.showModalThreat = true;
     },
     openRiskIndex(s) {
-      this.tempRisk = "";
+      this.riskIndexId = 1;
       this.subActChosen = s;
       this.showModalRisk = true;
     },
@@ -475,7 +536,8 @@ export default {
         if (s.inputs.error_outcome) this.chosenError = [...this.chosenError, s];
         else this.chosenError = this.chosenError.filter(e => e.id !== s.id);
       } else {
-        this.chosenError[find] = s;
+        if (s.inputs.error_outcome) this.chosenError[find] = s;
+        else this.chosenError = this.chosenError.filter(e => e.id !== s.id);
       }
     },
     chooseProbability(p) {
@@ -488,12 +550,27 @@ export default {
       else this.severityChosenId = s.id;
     },
     submitRisk() {
-      this.subActChosen.inputs.risk_index = this.tempRisk;
+      const concat = this.tempRisk.probability + this.tempRisk.severity;
+      if (this.riskIndexId === 1) this.subActChosen.inputs.risk_index = concat;
+      else if (this.riskIndexId === 2)
+        this.verification.proposed_risk_index = concat;
+      else if (this.riskIndexId === 3)
+        this.verification.risk_index_actual = concat;
+      else if (this.riskIndexId === 4)
+        this.verification.revised_risk_index = concat;
       this.showModalRisk = false;
+      this.tempRisk = {
+        probability: "",
+        severity: ""
+      };
     },
     submitThreatCode() {
-      this.subActChosen.inputs.sub_threat_codes_id = this.subThreatCode.id;
-      this.subActChosen.inputs.sub_threat_codes_name = this.subThreatCode.code;
+      this.subActChosen.inputs.sub_threat_codes_id = this.subThreatCodes
+        .map(s => s.id)
+        .join(",");
+      this.subActChosen.inputs.sub_threat_codes_name = this.subThreatCodes
+        .map(s => s.code)
+        .join(",");
       this.showModalThreat = false;
     },
     postObservation(status) {
@@ -503,10 +580,8 @@ export default {
       else if (status === "On Progress")
         action = name + " follow up MLOSA Plan";
       else if (status === "Close") action = name + " submit observation";
-
       let threats = [],
         errors = [];
-
       this.chosenError.map(e => {
         if (e.hazardRemarks) {
           threats.push({
@@ -521,7 +596,6 @@ export default {
           });
         }
       });
-
       const data = {
         observation: {
           ...this.headers,
@@ -539,7 +613,6 @@ export default {
         activities: this.activities,
         action
       };
-
       axios
         .post("/observation", data)
         .then(res => {
@@ -552,7 +625,7 @@ export default {
           axios
             .post(`/observation/${id}/upload`, formData, config)
             .then(() => {
-              swal("Success", res.data.message, "success");
+              swal("Success", res.data.message || "Success", "success");
               this.$store.dispatch("goToPage", "/observation-list");
             })
             .catch(err => displayError(err));
@@ -594,15 +667,11 @@ export default {
         .then(res => {
           this.probabilities = res.data.probability_of_occurence;
           this.severities = res.data.severity_of_occurence;
-        })
-        .catch(() => {});
-      axios
-        .get("/risk")
-        .then(res => {
           let risks = {};
-          res.data.risk_colors.map(r => {
-            const key = r.probability_value + r.severity_code;
-            risks[key] = r.color;
+          res.data.color_risk_index.map(c => {
+            c.risk_index.map(i => {
+              risks[i] = c.color;
+            });
           });
           this.risks = risks;
         })
@@ -617,7 +686,6 @@ export default {
     },
     checkVerif(s) {
       const inputs = s.inputs;
-
       return (
         inputs.safety_risk &&
         inputs.sub_threat_codes_id &&
@@ -625,15 +693,34 @@ export default {
         inputs.effectively_managed &&
         inputs.error_outcome
       );
+    },
+    safetyInput(s) {
+      if (
+        s.inputs.safety_risk === "S" ||
+        s.inputs.safety_risk === "DNO" ||
+        s.inputs.safety_risk === "N/A"
+      ) {
+        s.inputs.effectively_managed = null;
+        s.inputs.error_outcome = null;
+      }
+    },
+    chooseThreatCode(s) {
+      if (!this.subThreatCodes.includes(s)) this.subThreatCodes.push(s);
     }
   },
   data() {
     return {
+      hazardRemarks: "",
+      hazardCrewError: "",
       safetyRisk,
       hazardCode,
       hazardEffManaged,
       errorOutcome,
-      subActChosen: null,
+      subActChosen: {
+        inputs: {
+          risk_index: ""
+        }
+      },
       chosenError: [],
       maintenance_process: {},
       threatCodes: [],
@@ -650,7 +737,7 @@ export default {
       risks: {},
       probabilityChosenId: 0,
       severityChosenId: 0,
-      subThreatCode: null,
+      subThreatCodes: [],
       acceptOptions: [
         { value: "Accept", text: "Accept" },
         { value: "Threat", text: "Threat" }
@@ -679,7 +766,10 @@ export default {
       verification: {
         control_effectiveness: "",
         revised_control_effectiveness: "",
-        accept: ""
+        accept: "",
+        proposed_risk_index: "",
+        risk_index_actual: "",
+        revised_risk_index: ""
       },
       fields: [
         "No",
@@ -695,7 +785,8 @@ export default {
       probabilityFields: [
         { key: "qualitative", label: "Qualitative" },
         "meaning",
-        { key: "value", label: "Value" }
+        { key: "value", label: "Value" },
+        "choose"
       ],
       severityFields: [
         "aviation",
@@ -705,7 +796,8 @@ export default {
         "asset",
         "operational",
         "it_system",
-        "reputational"
+        "reputational",
+        "choose"
       ],
       formSchema: {
         display: "form",
@@ -742,11 +834,14 @@ export default {
       showModalVerify: false,
       showModalThreat: false,
       comment: "",
-      tempRisk: ""
+      tempRisk: {
+        probability: "",
+        severity: ""
+      },
+      riskIndexId: 0
     };
   },
   components: {
-    FormHeader,
     FormIo: Form
   },
   computed: {
@@ -768,6 +863,7 @@ export default {
   padding: 5px 15px;
   border-radius: 5px;
   display: inline-block;
+  cursor: pointer;
 }
 .search-container {
   max-height: 20vh;

@@ -26,8 +26,6 @@
       </b-col></b-row
     >
 
-    <form-header />
-
     <div class="text-right">
       <b-button
         variant="primary"
@@ -159,7 +157,6 @@
 </template>
 
 <script>
-import FormHeader from "@/components/FormHeader";
 import { displayError } from "@/utility/func";
 import { FormBuilder } from "vue-formio";
 import axios from "axios";
@@ -430,7 +427,6 @@ export default {
     };
   },
   components: {
-    FormHeader,
     FormBuilder
   }
 };

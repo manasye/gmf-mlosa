@@ -85,13 +85,23 @@
           <b-nav-item-dropdown right class="user-navbar">
             <template v-slot:button-content>
               <img
-                src="https://ra.ac.ae/wp-content/uploads/2017/02/user-icon-placeholder.png"
+                :src="
+                  getPhoto() ||
+                    'https://ra.ac.ae/wp-content/uploads/2017/02/user-icon-placeholder.png'
+                "
                 alt
                 class="navbar-img"
               />
             </template>
             <div style="margin: 15px 15px 0 15px">
-              <img :src="getPhoto()" alt class="navbar-img-expand mb-3" />
+              <img
+                :src="
+                  getPhoto() ||
+                    'https://ra.ac.ae/wp-content/uploads/2017/02/user-icon-placeholder.png'
+                "
+                alt
+                class="navbar-img-expand mb-3"
+              />
               <p class="mb-2 text-center" style="font-size: 14px">
                 {{ getFullname() }}
               </p>

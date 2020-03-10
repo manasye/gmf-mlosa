@@ -8,6 +8,7 @@
           v-for="r in report.recommendation"
           :recom="r"
           :key="r.id"
+          v-if="!recomId || r.id === recomId"
           :getDetail="getDetail"
         ></recom-card>
       </b-col>
@@ -64,6 +65,7 @@ import Risk from "@/components/Dashboard/Risk.vue";
 
 export default {
   mounted() {
+    if (this.$route.query.recom_id) this.recomId = +this.$route.query.recom_id;
     this.getDetail();
   },
   methods: {
@@ -91,6 +93,7 @@ export default {
         }
       ],
       title: "Loading...",
+      recomId: null,
       report: {},
       left: [
         { text: "Title", key: "title" },
@@ -122,5 +125,11 @@ export default {
 <style scoped>
 .detail-report {
   border: 1px solid #949699;
+}
+@media (max-width: 700px) {
+  .detail-report {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 </style>

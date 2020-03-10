@@ -124,14 +124,11 @@
       </b-col>
     </b-row>
 
-    <b-button variant="primary" class="mr-3" @click="postReport('On Progress')"
+    <b-button variant="primary" class="mr-3" @click="postReport('draft')"
       >SAVE</b-button
     >
-    <b-button variant="success" class="mr-3" @click="postReport('Closed')"
+    <b-button variant="success" class="mr-3" @click="postReport('submit')"
       >SUBMIT</b-button
-    >
-    <b-button variant="light" class="mr-3" @click="postReport('Open')"
-      >CANCEL</b-button
     >
 
     <b-modal v-model="showModal" centered title="ADD FIELD">
@@ -152,11 +149,15 @@ import Datepicker from "vuejs-datepicker";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
 import moment from "moment";
+import swal from "sweetalert";
 
 export default {
   mounted() {},
   methods: {
     postReport(status) {
+      if (status === "submit") {
+      }
+
       const data = {
         prepared_by: "Test",
         approved_by: "Test",
@@ -179,6 +180,14 @@ export default {
       };
 
       console.log(data);
+
+      // axios
+      //   .post("/report", data)
+      //   .then(res => {
+      //     swal("Success", res.data.message || "Success", "success");
+      //     this.$store.dispatch("goToPage", "/report-list");
+      //   })
+      //   .catch(() => {});
     },
     MyCustomUploadAdapterPlugin(editor) {
       editor.plugins.get("FileRepository").createUploadAdapter = loader => {

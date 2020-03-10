@@ -134,7 +134,10 @@ export default {
         .catch(() => {});
     },
     showReport(row) {
-      this.$store.dispatch("goToPage", `/report/${row.report_id}`);
+      this.$store.dispatch(
+        "goToPage",
+        `/report/${row.report_id}?recom_id=${row.id}`
+      );
     },
     getBadgesVariant(val) {
       if (val === "Open") return "primary";

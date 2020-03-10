@@ -5,8 +5,11 @@
         <h5 class="header-title">{{ recom.uic.join(", ") }}</h5></b-col
       >
       <b-col cols="3" class="text-right"
-        ><b-button :variant="getColorButton('Verify')" size="sm"
-          >Verify</b-button
+        ><b-button
+          :variant="getAction(recom.status)[0]"
+          size="sm"
+          v-if="recom.status !== 'Closed'"
+          >{{ getAction(recom.status)[1] }}</b-button
         ></b-col
       >
     </b-row>
@@ -60,9 +63,9 @@ import axios from "axios";
 export default {
   props: ["recom", "getDetail"],
   methods: {
-    getColorButton(action) {
-      if (action === "Verify") return "success";
-      else return "danger";
+    getAction(status) {
+      if (status === "Overdue") return ["danger", "Drop"];
+      else return ["success", "Verify"];
     },
     getRecomBadgesVariant(val) {
       if (val === "Open") return "primary";
