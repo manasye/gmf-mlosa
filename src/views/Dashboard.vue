@@ -20,7 +20,7 @@
 import Safety from "@/components/Dashboard/Safety";
 import Threat from "@/components/Dashboard/Threat";
 import Pareto from "@/components/Dashboard/Pareto";
-import Equipment from "@/components/Dashboard/Equipment";
+import Breakdown from "@/components/Dashboard/Breakdown";
 import Risk from "@/components/Dashboard/Risk";
 
 export default {
@@ -38,9 +38,9 @@ export default {
         { title: "Number of Threat", route: "threat", component: Threat },
         { title: "Pareto Diagram", route: "pareto", component: Pareto },
         {
-          title: "Equipment / Tools Breakdown",
-          route: "equipment",
-          component: Equipment
+          title: "Threat Breakdown",
+          route: "breakdown",
+          component: Breakdown
         },
         { title: "Risk Register", route: "risk", component: Risk }
       ],

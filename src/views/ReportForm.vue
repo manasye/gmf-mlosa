@@ -71,10 +71,15 @@
       ></b-col>
     </b-row>
 
-    <ckeditor :editor="editor" v-model="regression" :config="editorConfig" />
+    <ckeditor
+      :editor="editor"
+      v-model="regression"
+      :config="editorConfig"
+      v-if="checked"
+    />
 
     <label class="mt-4"
-      >III.{{ !checked ? "2" : "3" }} Threat and Error Management Result</label
+      >III.3 Threat and Error Management Result</label
     >
     <ckeditor :editor="editor" v-model="threat" :config="editorConfig" />
 
@@ -95,7 +100,7 @@
               }
             ]
           "
-          >Add</b-button
+          >New</b-button
         ></b-col
       >
     </b-row>
@@ -106,7 +111,7 @@
           v-model="r.recommendation"
           :config="editorConfig"
       /></b-col>
-      <b-col cols="12" md="4">
+      <b-col cols="12" md="3">
         <label
           >Due Date : <br /><datepicker
             calendar-class="modal-calendar"
@@ -117,10 +122,15 @@
           >UIC :
           <b-form-select
             v-model="r.uic"
-            :options="distOptions"
+            :options="uicOptions"
             multiple
             :select-size="4"
         /></label>
+      </b-col>
+      <b-col cols="12" md="1" v-if="idx !== 0" class="text-right">
+        <b-button variant="danger" size="sm" @click="deleteRecom(idx)"
+          ><font-awesome-icon icon="trash"
+        /></b-button>
       </b-col>
     </b-row>
 
@@ -150,10 +160,18 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import axios from "axios";
 import moment from "moment";
 import swal from "sweetalert";
+import { getUics } from "@/utility/func.js";
 
 export default {
-  mounted() {},
+  mounted() {
+    getUics().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
+  },
   methods: {
+    deleteRecom(idx) {
+      this.recommendations = this.recommendations.filter((r, i) => i !== idx);
+    },
     postReport(status) {
       if (status === "submit") {
       }
@@ -165,7 +183,7 @@ export default {
         status,
         title: this.title,
         subject: this.subject,
-        report_no: headers.no,
+        report_no: this.headers.no,
         date: moment(this.date).format("YYYY-MM-DD"),
         attention: "Attention Test",
         issued: "TQY",
@@ -201,10 +219,11 @@ export default {
   components: { Datepicker },
   data() {
     return {
+      uicOptions: [],
       title: "",
       subject: "",
       headers: {
-        no: null
+        no: ""
       },
       editor: ClassicEditor,
       editorData: "<p>Content of the editor.</p>",
@@ -288,17 +307,26 @@ class UploadAdapter {
     return this.loader.file.then(uploadedFile => {
       return new Promise((resolve, reject) => {
         const data = new FormData();
-        console.log(uploadedFile);
-        data.append("upload", uploadedFile);
+        data.append("file", uploadedFile);
+        const config = { headers: { "Content-Type": "multipart/form-data" } };
+        axios
+          .post("/report/upload_file_editor", data, config)
+          .then(res => {
+            resolve({
+              default: res.data.image_url
+            });
+          })
+          .catch(() => {
+            reject("Upload failed");
+          });
 
         // axios({
-        //   url: "/index/uploadimage",
+        //   url: "/report/upload_file_editor",
         //   method: "post",
         //   data,
         //   headers: {
         //     "Content-Type": "multipart/form-data;"
-        //   },
-        //   withCredentials: false
+        //   }
         // })
         //   .then(response => {
         //     if (response.data.result == "success") {
@@ -309,7 +337,7 @@ class UploadAdapter {
         //       reject(response.data.message);
         //     }
         //   })
-        //   .catch(response => {
+        //   .catch(() => {
         //     reject("Upload failed");
         //   });
       });

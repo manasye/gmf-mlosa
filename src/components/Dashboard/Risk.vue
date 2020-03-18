@@ -191,17 +191,28 @@ export default {
               ...this.register1.chartOptions,
               xaxis: {
                 ...this.register1.chartOptions.xaxis,
-                categories: res.data.corporate_current_risk.map(
-                  c => c.risk_value + " " + c.category
-                )
+                categories: Object.keys(res.data.corporate_current_risk)
               }
             }
           };
           this.register1 = {
             ...this.register1,
-            series: [
-              { data: res.data.corporate_current_risk.map(c => c.count) }
-            ]
+            series: [{ data: Object.values(res.data.corporate_current_risk) }]
+          };
+
+          this.register2 = {
+            ...this.register2,
+            chartOptions: {
+              ...this.register2.chartOptions,
+              xaxis: {
+                ...this.register2.chartOptions.xaxis,
+                categories: Object.keys(res.data.corporate_proposed_risk)
+              }
+            }
+          };
+          this.register2 = {
+            ...this.register2,
+            series: [{ data: Object.values(res.data.corporate_proposed_risk) }]
           };
 
           const dimension = res.data.risk_dimension_distribution;
@@ -641,7 +652,7 @@ export default {
             categories: []
           },
           legend: {
-            position: "bottom",
+            position: "bottom"
           },
           fill: {
             opacity: 1

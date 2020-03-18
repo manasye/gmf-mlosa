@@ -160,11 +160,17 @@
           </b-col>
           <b-col cols="12" md="2" class="mb-3"
             ><label>Start Month</label>
-            <b-form-select v-model="selectVal.start" :options="startOptions" />
+            <b-form-select
+              v-model="selectVal.start_month"
+              :options="startOptions"
+            />
           </b-col>
           <b-col cols="12" md="2" class="mb-3"
             ><label>End Month</label>
-            <b-form-select v-model="selectVal.end" :options="endOptions" />
+            <b-form-select
+              v-model="selectVal.end_month"
+              :options="endOptions"
+            />
           </b-col>
           <b-col cols="12" md="2" class="mb-3"
             ><label>UIC</label>
@@ -173,12 +179,14 @@
           <b-col cols="12" md="3" class="mb-3"
             ><label>Maintenance Process</label>
             <b-form-select
-              v-model="selectVal.maintenance"
+              v-model="selectVal.maintenance_process"
               :options="maintenanceOptions"
             />
           </b-col>
         </b-row>
-        <b-button variant="primary" class="mt-2 mb-2">Download</b-button>
+        <b-button variant="primary" class="mt-2 mb-2" @click="downloadDb"
+          >Download</b-button
+        >
       </div>
     </b-modal>
 
@@ -218,11 +226,15 @@
 
 <script>
 import axios from "axios";
+import { months } from "@/utility/variable.js";
+import {
+  getMaintenancesName,
+  getUicCodes,
+  getYearOptions
+} from "@/utility/func.js";
 // import moment from "moment";
-import { socketHost } from "@/utility/config.js";
-import Echo from "laravel-echo";
 
-window.Pusher = require("pusher-js");
+// window.Pusher = require("pusher-js");
 //
 // window.Echo = new Echo({
 //   broadcaster: "pusher",
@@ -234,6 +246,15 @@ window.Pusher = require("pusher-js");
 
 export default {
   mounted() {
+    getMaintenancesName().then(res => {
+      this.maintenanceOptions = this.maintenanceOptions.concat(res);
+    });
+    getYearOptions().then(res => {
+      this.yearOptions = this.yearOptions.concat(res);
+    });
+    getUicCodes().then(res => {
+      this.uicOptions = this.uicOptions.concat(res);
+    });
     axios
       .get("/check_auth")
       .then(res => {
@@ -242,7 +263,6 @@ export default {
       .catch(() => {
         this.$store.dispatch("goToPage", "/login");
       });
-    // console.log(Echo);
   },
   methods: {
     startWalkthrough() {
@@ -273,6 +293,16 @@ export default {
     },
     downloadApp(type) {
       console.log(type);
+    },
+    downloadDb() {
+      let queryParams = "";
+      for (let key in this.selectVal) {
+        if (this.selectVal[key]) {
+          queryParams += `${key}=${this.selectVal[key]}&`;
+        }
+      }
+      window.location =
+        axios.defaults.baseURL + `/observation/download/mlosa?${queryParams}`;
     }
   },
   data() {
@@ -282,9 +312,9 @@ export default {
       showModalApp: false,
       selectVal: {
         year: null,
-        start: null,
-        end: null,
-        maintenance: null,
+        start_month: null,
+        end_month: null,
+        maintenance_process: null,
         uic: null
       },
       yearOptions: [
@@ -297,13 +327,15 @@ export default {
         {
           value: null,
           text: "All Start Month"
-        }
+        },
+        ...months
       ],
       endOptions: [
         {
           value: null,
           text: "All End Month"
-        }
+        },
+        ...months
       ],
       maintenanceOptions: [
         {

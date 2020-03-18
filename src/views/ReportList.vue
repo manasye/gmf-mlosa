@@ -174,12 +174,12 @@ import {
   statusReport,
   months
 } from "@/utility/variable.js";
-import { getUicCodes } from "@/utility/func.js";
+import { getUics } from "@/utility/func.js";
 import axios from "axios";
 
 export default {
   mounted() {
-    getUicCodes().then(res => {
+    getUics().then(res => {
       this.uicOptions = this.uicOptions.concat(res);
     });
     this.getReports();

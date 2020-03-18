@@ -25,14 +25,6 @@
           @input="getChart"
         ></b-form-select>
       </b-col>
-      <b-col cols="12" :md="this.halfSize ? 4 : 2" class="mb-3"
-        ><label>Maintenance Process</label>
-        <b-form-select
-          v-model="selectVal.maintenance_process"
-          :options="maintenanceOptions"
-          @input="getChart"
-        ></b-form-select>
-      </b-col>
       <b-col
         cols="12"
         :md="this.halfSize ? 2 : 1"
@@ -87,12 +79,16 @@ export default {
         }
       }
       axios
-        .get(`/chart/equipment?${queryParams}`)
+        .get(`/chart/breakdown?${queryParams}`)
         .then(res => {
-          const data = res.data;
+          const data = res.data.data;
           this.chartOptions = {
             ...this.chartOptions,
-            labels: data.map(d => d.threat)
+            labels: data.map(d => d.sub_threat),
+            title: {
+              ...this.chartOptions.title,
+              text: res.data.threat
+            }
           };
           this.series = data.map(d => d.total);
         })

@@ -94,7 +94,7 @@
         </tr>
       </thead>
       <tbody>
-        <template v-for="a in getActs">
+        <template v-for="(a, idxA) in getActs">
           <tr :key="a.id">
             <th />
             <th>{{ convertSnakeCaseToText(a.name) }}</th>
@@ -144,7 +144,7 @@
                 v-if="checkVerif(s)"
                 size="sm"
                 variant="primary"
-                @click="openVerify(s)"
+                @click="openVerify(s, idxA, idx)"
                 >Verify</b-button
               >
             </td>
@@ -379,13 +379,17 @@
           Control Effectiveness
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          <b-form-select v-model="verification.control_effectiveness" />
+          <b-form-select
+            v-model="verification.control_effectiveness"
+            :options="controlEffectivenessOptions"
+            @input="calcRiskValue(1)"
+          />
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Risk Value
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          XXX
+          {{ verification.risk_value || "" }}
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Proposed Risk Index
@@ -394,7 +398,7 @@
           <div
             class="risk-index"
             :style="{
-              'background-color': risks[verification.proposed_risk_index]
+              'background-color': risks[verification.propose_risk_index]
             }"
             @click="
               () => {
@@ -403,7 +407,7 @@
               }
             "
           >
-            {{ verification.proposed_risk_index || "-" }}
+            {{ verification.propose_risk_index || "-" }}
           </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
@@ -448,20 +452,24 @@
           Revised Control Effectiveness
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          <b-form-select v-model="verification.control_effectiveness" />
+          <b-form-select
+            v-model="verification.revised_control_effectiveness"
+            :options="controlEffectivenessOptions"
+            @input="calcRiskValue(2)"
+          />
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Propose Risk Value
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
-          XXX
+          {{ verification.propose_risk_value || "" }}
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           Accept / Threat
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
           <b-form-select
-            v-model="verification.accept"
+            v-model="verification.accept_or_treat"
             :options="acceptOptions"
           />
         </b-col>
@@ -475,9 +483,7 @@
             class="mr-3"
             >Cancel</b-button
           >
-          <b-button variant="primary" @click="s.safety_risk = 'SA'"
-            >Submit</b-button
-          >
+          <b-button variant="primary" @click="submitVerify">Submit</b-button>
         </b-col>
       </b-row>
     </b-modal>
@@ -526,7 +532,9 @@ export default {
       this.subActChosen = s;
       this.showModalRisk = true;
     },
-    openVerify(s) {
+    openVerify(s, a, i) {
+      this.chosenActivityIdx = a;
+      this.chosenSubActIdx = i;
       this.subActChosen = s;
       this.showModalVerify = true;
     },
@@ -553,7 +561,7 @@ export default {
       const concat = this.tempRisk.probability + this.tempRisk.severity;
       if (this.riskIndexId === 1) this.subActChosen.inputs.risk_index = concat;
       else if (this.riskIndexId === 2)
-        this.verification.proposed_risk_index = concat;
+        this.verification.propose_risk_index = concat;
       else if (this.riskIndexId === 3)
         this.verification.risk_index_actual = concat;
       else if (this.riskIndexId === 4)
@@ -706,6 +714,40 @@ export default {
     },
     chooseThreatCode(s) {
       if (!this.subThreatCodes.includes(s)) this.subThreatCodes.push(s);
+    },
+    calcRiskValue(t) {
+      let r, c;
+      if (t === 1) {
+        r = this.subActChosen.inputs.risk_index;
+        c = this.verification.control_effectiveness;
+      } else {
+        r = this.verification.risk_index_actual;
+        c = this.verification.revised_control_effectiveness;
+      }
+      axios
+        .get(`/risk_value/calculate?risk_index=${r}&control_effectiveness=${c}`)
+        .then(res => {
+          const val = res.data.risk_value;
+          if (t === 1) {
+            this.verification.risk_value = val;
+          } else {
+            this.verification.propose_risk_value = val;
+          }
+        })
+        .catch(() => {});
+    },
+    submitVerify() {
+      this.subActChosen = {
+        ...this.subActChosen,
+        inputs: {
+          ...this.subActChosen.inputs,
+          ...this.verification
+        }
+      };
+      this.activities[this.chosenActivityIdx].sub_activities[
+        this.chosenSubActIdx
+      ] = this.subActChosen;
+      this.showModalVerify = false;
     }
   },
   data() {
@@ -766,11 +808,14 @@ export default {
       verification: {
         control_effectiveness: "",
         revised_control_effectiveness: "",
-        accept: "",
-        proposed_risk_index: "",
+        accept_or_treat: "",
+        propose_risk_index: "",
         risk_index_actual: "",
-        revised_risk_index: ""
+        revised_risk_index: "",
+        risk_value: "",
+        propose_risk_value: ""
       },
+      verifications: [],
       fields: [
         "No",
         "Activity",
@@ -838,7 +883,10 @@ export default {
         probability: "",
         severity: ""
       },
-      riskIndexId: 0
+      riskIndexId: 0,
+      controlEffectivenessOptions: Array.from(Array(10).keys()).map(e => e + 1),
+      chosenActivityIdx: 0,
+      chosenSubActIdx: 0
     };
   },
   components: {

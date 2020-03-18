@@ -35,7 +35,7 @@
               <safety :halfSize="true"></safety>
               <threat :halfSize="true"></threat>
               <pareto :halfSize="true"></pareto>
-              <equipment :halfSize="true"></equipment>
+              <breakdown :halfSize="true"></breakdown>
               <risk :halfSize="true"></risk>
             </div>
             <label class="mt-3">III.2 Regression Analysis</label>
@@ -60,7 +60,7 @@ import RecomCard from "@/components/RecomCard.vue";
 import Safety from "@/components/Dashboard/Safety.vue";
 import Threat from "@/components/Dashboard/Threat.vue";
 import Pareto from "@/components/Dashboard/Pareto.vue";
-import Equipment from "@/components/Dashboard/Equipment.vue";
+import Breakdown from "@/components/Dashboard/Breakdown.vue";
 import Risk from "@/components/Dashboard/Risk.vue";
 
 export default {
@@ -116,7 +116,7 @@ export default {
     Safety,
     Threat,
     Pareto,
-    Equipment,
+    Breakdown,
     Risk
   }
 };
