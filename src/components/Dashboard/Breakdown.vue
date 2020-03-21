@@ -145,7 +145,7 @@ export default {
       series: [],
       chartOptions: {
         title: {
-          text: "Equipment Tools Breakdown",
+          text: "",
           align: "center",
           margin: 10,
           style: {

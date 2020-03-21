@@ -253,7 +253,6 @@ export default {
     getYearOptions().then(res => {
       this.yearOptions = this.yearOptions.concat(res);
     });
-    this.statusOptions = this.statusOptions.filter(o => o.value !== "Verified");
     this.getGlobalPlan();
     this.getChart();
   },

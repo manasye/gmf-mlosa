@@ -110,7 +110,7 @@ export default {
     getCharts() {
       this.getSafetyChart();
       this.getParetoChart();
-      this.getEquipmentChart();
+      this.getBreakdownChart();
     },
     showObservation(row) {
       this.$store.dispatch("goToPage", `/observation/${row.id}`);
@@ -291,14 +291,18 @@ export default {
         })
         .catch(() => {});
     },
-    getEquipmentChart() {
+    getBreakdownChart() {
       axios
-        .get(`/chart/equipment`)
+        .get(`/chart/breakdown`)
         .then(res => {
-          const data = res.data;
+          const data = res.data.data;
           this.charts[3].chartOptions = {
             ...this.charts[3].chartOptions,
-            labels: data.map(d => d.threat)
+            labels: data.map(d => d.sub_threat),
+            title: {
+              ...this.charts[3].chartOptions.title,
+              text: res.data.threat
+            }
           };
           this.charts[3].series = data.map(d => d.total);
         })
@@ -483,7 +487,7 @@ export default {
               verticalAlign: "top"
             },
             title: {
-              text: "Equipment Tools Breakdown",
+              text: "",
               align: "center",
               margin: 10,
               style: {

@@ -1,3 +1,5 @@
+import { isAdmin } from "./func";
+
 export const perPageOptions = [
   {
     value: "10",
@@ -64,7 +66,7 @@ export const months = [
   }
 ];
 
-export const statusObservation = [
+let status = [
   {
     value: "Open",
     text: "Open"
@@ -86,6 +88,12 @@ export const statusObservation = [
     text: "Verified"
   }
 ];
+
+if (!isAdmin()) {
+  status.pop();
+}
+
+export const statusObservation = status;
 
 export const statusReport = [
   {

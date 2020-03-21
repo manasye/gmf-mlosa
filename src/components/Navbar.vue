@@ -227,11 +227,7 @@
 <script>
 import axios from "axios";
 import { months } from "@/utility/variable.js";
-import {
-  getMaintenancesName,
-  getUicCodes,
-  getYearOptions
-} from "@/utility/func.js";
+import { getMaintenances, getUics, getYearOptions } from "@/utility/func.js";
 // import moment from "moment";
 
 // window.Pusher = require("pusher-js");
@@ -246,13 +242,13 @@ import {
 
 export default {
   mounted() {
-    getMaintenancesName().then(res => {
+    getMaintenances().then(res => {
       this.maintenanceOptions = this.maintenanceOptions.concat(res);
     });
     getYearOptions().then(res => {
       this.yearOptions = this.yearOptions.concat(res);
     });
-    getUicCodes().then(res => {
+    getUics().then(res => {
       this.uicOptions = this.uicOptions.concat(res);
     });
     axios
@@ -301,8 +297,15 @@ export default {
           queryParams += `${key}=${this.selectVal[key]}&`;
         }
       }
-      window.location =
-        axios.defaults.baseURL + `/observation/download/mlosa?${queryParams}`;
+      let url;
+      if (!this.isAdmin())
+        url =
+          axios.defaults.baseURL + `/observation/download/mlosa?${queryParams}`;
+      else
+        url =
+          axios.defaults.baseURL +
+          `/observation_admin/download/mlosa?${queryParams}`;
+      window.location = url;
     }
   },
   data() {

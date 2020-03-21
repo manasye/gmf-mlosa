@@ -39,7 +39,7 @@ export const getUic = () => {
 };
 
 export const isAdmin = () => {
-  return false;
+  return true;
 };
 
 export const getUics = () => {
