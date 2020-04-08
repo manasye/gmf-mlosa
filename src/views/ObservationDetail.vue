@@ -398,7 +398,7 @@
           <div
             class="risk-index"
             :style="{
-              'background-color': risks[verification.propose_risk_index]
+              'background-color': risks[verification.risk_index_proposed]
             }"
             @click="
               () => {
@@ -407,7 +407,7 @@
               }
             "
           >
-            {{ verification.propose_risk_index || "-" }}
+            {{ verification.risk_index_proposed || "-" }}
           </div>
         </b-col>
         <b-col cols="12" md="6" class="mt-2">
@@ -561,7 +561,7 @@ export default {
       const concat = this.tempRisk.probability + this.tempRisk.severity;
       if (this.riskIndexId === 1) this.subActChosen.inputs.risk_index = concat;
       else if (this.riskIndexId === 2)
-        this.verification.propose_risk_index = concat;
+        this.verification.risk_index_proposed = concat;
       else if (this.riskIndexId === 3)
         this.verification.risk_index_actual = concat;
       else if (this.riskIndexId === 4)
@@ -588,22 +588,7 @@ export default {
       else if (status === "On Progress")
         action = name + " follow up MLOSA Plan";
       else if (status === "Close") action = name + " submit observation";
-      let threats = [],
-        errors = [];
-      this.chosenError.map(e => {
-        if (e.hazardRemarks) {
-          threats.push({
-            sub_activity_id: e.id,
-            description: e.hazardRemarks
-          });
-        }
-        if (e.hazardCrewError) {
-          errors.push({
-            sub_activity_id: e.id,
-            description: e.hazardCrewError
-          });
-        }
-      });
+
       const data = {
         observation: {
           ...this.headers,
@@ -613,9 +598,9 @@ export default {
           team: this.teamProject,
           id: +this.$route.query.obs_id,
           uic_id: +this.getUic(),
-          describe_threat: threats,
-          describe_crew_error: errors,
-          comment: this.comment
+          comment: this.comment,
+          describe_threat: this.hazardRemarks,
+          describe_crew_error: this.hazardCrewError
         },
         maintenance_process: this.maintenance_process,
         activities: this.activities,
@@ -809,7 +794,7 @@ export default {
         control_effectiveness: "",
         revised_control_effectiveness: "",
         accept_or_treat: "",
-        propose_risk_index: "",
+        risk_index_proposed: "",
         risk_index_actual: "",
         revised_risk_index: "",
         risk_value: "",

@@ -45,10 +45,50 @@
       </b-col>
     </b-row>
     <label class="mt-4">I. Introduction</label>
-    <ckeditor :editor="editor" v-model="intro" :config="editorConfig" />
+
+    <b-row>
+      <b-col cols="11">
+        <ckeditor :editor="editor" v-model="intro" :config="editorConfig" />
+      </b-col>
+      <b-col cols="1" align-self="center">
+        <font-awesome-icon
+          icon="exclamation-circle"
+          size="lg"
+          style="cursor: pointer"
+          @click="toggleRemarks(0)"
+        />
+      </b-col>
+    </b-row>
+
+    <b-form-textarea
+      class="mt-3"
+      placeholder="Add your remarks here..."
+      v-if="remarksShow[0]"
+      v-model="remarks[0]"
+    ></b-form-textarea>
 
     <label class="mt-4">II. Brief Summary</label>
-    <ckeditor :editor="editor" v-model="briefSummary" :config="editorConfig" />
+
+    <b-row>
+      <b-col cols="11">
+        <ckeditor :editor="editor" v-model="briefSummary" :config="editorConfig"
+      /></b-col>
+      <b-col cols="1" align-self="center">
+        <font-awesome-icon
+          icon="exclamation-circle"
+          size="lg"
+          style="cursor: pointer"
+          @click="toggleRemarks(1)"
+        />
+      </b-col>
+    </b-row>
+
+    <b-form-textarea
+      class="mt-3"
+      placeholder="Add your remarks here..."
+      v-if="remarksShow[1]"
+      v-model="remarks[1]"
+    ></b-form-textarea>
 
     <label class="mt-4">III. Section Summaries</label>
     <br />
@@ -71,35 +111,58 @@
       ></b-col>
     </b-row>
 
-    <ckeditor
-      :editor="editor"
-      v-model="regression"
-      :config="editorConfig"
-      v-if="checked"
-    />
+    <b-row>
+      <b-col cols="11">
+        <ckeditor
+          :editor="editor"
+          v-model="regression"
+          :config="editorConfig"
+          v-if="checked"
+      /></b-col>
+      <b-col cols="1" align-self="center">
+        <font-awesome-icon
+          icon="exclamation-circle"
+          size="lg"
+          style="cursor: pointer"
+          @click="toggleRemarks(2)"
+        />
+      </b-col>
+    </b-row>
 
-    <label class="mt-4"
-      >III.3 Threat and Error Management Result</label
-    >
-    <ckeditor :editor="editor" v-model="threat" :config="editorConfig" />
+    <b-form-textarea
+      class="mt-3"
+      placeholder="Add your remarks here..."
+      v-if="remarksShow[2]"
+      v-model="remarks[2]"
+    ></b-form-textarea>
+
+    <label class="mt-4">III.3 Threat and Error Management Result</label>
+
+    <b-row>
+      <b-col cols="11">
+        <ckeditor :editor="editor" v-model="threat" :config="editorConfig" />
+      </b-col>
+      <b-col cols="1" align-self="center">
+        <font-awesome-icon
+          icon="exclamation-circle"
+          size="lg"
+          style="cursor: pointer"
+          @click="toggleRemarks(3)"
+        />
+      </b-col>
+    </b-row>
+
+    <b-form-textarea
+      class="mt-3"
+      placeholder="Add your remarks here..."
+      v-if="remarksShow[3]"
+      v-model="remarks[3]"
+    ></b-form-textarea>
 
     <b-row class="mt-4">
       <b-col cols="12" md="9"> <label>IV. Recommendation</label></b-col>
       <b-col cols="12" md="3" class="text-right"
-        ><b-button
-          variant="primary"
-          size="sm"
-          @click="
-            recommendations = [
-              ...recommendations,
-              {
-                uic: [],
-                recommendation: '',
-                due_date: '',
-                status: ''
-              }
-            ]
-          "
+        ><b-button variant="primary" size="sm" @click="addNewRecom"
           >New</b-button
         ></b-col
       >
@@ -127,11 +190,33 @@
             :select-size="4"
         /></label>
       </b-col>
-      <b-col cols="12" md="1" v-if="idx !== 0" class="text-right">
-        <b-button variant="danger" size="sm" @click="deleteRecom(idx)"
+      <b-col cols="12" md="1" align-self="center">
+        <font-awesome-icon
+          icon="exclamation-circle"
+          size="lg"
+          style="cursor: pointer"
+          @click="toggleRemarks(4 + idx)"
+        />
+        <br />
+        <br />
+        <b-button
+          variant="danger"
+          style="cursor: pointer"
+          size="sm"
+          @click="deleteRecom(idx)"
+          v-if="idx !== 0"
           ><font-awesome-icon icon="trash"
         /></b-button>
       </b-col>
+
+      <b-col cols="12">
+        <b-form-textarea
+          class="mt-3"
+          placeholder="Add your remarks here..."
+          v-if="remarksShow[4 + idx]"
+          v-model="remarks[4 + idx]"
+        ></b-form-textarea
+      ></b-col>
     </b-row>
 
     <b-button variant="primary" class="mr-3" @click="postReport('draft')"
@@ -169,9 +254,6 @@ export default {
     });
   },
   methods: {
-    deleteRecom(idx) {
-      this.recommendations = this.recommendations.filter((r, i) => i !== idx);
-    },
     postReport(status) {
       if (status === "submit") {
       }
@@ -214,6 +296,30 @@ export default {
     },
     customFormatter(date) {
       return moment(date).format("YYYY-MM-DD");
+    },
+    toggleRemarks(idx) {
+      this.remarksShow = this.remarksShow.map((e, i) => {
+        if (i === idx) return !e;
+        return e;
+      });
+    },
+    addNewRecom() {
+      this.recommendations = [
+        ...this.recommendations,
+        {
+          uic: [],
+          recommendation: "",
+          due_date: "",
+          status: ""
+        }
+      ];
+      this.remarksShow.push(false);
+      this.remarks.push("");
+    },
+    deleteRecom(idx) {
+      this.recommendations = this.recommendations.filter((r, i) => i !== idx);
+      this.remarksShow = this.remarksShow.filter((r, i) => i !== 4 + idx);
+      this.remarks = this.remarks.filter((r, i) => i !== 4 + idx);
     }
   },
   components: { Datepicker },
@@ -293,7 +399,9 @@ export default {
       threat: null,
       recommendations: [
         { uic: [], recommendation: "", due_date: "", status: "" }
-      ]
+      ],
+      remarksShow: Array(5).fill(false),
+      remarks: Array(5).fill("")
     };
   }
 };

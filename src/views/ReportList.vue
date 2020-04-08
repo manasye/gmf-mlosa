@@ -231,6 +231,7 @@ export default {
       else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else if (val === "Overdue") return "danger";
+      else if (val === "Verified") return "info";
       else return "secondary";
     },
     actionClick(item) {

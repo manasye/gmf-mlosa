@@ -2,13 +2,18 @@
   <div class="p-3 recom-container mb-4">
     <b-row>
       <b-col cols="9">
-        <h5 class="header-title">{{ recom.uic.join(", ") }}</h5></b-col
+        <h5 class="header-title">{{ recom.uic.uic_code }}</h5></b-col
       >
       <b-col cols="3" class="text-right"
         ><b-button
           :variant="getAction(recom.status)[0]"
           size="sm"
-          v-if="recom.status !== 'Closed'"
+          v-if="
+            recom.status !== 'Closed' &&
+              recom.status !== 'Verified' &&
+              isAdmin()
+          "
+          @click="actionRecom"
           >{{ getAction(recom.status)[1] }}</b-button
         ></b-col
       >
@@ -33,20 +38,34 @@
     <div v-for="reply in recom.replies" class="mb-2">
       <b-badge>Admin</b-badge>
       <p class="mb-0">{{ reply.reply }}</p>
-      <a href="" v-if="reply.file">File</a>
+      <a :href="reply.file" v-if="reply.file" target="_blank">File</a>
     </div>
 
     <b-form-textarea
       v-model="reply"
       placeholder="Reply here..."
-      v-if="recom.status !== 'Closed'"
+      v-if="
+        recom.status !== 'Closed' &&
+          recom.status !== 'Verified' &&
+          recom.status !== 'Overdue'
+      "
     ></b-form-textarea>
 
-    <b-row class="mt-3" v-if="recom.status !== 'Closed'">
-      <b-col cols="6">
-        <b-form-file v-model="attachedFile" />
+    <b-row
+      class="mt-3"
+      v-if="
+        recom.status !== 'Closed' &&
+          recom.status !== 'Verified' &&
+          recom.status !== 'Overdue'
+      "
+    >
+      <b-col cols="8">
+        <b-form-file
+          v-model="attachedFile"
+          :file-name-formatter="formatNames"
+        />
       </b-col>
-      <b-col cols="6" class="text-right">
+      <b-col cols="4" class="text-right" align-self="center">
         <b-button variant="primary" size="sm" @click="sendReply"
           >Send</b-button
         ></b-col
@@ -72,6 +91,7 @@ export default {
       else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
       else if (val === "Overdue") return "danger";
+      else if (val === "Verified") return "info";
       else return "secondary";
     },
     sendReply() {
@@ -89,6 +109,28 @@ export default {
           this.attachedFile = null;
         })
         .catch(err => displayError(err));
+    },
+    formatNames(files) {
+      if (files.length === 1) {
+        return files[0].name.slice(0, 25);
+      } else {
+        return `${files.length} files selected`;
+      }
+    },
+    actionRecom() {
+      const status = this.recom.status;
+      let url;
+      if (status === "Open") url = `/recommendation/verify/${this.recom.id}`;
+      else return;
+      axios
+        .put(url)
+        .then(() => {
+          swal("Success", "Action successfully done", "success");
+          this.getDetail();
+        })
+        .catch(err => {
+          swal("Error", err.response.data.message, "error");
+        });
     }
   },
   data() {

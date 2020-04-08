@@ -259,6 +259,19 @@ export default {
       .catch(() => {
         this.$store.dispatch("goToPage", "/login");
       });
+
+    if (false) {
+      this.navItems = this.navItems.map((n, idx) => {
+        if (idx === 4) {
+          return {
+            name: "Recommendation",
+            route: "/#/report-recommendation",
+            icon: "archive"
+          };
+        }
+        return n;
+      });
+    }
   },
   methods: {
     startWalkthrough() {

@@ -26,7 +26,8 @@ import {
   faQuestionCircle,
   faEye,
   faEyeSlash,
-  faTrash
+  faTrash,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueFroala from "vue-froala-wysiwyg";
@@ -60,6 +61,7 @@ library.add(faQuestionCircle);
 library.add(faEye);
 library.add(faEyeSlash);
 library.add(faTrash);
+library.add(faExclamationCircle);
 
 Vue.config.productionTip = false;
 

@@ -85,7 +85,6 @@
           </p>
         </b-badge>
       </template>
-      <template v-slot:cell(uic)="data"> {{ data.value.join(", ") }}</template>
     </b-table>
   </div>
 </template>
@@ -143,6 +142,7 @@ export default {
       if (val === "Open") return "primary";
       else if (val === "On Progress") return "warning";
       else if (val === "Close") return "success";
+      else if (val === "Verified") return "info";
       else return "danger";
     }
   },
@@ -188,7 +188,7 @@ export default {
         { key: "date", label: "Date", sortable: true },
         { key: "report_no", sortable: true },
         { key: "recommendation", sortable: true },
-        { key: "uic", label: "UIC", sortable: true },
+        { key: "uic_code", label: "UIC", sortable: true },
         { key: "status", sortable: true }
       ],
       recoms: []

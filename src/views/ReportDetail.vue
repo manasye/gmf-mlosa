@@ -44,7 +44,7 @@
             <div v-html="report.threat_error"></div>
             <label class="mt-3">IV. Recommendation</label>
             <div v-for="r in report.recommendation" class="mb-3">
-              <p class="mb-1">{{ r.uic.join(", ") }}</p>
+              <p class="mb-1">{{ r.uic.uic_code }}</p>
               <div v-html="r.recommendation"></div>
             </div>
           </b-col>
