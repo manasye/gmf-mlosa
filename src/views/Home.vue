@@ -39,7 +39,7 @@
               :key="p.id"
               :due="p.due_date"
               :description="p.subtitle"
-              :featured="p.uic ? p.uic.uic_name : ''"
+              :uic="p.uic ? p.uic : { uic_name: '' }"
               :status="p.status"
               v-if="globalPlans[dateSelected].length > 0"
               class="mb-3"
@@ -95,6 +95,9 @@ import { safetyRisk } from "@/utility/variable.js";
 import { getMaintenancesName } from "@/utility/func.js";
 import BarChart from "@/components/BarChart.vue";
 
+const d = new Date();
+const monthNow = d.getMonth() + 1;
+
 export default {
   name: "home",
   mounted() {
@@ -111,6 +114,7 @@ export default {
       this.getSafetyChart();
       this.getParetoChart();
       this.getBreakdownChart();
+      this.getRiskChart();
     },
     showObservation(row) {
       this.$store.dispatch("goToPage", `/observation/${row.id}`);
@@ -162,13 +166,6 @@ export default {
                 class: "status-overdue"
               },
               dates: []
-            },
-            {
-              key: "Verified",
-              highlight: {
-                class: "status-verified"
-              },
-              dates: []
             }
           ];
           data.map(d => {
@@ -181,9 +178,7 @@ export default {
                 labels[1].dates.push(new Date(year, month - 1, date));
               if (status === "Open")
                 labels[0].dates.push(new Date(year, month - 1, date));
-              if (status === "Verified")
-                labels[4].dates.push(new Date(year, month - 1, date));
-              if (status === "Close")
+              if (status === "Close" || status === "Verified")
                 labels[2].dates.push(new Date(year, month - 1, date));
               if (status === "Overdue")
                 labels[3].dates.push(new Date(year, month - 1, date));
@@ -195,7 +190,7 @@ export default {
     },
     getObservations() {
       axios
-        .get("/observation")
+        .get(`/observation?month=${monthNow}`)
         .then(res => {
           this.observations = res.data.data;
         })
@@ -203,7 +198,7 @@ export default {
     },
     getSafetyChart() {
       axios
-        .get("/chart/safety")
+        .get(`/chart/safety?start_month=${monthNow}&end_month=${monthNow}`)
         .then(res => {
           let series = safetyRisk.slice(1).map(m => {
             return { name: m.text, data: [] };
@@ -215,6 +210,12 @@ export default {
             series[2].data.push(data[m].DNO);
             series[3].data.push(data[m]["N/A"]);
           }
+          let count = 0;
+          series.map(s => {
+            count += s.data.length;
+            return null;
+          });
+          if (count === 0) series = [];
           this.charts[0].chartOptions = {
             ...this.charts[0].chartOptions,
             xaxis: {
@@ -228,7 +229,7 @@ export default {
     },
     getThreatChart() {
       axios
-        .get(`/chart/threat`)
+        .get(`/chart/threat?start_month=${monthNow}&end_month=${monthNow}`)
         .then(res => {
           const data = res.data;
           let series = this.maintenanceOptions.map(m => {
@@ -240,6 +241,12 @@ export default {
               series[find].data.push(data[t][m]);
             }
           }
+          let count = 0;
+          series.map(s => {
+            count += s.data.length;
+            return null;
+          });
+          if (count === 0) series = [];
           this.charts[1].chartOptions = {
             ...this.charts[1].chartOptions,
             xaxis: {
@@ -253,7 +260,7 @@ export default {
     },
     getParetoChart() {
       axios
-        .get(`/chart/pareto`)
+        .get(`/chart/pareto?start_month=${monthNow}&end_month=${monthNow}`)
         .then(res => {
           const data = res.data;
           this.charts[2].series = {
@@ -293,7 +300,7 @@ export default {
     },
     getBreakdownChart() {
       axios
-        .get(`/chart/breakdown`)
+        .get(`/chart/breakdown?start_month=${monthNow}&end_month=${monthNow}`)
         .then(res => {
           const data = res.data.data;
           this.charts[3].chartOptions = {
@@ -305,6 +312,230 @@ export default {
             }
           };
           this.charts[3].series = data.map(d => d.total);
+        })
+        .catch(() => {});
+    },
+    getRiskChart() {
+      axios
+        .get(
+          `/chart/risk_register?start_month=${monthNow}&end_month=${monthNow}`
+        )
+        .then(res => {
+          this.charts[4] = {
+            ...this.charts[4],
+            chartOptions: {
+              ...this.charts[4].chartOptions,
+              xaxis: {
+                ...this.charts[4].chartOptions.xaxis,
+                categories: Object.keys(res.data.corporate_current_risk)
+              }
+            }
+          };
+          this.charts[4] = {
+            ...this.charts[4],
+            series: [{ data: Object.values(res.data.corporate_current_risk) }]
+          };
+
+          this.charts[5] = {
+            ...this.charts[5],
+            chartOptions: {
+              ...this.charts[5].chartOptions,
+              xaxis: {
+                ...this.charts[5].chartOptions.xaxis,
+                categories: Object.keys(res.data.corporate_proposed_risk)
+              }
+            }
+          };
+          this.charts[5] = {
+            ...this.charts[5],
+            series: [{ data: Object.values(res.data.corporate_proposed_risk) }]
+          };
+
+          const dimension = res.data.risk_dimension_distribution;
+          this.charts[6] = {
+            ...this.charts[6],
+            chartOptions: {
+              ...this.charts[6].chartOptions,
+              xaxis: {
+                ...this.charts[6].chartOptions.xaxis,
+                categories: Object.keys(dimension)
+              }
+            }
+          };
+          this.charts[6] = {
+            ...this.charts[6],
+            series: [{ data: Object.values(dimension) }]
+          };
+
+          const value = res.data.risk_value_dist;
+          this.charts[7] = {
+            ...this.charts[7],
+            chartOptions: {
+              ...this.charts[7].chartOptions,
+              xaxis: {
+                ...this.charts[7].chartOptions.xaxis,
+                categories: Object.keys(value)
+              }
+            }
+          };
+          let valueSeries = [[], [], [], [], []];
+          let riskTables = [
+            { risk: "Negligible" },
+            { risk: "Low Risk" },
+            { risk: "Medium Risk" },
+            { risk: "High Risk" },
+            { risk: "Extreme Risk" }
+          ];
+          for (let key in value) {
+            for (let risk in value[key]) {
+              if (risk === "Negligible") {
+                valueSeries[0].push(value[key][risk]);
+                riskTables[0] = {
+                  ...riskTables[0],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Low")) {
+                valueSeries[1].push(value[key][risk]);
+                riskTables[1] = {
+                  ...riskTables[1],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Medium")) {
+                valueSeries[2].push(value[key][risk]);
+                riskTables[2] = {
+                  ...riskTables[2],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("High")) {
+                valueSeries[3].push(value[key][risk]);
+                riskTables[3] = {
+                  ...riskTables[3],
+                  [key]: value[key][risk]
+                };
+              }
+              if (risk.includes("Extreme")) {
+                valueSeries[4].push(value[key][risk]);
+                riskTables[4] = {
+                  ...riskTables[4],
+                  [key]: value[key][risk]
+                };
+              }
+            }
+          }
+          this.riskValueTables = riskTables;
+          this.charts[7] = {
+            ...this.charts[7],
+            series: [
+              {
+                name: "Negligible",
+                data: valueSeries[0]
+              },
+              {
+                name: "Low Risk",
+                data: valueSeries[1]
+              },
+              {
+                name: "Medium Risk",
+                data: valueSeries[2]
+              },
+              {
+                name: "High Risk",
+                data: valueSeries[3]
+              },
+              {
+                name: "Extreme Risk",
+                data: valueSeries[4]
+              }
+            ]
+          };
+
+          const threat = res.data.theat_subject;
+          this.charts[8] = {
+            ...this.charts[8],
+            chartOptions: {
+              ...this.charts[8].chartOptions,
+              xaxis: {
+                ...this.charts[8].chartOptions.xaxis,
+                categories: Object.keys(threat)
+              }
+            }
+          };
+          let threatSeries = [[], [], [], [], []];
+          let threatTables = [
+            { risk: "Negligible" },
+            { risk: "Low Risk" },
+            { risk: "Medium Risk" },
+            { risk: "High Risk" },
+            { risk: "Extreme Risk" }
+          ];
+          for (let key in threat) {
+            for (let risk in threat[key]) {
+              if (risk === "Negligible") {
+                threatSeries[0].push(threat[key][risk]);
+                threatTables[0] = {
+                  ...threatTables[0],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Low")) {
+                threatSeries[1].push(threat[key][risk]);
+                threatTables[1] = {
+                  ...threatTables[1],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Medium")) {
+                threatSeries[2].push(threat[key][risk]);
+                threatTables[2] = {
+                  ...threatTables[2],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("High")) {
+                threatSeries[3].push(threat[key][risk]);
+                threatTables[3] = {
+                  ...threatTables[3],
+                  [key]: threat[key][risk]
+                };
+              }
+              if (risk.includes("Extreme")) {
+                threatSeries[4].push(threat[key][risk]);
+                threatTables[4] = {
+                  ...threatTables[4],
+                  [key]: threat[key][risk]
+                };
+              }
+            }
+          }
+          this.threatTables = threatTables;
+          this.charts[8] = {
+            ...this.charts[8],
+            series: [
+              {
+                name: "Negligible",
+                data: threatSeries[0]
+              },
+              {
+                name: "Low Risk",
+                data: threatSeries[1]
+              },
+              {
+                name: "Medium Risk",
+                data: threatSeries[2]
+              },
+              {
+                name: "High Risk",
+                data: threatSeries[3]
+              },
+              {
+                name: "Extreme Risk",
+                data: threatSeries[4]
+              }
+            ]
+          };
         })
         .catch(() => {});
     }
@@ -512,6 +743,210 @@ export default {
               offsetX: 40
             }
           }
+        },
+        {
+          type: "bar",
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true
+              }
+            },
+            title: {
+              text: "Corporate Current Risk Severity Distribution",
+              align: "center",
+              margin: 0
+            },
+            dataLabels: {
+              enabled: false
+            },
+            xaxis: {
+              categories: []
+            }
+          },
+          series: [
+            {
+              data: []
+            }
+          ]
+        },
+        {
+          type: "bar",
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true
+              }
+            },
+            title: {
+              text: "Corporate Proposed Risk Severity Distribution",
+              align: "center",
+              margin: 0
+            },
+            dataLabels: {
+              enabled: false
+            },
+            xaxis: {
+              categories: []
+            }
+          },
+          series: [
+            {
+              data: []
+            }
+          ]
+        },
+        {
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            chart: {
+              height: 350,
+              type: "bar"
+            },
+            plotOptions: {
+              bar: {
+                dataLabels: {
+                  position: "top" // top, center, bottom
+                }
+              }
+            },
+            xaxis: {
+              categories: [],
+              position: "bottom"
+            },
+            fill: {
+              gradient: {
+                shade: "light",
+                type: "horizontal",
+                shadeIntensity: 0.25,
+                gradientToColors: undefined,
+                inverseColors: true,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [50, 0, 100, 100]
+              }
+            },
+            title: {
+              text: "Risk Dimension Distribution",
+              align: "center"
+            }
+          },
+          series: [
+            {
+              data: []
+            }
+          ]
+        },
+        {
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            chart: {
+              stacked: true,
+              width: "100%"
+            },
+            plotOptions: {
+              bar: {
+                horizontal: true
+              }
+            },
+            stroke: {
+              width: 1,
+              colors: ["#fff"]
+            },
+            title: {
+              text: "Risk Value Distribution for each Risk Dimension",
+              align: "center",
+              margin: 0,
+              style: {
+                fontSize: "16px",
+                fontWeight: "700"
+              }
+            },
+            xaxis: {
+              categories: []
+            },
+            yaxis: {
+              title: {
+                text: undefined
+              }
+            },
+            fill: {
+              opacity: 1
+            },
+            legend: {
+              position: "bottom",
+              horizontalAlign: "left",
+              offsetX: 40
+            }
+          },
+          series: []
+        },
+        {
+          chartOptions: {
+            noData: {
+              text: "No Data",
+              verticalAlign: "top"
+            },
+            chart: {
+              stacked: true,
+              toolbar: {
+                show: true
+              },
+              zoom: {
+                enabled: true
+              }
+            },
+            responsive: [
+              {
+                breakpoint: 480,
+                options: {
+                  legend: {
+                    position: "bottom",
+                    offsetX: -10,
+                    offsetY: 0
+                  }
+                }
+              }
+            ],
+            plotOptions: {
+              bar: {
+                horizontal: false
+              }
+            },
+            title: {
+              text: "Threat Subject (Impact To) for Each Department",
+              align: "center",
+              margin: 0,
+              style: {
+                fontSize: "16px",
+                fontWeight: "700"
+              }
+            },
+            xaxis: {
+              categories: []
+            },
+            legend: {
+              position: "bottom"
+            },
+            fill: {
+              opacity: 1
+            }
+          },
+          series: []
         }
       ]
     };

@@ -1,6 +1,6 @@
 <template>
   <b-card
-    :header="featured"
+    :header="uic.uic_code + ' - ' + uic.uic_name"
     header-tag="header"
     :header-bg-variant="headerBg"
     header-text-variant="white"
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  props: ["due", "description", "featured", "status"],
+  props: ["due", "description", "uic", "status"],
   computed: {
     headerBg() {
       if (this.status === "Open") return "primary";

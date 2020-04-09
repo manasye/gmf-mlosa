@@ -194,7 +194,7 @@
         <b-button
           variant="success"
           class="mr-3"
-          @click="postObservation('Closed')"
+          @click="postObservation('Open')"
           v-if="headers.no"
           >SUBMIT</b-button
         >
@@ -239,16 +239,28 @@
       </b-card>
       <p class="mb-0">
         Chosen Sub Threat Code :
-        {{
-          subThreatCodes.length > 0
-            ? subThreatCodes.map(s => s.code).join(", ")
-            : "-"
-        }}
       </p>
+      <div
+        v-for="tc in subThreatCodes"
+        :key="tc.code"
+        class="d-flex justify-content-between mb-3"
+      >
+        <p class="mb-1">
+          {{ tc.code }}
+        </p>
+        <b-button
+          variant="danger"
+          size="sm"
+          @click="
+            subThreatCodes = subThreatCodes.filter(s => s.code !== tc.code)
+          "
+          ><font-awesome-icon icon="trash"
+        /></b-button>
+      </div>
       <b-row class="text-right mt-4">
         <b-col cols="12">
           <b-button
-            variant="danger"
+            variant="light"
             @click="showModalThreat = false"
             class="mr-3"
             >Cancel</b-button
@@ -514,7 +526,9 @@ export default {
       })
       .catch(() => {});
     axios
-      .get(`/observation/${this.$route.params.id}/form`)
+      .get(
+        `/observation/${this.$route.params.id}/form?observation_no=${this.$route.query.obs_no}`
+      )
       .then(res => {
         this.activities = res.data.activities;
         this.breadcrumbs[1].text = res.data.maintenance_process.name;
@@ -587,7 +601,9 @@ export default {
       if (status === "Open") action = name + " create MLOSA Plan";
       else if (status === "On Progress")
         action = name + " follow up MLOSA Plan";
-      else if (status === "Close") action = name + " submit observation";
+      else if (status === "Closed") action = name + " submit observation";
+
+      if (this.isAdmin()) status = "Closed";
 
       const data = {
         observation: {

@@ -93,7 +93,8 @@
       <template v-slot:cell(status)="data">
         <b-badge
           :variant="getBadgesVariant(data.value)"
-          style="margin-right: 30px"
+          style="margin-right: 30px; cursor:pointer"
+          @click.stop="viewLog(data.item)"
         >
           <p class="status-badges" :class="getBadgesVariant(data.value)">
             {{ data.value }}
@@ -104,7 +105,7 @@
         <p
           class="text-primary mb-0 "
           style="cursor: pointer"
-          @click.stop="actionClick(data.item)"
+          @click="actionClick(data.item)"
         >
           {{ data.value }}
           <font-awesome-icon
@@ -182,6 +183,7 @@ import {
   getYearOptions,
   displayError
 } from "@/utility/func.js";
+import swal from "sweetalert";
 
 export default {
   mounted() {
@@ -314,16 +316,23 @@ export default {
       else if (val === "Verified") return "info";
       else return "danger";
     },
+    viewLog(item) {
+      axios
+        .get(`/observation/${item.id}/logs`)
+        .then(res => {
+          this.showModal = true;
+          this.histories = res.data.data;
+          this.observationChosen = item;
+        })
+        .catch(() => {});
+    },
     actionClick(item) {
+      console.log(item);
       if (item.action === "View") {
-        axios
-          .get(`/observation/${item.id}/logs`)
-          .then(res => {
-            this.histories = res.data.data;
-            this.observationChosen = item;
-            this.showModal = true;
-          })
-          .catch(() => {});
+        this.$store.dispatch(
+          "goToPage",
+          `/observation-create/${item.mp_id}?obs_no=${item.observation_no}&obs_id=${item.id}`
+        );
       } else {
         this.$store.dispatch(
           "goToPage",
@@ -337,12 +346,23 @@ export default {
         obs.link_download;
     },
     deleteObservation(id) {
-      axios
-        .delete(`/observation/${id}`)
-        .then(() => {
-          this.getObservations();
-        })
-        .catch(err => displayError(err));
+      swal({
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to recover it",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true
+      }).then(willDelete => {
+        if (willDelete) {
+          axios
+            .delete(`/observation/${id}`)
+            .then(() => {
+              swal("Success", "Delete successfully done", "success");
+              this.getObservations();
+            })
+            .catch(err => displayError(err));
+        }
+      });
     }
   }
 };

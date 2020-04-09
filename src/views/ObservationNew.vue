@@ -11,20 +11,20 @@
       /></b-col>
     </b-row>
 
-    <b-row>
-      <b-col cols="12" md="6">
-        <b-row v-for="h in leftHeaders" :key="h.field" class="mt-2">
-          <b-col cols="12" md="6"> {{ h.field }}</b-col>
-          <b-col cols="12" md="6"> {{ h.value }}</b-col>
-        </b-row>
-      </b-col>
-      <b-col cols="12" md="6">
-        <b-row v-for="(h, idx) in rightHeaders" :key="idx" class="mt-2">
-          <b-col cols="12" md="6"> {{ h.field }}</b-col>
-          <b-col cols="12" md="6"> {{ h.value }}</b-col>
-        </b-row>
-      </b-col></b-row
-    >
+<!--    <b-row>-->
+<!--      <b-col cols="12" md="6">-->
+<!--        <b-row v-for="h in leftHeaders" :key="h.field" class="mt-2">-->
+<!--          <b-col cols="12" md="6"> {{ h.field }}</b-col>-->
+<!--          <b-col cols="12" md="6"> {{ h.value }}</b-col>-->
+<!--        </b-row>-->
+<!--      </b-col>-->
+<!--      <b-col cols="12" md="6">-->
+<!--        <b-row v-for="(h, idx) in rightHeaders" :key="idx" class="mt-2">-->
+<!--          <b-col cols="12" md="6"> {{ h.field }}</b-col>-->
+<!--          <b-col cols="12" md="6"> {{ h.value }}</b-col>-->
+<!--        </b-row>-->
+<!--      </b-col></b-row-->
+<!--    >-->
 
     <div class="text-right">
       <b-button

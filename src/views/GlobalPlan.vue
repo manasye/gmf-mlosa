@@ -11,16 +11,16 @@
           @input="getGlobalPlan"
         />
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
-        ><label>Start Month</label>
+      <b-col cols="12" md="1" class="mb-3"
+        ><label>Start</label>
         <b-form-select
           v-model="selectVal.start_month"
           :options="startOptions"
           @input="getGlobalPlan"
         />
       </b-col>
-      <b-col cols="12" md="2" class="mb-3"
-        ><label>End Month</label>
+      <b-col cols="12" md="1" class="mb-3"
+        ><label>End</label>
         <b-form-select
           v-model="selectVal.end_month"
           :options="endOptions"
@@ -59,6 +59,14 @@
           >Filter</b-button
         ></b-col
       >
+<!--      <b-col cols="12" md="2" class="mb-3  d-flex justify-content-end"-->
+<!--        ><b-button-->
+<!--          variant="primary"-->
+<!--          @click="showModalUic = true"-->
+<!--          class="align-self-end"-->
+<!--          >Add UIC</b-button-->
+<!--        ></b-col-->
+<!--      >-->
       <b-col cols="12" md="2" class="mb-3 d-flex justify-content-end">
         <b-button
           variant="primary"
@@ -137,7 +145,7 @@
               <card-calendar-info
                 :due="p.due_date"
                 :description="p.subtitle"
-                :featured="p.uic ? p.uic.uic_name : ''"
+                :uic="p.uic ? p.uic : { uic_name: '' }"
                 v-if="globalPlans[dateSelected].length > 0"
                 :status="p.status"
               />
@@ -298,13 +306,6 @@ export default {
                 class: "status-overdue"
               },
               dates: []
-            },
-            {
-              key: "Verified",
-              highlight: {
-                class: "status-verified"
-              },
-              dates: []
             }
           ];
           data.map(d => {
@@ -317,9 +318,7 @@ export default {
                 labels[1].dates.push(new Date(year, month - 1, date));
               if (status === "Open")
                 labels[0].dates.push(new Date(year, month - 1, date));
-              if (status === "Verified")
-                labels[4].dates.push(new Date(year, month - 1, date));
-              if (status === "Close")
+              if (status === "Close" || status === "Verified")
                 labels[2].dates.push(new Date(year, month - 1, date));
               if (status === "Overdue")
                 labels[3].dates.push(new Date(year, month - 1, date));
@@ -334,13 +333,13 @@ export default {
         .get("/mlosa_implementation")
         .then(res => {
           const data = res.data.data;
-          let counts = new Array(5).fill(0);
+          let counts = new Array(4).fill(0);
           data.map(d => {
-            if (d.status === "On Progress") counts[1] = d.count;
-            if (d.status === "Open") counts[0] = d.count;
-            if (d.status === "Verified") counts[4] = d.count;
-            if (d.status === "Close") counts[2] = d.count;
-            if (d.status === "Overdue") counts[3] = d.count;
+            if (d.status === "On Progress") counts[1] += d.count;
+            if (d.status === "Open") counts[0] += d.count;
+            if (d.status === "Close" || d.status === "Verified")
+              counts[2] += d.count;
+            if (d.status === "Overdue") counts[3] += d.count;
           });
           let datasets = [
             {
@@ -356,7 +355,7 @@ export default {
           ];
           this.chartData = {
             ...this.chartData,
-            labels: ["Open", "On Progress", "Close", "Overdue", "Verified"],
+            labels: ["Open", "On Progress", "Close", "Overdue"],
             datasets
           };
         })

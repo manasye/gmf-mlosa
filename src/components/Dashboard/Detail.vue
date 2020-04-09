@@ -44,7 +44,7 @@
       >
       <b-col cols="12" md="1" class="mb-3 d-flex justify-content-end"
         ><b-button variant="primary" class="align-self-end" @click="back"
-          >Chart
+          >Back
         </b-button>
       </b-col>
     </b-row>

@@ -82,16 +82,12 @@ let status = [
   {
     value: "Closed",
     text: "Closed"
-  },
-  {
-    value: "Verified",
-    text: "Verified"
   }
 ];
 
-if (!isAdmin()) {
-  status.pop();
-}
+// if (!isAdmin()) {
+//   status.pop();
+// }
 
 export const statusObservation = status;
 
