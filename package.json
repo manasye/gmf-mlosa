@@ -28,7 +28,7 @@
     "query-string": "^6.10.1",
     "register-service-worker": "^1.6.2",
     "slick-carousel": "^1.8.1",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socket.io-client": "^2.3.0",
     "sweetalert": "^2.1.2",
     "v-calendar": "^1.0.1",
